@@ -1,0 +1,6 @@
+{
+  "name": "Teach Arab",
+  "description": "Platform pembuatan materi & game interaktif pembelajaran Bahasa Arab untuk guru dengan ekspor mandiri, penyimpanan lokal, dan mode proyektor kelas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
