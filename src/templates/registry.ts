@@ -8,6 +8,9 @@ import {
   Images,
   Scroll,
   Table,
+  CheckSquare,
+  Brain,
+  Compass,
 } from 'lucide-react';
 
 import FlashcardEditor from './flashcard/Editor';
@@ -37,6 +40,18 @@ import { DEFAULT_READING_SENTENCES } from './reading/schema';
 import WordTableEditor from './word-table/Editor';
 import WordTablePlayer from './word-table/Player';
 import { DEFAULT_WORD_TABLE_ROWS, PRESET_TASHRIF_COLUMNS } from './word-table/schema';
+
+import TrueFalseEditor from './true-false/Editor';
+import TrueFalsePlayer from './true-false/Player';
+import { DEFAULT_TRUE_FALSE } from './true-false/schema';
+
+import MemoryEditor from './memory/Editor';
+import MemoryPlayer from './memory/Player';
+import { DEFAULT_MEMORY_PAIRS } from './memory/schema';
+
+import WheelEditor from './wheel/Editor';
+import WheelPlayer from './wheel/Player';
+import { DEFAULT_WHEEL_ENTRIES } from './wheel/schema';
 
 export interface TemplateDefinition {
   id: TemplateType;
@@ -337,6 +352,140 @@ const wordTableDefinition: TemplateDefinition = {
   PlayerComponent: WordTablePlayer,
 };
 
+// 8. Benar atau Salah (True-False)
+const trueFalseDefinition: TemplateDefinition = {
+  id: 'true-false',
+  name: 'Benar atau Salah',
+  category: 'game',
+  description:
+    'Game evaluasi cepat dengan tombol BENAR dan SALAH, skor langsung, batas waktu timer, dan penjelasan kunci jawaban.',
+  badge: 'Game Cepat',
+  icon: CheckSquare,
+  features: [
+    'Dua Tombol Besar Interaktif',
+    'Umpan Balik & Penjelasan Langsung',
+    'Batas Waktu Timer per Soal',
+    'Mode Kompetisi 2-4 Tim',
+  ],
+  createDefaultDraft: (title = 'Benar atau Salah: Pemahaman Kosakata') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Latihan menentukan kebenaran pernyataan bahasa Arab secara interaktif.',
+    templateType: 'true-false',
+    theme: {
+      palette: 'emerald',
+      fontFamily: 'Noto Naskh Arabic',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: true,
+      soundEnabled: true,
+    },
+    settings: {
+      tfTimerSeconds: 15,
+      tfPointsPerQuestion: 10,
+      tfShuffle: false,
+      teamMode: false,
+      teamCount: 2,
+      teamNames: ['Tim Hijau', 'Tim Kuning'],
+    },
+    items: DEFAULT_TRUE_FALSE,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: TrueFalseEditor,
+  PlayerComponent: TrueFalsePlayer,
+};
+
+// 9. Memory Card
+const memoryDefinition: TemplateDefinition = {
+  id: 'memory',
+  name: 'Memory Card',
+  category: 'game',
+  description:
+    'Game melatih daya ingat mufrodat dengan grid kartu tertutup. Cocokkan kata Arab dengan arti, gambar, atau audio pelafalan.',
+  badge: 'Game Ingatan',
+  icon: Brain,
+  features: [
+    '4-10 Pasangan Kartu (Grid Responsif)',
+    'Efek 3D Flip & Suara Interaktif',
+    'Hitung Langkah & Catatan Waktu',
+    'Mode Tim Bergiliran',
+  ],
+  createDefaultDraft: (title = 'Memory Card: Mufrodat Penting') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Permainan membalik kartu untuk mencocokkan kata Arab dan artinya.',
+    templateType: 'memory',
+    theme: {
+      palette: 'indigo',
+      fontFamily: 'Amiri',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: true,
+      soundEnabled: true,
+    },
+    settings: {
+      memoryPairsPerGame: 6,
+      memoryPreviewBriefly: false,
+      teamMode: false,
+      teamCount: 2,
+      teamNames: ['Tim Merah', 'Tim Biru'],
+    },
+    items: DEFAULT_MEMORY_PAIRS,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: MemoryEditor,
+  PlayerComponent: MemoryPlayer,
+};
+
+// 10. Roda Acak / Spinner
+const wheelDefinition: TemplateDefinition = {
+  id: 'wheel',
+  name: 'Roda Acak / Spinner',
+  category: 'game',
+  description:
+    'Roda putar interaktif untuk undian nama siswa, kuis acak, dan tantangan kelas dengan animasi putaran halus dan efek suara.',
+  badge: 'Game Putar Roda',
+  icon: Compass,
+  features: [
+    'Animasi Fisika Halus & Suara Berputar',
+    'Dukungan Penuh Teks Arab RTL',
+    'Opsi Hapus Entri Setelah Terpilih',
+    'Kunci Jawaban Pop-up & Skor Tim',
+  ],
+  createDefaultDraft: (title = 'Roda Acak: Tanya Jawab Arab') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Roda putaran seru untuk memilih pertanyaan atau undian giliran siswa di kelas.',
+    templateType: 'wheel',
+    theme: {
+      palette: 'emerald',
+      fontFamily: 'Amiri',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: true,
+      soundEnabled: true,
+    },
+    settings: {
+      wheelMode: 'questions',
+      wheelEliminateOnPick: false,
+      wheelSound: true,
+      teamMode: false,
+      teamCount: 2,
+      teamNames: ['Tim A', 'Tim B'],
+    },
+    items: DEFAULT_WHEEL_ENTRIES,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: WheelEditor,
+  PlayerComponent: WheelPlayer,
+};
+
 export const TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
   flashcard: flashcardDefinition,
   kuis: quizDefinition,
@@ -346,6 +495,9 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
   'vocab-picture': vocabPictureDefinition,
   reading: readingDefinition,
   'word-table': wordTableDefinition,
+  'true-false': trueFalseDefinition,
+  memory: memoryDefinition,
+  wheel: wheelDefinition,
 };
 
 export function isValidTemplateType(type: string): type is TemplateType {
@@ -357,7 +509,10 @@ export function isValidTemplateType(type: string): type is TemplateType {
     type === 'slide' ||
     type === 'vocab-picture' ||
     type === 'reading' ||
-    type === 'word-table'
+    type === 'word-table' ||
+    type === 'true-false' ||
+    type === 'memory' ||
+    type === 'wheel'
   );
 }
 
@@ -385,6 +540,9 @@ export function getAllTemplates(): TemplateDefinition[] {
     flashcardDefinition,
     quizDefinition,
     matchingDefinition,
+    trueFalseDefinition,
+    memoryDefinition,
+    wheelDefinition,
   ];
 }
 
@@ -402,6 +560,9 @@ export function getAllGameTemplates(): TemplateDefinition[] {
     flashcardDefinition,
     quizDefinition,
     matchingDefinition,
+    trueFalseDefinition,
+    memoryDefinition,
+    wheelDefinition,
   ];
 }
 

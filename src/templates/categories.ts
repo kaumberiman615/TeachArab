@@ -62,7 +62,10 @@ export function getCategoryByTemplateType(templateType?: string): TemplateCatego
     cleanType === 'kuis' ||
     cleanType === 'quiz' ||
     cleanType === 'matching' ||
-    cleanType === 'mencocokkan'
+    cleanType === 'mencocokkan' ||
+    cleanType === 'true-false' ||
+    cleanType === 'memory' ||
+    cleanType === 'wheel'
   ) {
     return 'game';
   }

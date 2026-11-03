@@ -392,10 +392,130 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
       .no-print {
         display: none !important;
       }
-      .data-table th, .data-table td {
-        border: 1px solid #000 !important;
-        color: #000 !important;
-      }
+    /* True-False styles */
+    .tf-btn {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      border-radius: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.15s ease;
+      border: 3px solid transparent;
+      user-select: none;
+    }
+    .tf-btn-true {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #10b981;
+    }
+    .tf-btn-true:hover:not(.disabled) {
+      background: #10b981;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .tf-btn-false {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #ef4444;
+    }
+    .tf-btn-false:hover:not(.disabled) {
+      background: #ef4444;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .tf-btn.selected-correct {
+      background: #10b981 !important;
+      color: #fff !important;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+    }
+    .tf-btn.selected-wrong {
+      background: #ef4444 !important;
+      color: #fff !important;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Memory styles */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 1rem;
+      max-width: 800px;
+      margin: 1.5rem auto;
+      width: 100%;
+    }
+    .memory-card {
+      perspective: 800px;
+      height: 130px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .memory-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: 0.85rem;
+    }
+    .memory-card.flipped .memory-card-inner {
+      transform: rotateY(180deg);
+    }
+    .memory-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06);
+    }
+    .memory-front {
+      background: #047857;
+      color: #fff;
+      border: 2px solid #065f46;
+      font-size: 1.75rem;
+    }
+    .memory-back {
+      background: #fff;
+      border: 2px solid #e7e5e4;
+      transform: rotateY(180deg);
+      overflow: hidden;
+    }
+    .memory-card.matched .memory-back {
+      background: #ecfdf5;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Wheel styles */
+    .wheel-container {
+      position: relative;
+      width: 360px;
+      height: 360px;
+      margin: 1rem auto;
+    }
+    .wheel-pointer {
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-right: 28px solid #ef4444;
+      z-index: 10;
+      filter: drop-shadow(-2px 0 2px rgba(0,0,0,0.3));
     }
   </style>
 </head>
@@ -510,6 +630,12 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         renderReading();
       } else if (data.templateType === 'word-table') {
         renderWordTable();
+      } else if (data.templateType === 'true-false') {
+        renderTrueFalse();
+      } else if (data.templateType === 'memory') {
+        renderMemory();
+      } else if (data.templateType === 'wheel') {
+        renderWheel();
       }
 
       // 1. FLASHCARD
@@ -1434,6 +1560,588 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         }
 
         updateTable();
+      }
+
+      // 8. BENAR ATAU SALAH (TRUE-FALSE)
+      function renderTrueFalse() {
+        const rawItems = data.items || [];
+        if (rawItems.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada soal Benar/Salah dalam materi ini.</div>';
+          return;
+        }
+
+        const shouldShuffle = data.settings && data.settings.tfShuffle !== false;
+        let items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+        const timerSeconds = (data.settings && data.settings.tfTimerSeconds) || 0;
+        const ptsPerQ = (data.settings && data.settings.tfPointsPerQuestion) || 10;
+
+        let currentIndex = 0;
+        let score = 0;
+        let answered = false;
+        let selectedAnswer = null;
+        let timer = timerSeconds;
+        let timerInterval = null;
+
+        function startTimer() {
+          if (timerInterval) clearInterval(timerInterval);
+          if (timerSeconds <= 0) return;
+          timer = timerSeconds;
+          timerInterval = setInterval(() => {
+            timer--;
+            const timerEl = document.getElementById('tf-timer');
+            if (timerEl) timerEl.textContent = timer + 'd';
+            if (timer <= 0) {
+              clearInterval(timerInterval);
+              handleAnswer(null); // Time out
+            }
+          }, 1000);
+        }
+
+        function handleAnswer(ans) {
+          if (answered) return;
+          answered = true;
+          selectedAnswer = ans;
+          if (timerInterval) clearInterval(timerInterval);
+
+          const cur = items[currentIndex];
+          const isCorrect = ans === cur.isTrue;
+          if (isCorrect) {
+            score += ptsPerQ;
+            sfxCorrect();
+          } else {
+            sfxWrong();
+          }
+          renderQuestion();
+        }
+
+        function renderResults() {
+          if (timerInterval) clearInterval(timerInterval);
+          const totalScore = items.length * ptsPerQ;
+          const pct = Math.round((score / totalScore) * 100) || 0;
+          viewport.innerHTML = \`
+            <div class="card" style="text-align:center; max-width:550px; margin:2rem auto; padding:2.5rem 1.5rem;">
+              <div style="font-size:3rem; margin-bottom:1rem;">\${pct >= 70 ? '🎉' : '💪'}</div>
+              <h2 style="font-size:1.75rem; font-weight:700; color:#1c1917; margin-bottom:0.5rem;">Permainan Selesai!</h2>
+              <p style="color:#57534e; margin-bottom:1.5rem;">Kamu telah menyelesaikan seluruh pernyataan.</p>
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;">
+                <div style="font-size:0.875rem; color:#047857; font-weight:600; text-transform:uppercase;">Skor Akhir</div>
+                <div style="font-size:3rem; font-weight:800; color:#065f46;">\${score} <span style="font-size:1.25rem; font-weight:500; color:#6b7280;">/ \${totalScore}</span></div>
+                <div style="font-size:0.95rem; color:#047857; margin-top:0.25rem;">Akurasi: \${pct}%</div>
+              </div>
+              <button class="btn btn-primary" id="btn-tf-restart" style="padding:0.75rem 2rem; font-size:1rem;">
+                🔄 Main Lagi
+              </button>
+            </div>
+          \`;
+          document.getElementById('btn-tf-restart').addEventListener('click', () => {
+            currentIndex = 0;
+            score = 0;
+            answered = false;
+            selectedAnswer = null;
+            items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+            renderQuestion();
+          });
+        }
+
+        function renderQuestion() {
+          if (currentIndex >= items.length) {
+            renderResults();
+            return;
+          }
+
+          const cur = items[currentIndex];
+          const hasArabic = /[\\u0600-\\u06FF]/.test(cur.statement || '');
+          const imgSrc = getMediaSrc(cur.mediaImageId);
+          const audioSrc = getMediaSrc(cur.mediaAudioId);
+
+          let feedbackHtml = '';
+          if (answered) {
+            const isCorrect = selectedAnswer === cur.isTrue;
+            feedbackHtml = \`
+              <div style="margin-top:1.5rem; padding:1.25rem; border-radius:0.75rem; background:\${isCorrect ? '#ecfdf5' : '#fef2f2'}; border:2px solid \${isCorrect ? '#10b981' : '#ef4444'}; text-align:left;">
+                <div style="font-weight:700; font-size:1.1rem; color:\${isCorrect ? '#065f46' : '#991b1b'}; display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                  <span>\${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Kurang Tepat!'}</span>
+                </div>
+                <div style="color:#374151; font-size:0.95rem; line-height:1.5;">
+                  <strong>Pernyataan ini seharusnya:</strong> <span style="font-weight:700; color:\${cur.isTrue ? '#047857' : '#b91c1c'}">\${cur.isTrue ? 'BENAR' : 'SALAH'}</span>
+                  \${cur.explanation ? \`<div style="margin-top:0.5rem; color:#4b5563;">💡 \${cur.explanation}</div>\` : ''}
+                </div>
+                <div style="margin-top:1rem; text-align:right;">
+                  <button class="btn btn-primary" id="btn-tf-next">
+                    \${currentIndex + 1 < items.length ? 'Pernyataan Berikutnya ➔' : 'Lihat Hasil ➔'}
+                  </button>
+                </div>
+              </div>
+            \`;
+          }
+
+          viewport.innerHTML = \`
+            <div style="max-width:640px; margin:1rem auto; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <div style="font-weight:600; color:#57534e;">Pernyataan \${currentIndex + 1} dari \${items.length}</div>
+                <div style="display:flex; gap:0.75rem; align-items:center;">
+                  \${timerSeconds > 0 ? \`<span style="background:#fee2e2; color:#991b1b; padding:0.25rem 0.6rem; border-radius:9999px; font-weight:700; font-size:0.875rem;">⏱️ <span id="tf-timer">\${timer}d</span></span>\` : ''}
+                  <span style="background:#ecfdf5; color:#065f46; padding:0.25rem 0.6rem; border-radius:9999px; font-weight:700; font-size:0.875rem;">Skor: \${score}</span>
+                </div>
+              </div>
+
+              <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+                \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:180px; border-radius:0.75rem; margin-bottom:1.25rem; object-fit:contain;" />\` : ''}
+
+                <div class="\${hasArabic ? 'arabic-text ' + fontClass : ''}" style="font-size:\${hasArabic ? '2.2rem' : '1.35rem'}; font-weight:700; color:#1c1917; margin-bottom:1.5rem; line-height:1.6;">
+                  \${hasArabic ? filterHarakat(cur.statement) : cur.statement}
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1.5rem;">
+                  \${hasArabic ? \`<button class="btn btn-outline" id="btn-tf-speak" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🔊 Bacakan</button>\` : ''}
+                  \${audioSrc ? \`<audio id="tf-audio" src="\${audioSrc}"></audio><button class="btn btn-outline" id="btn-tf-audio" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🎵 Audio</button>\` : ''}
+                </div>
+
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                  <button class="tf-btn tf-btn-true \${answered ? 'disabled' : ''} \${answered && selectedAnswer === true ? (cur.isTrue === true ? 'selected-correct' : 'selected-wrong') : ''}" id="btn-choice-true" \${answered ? 'disabled' : ''}>
+                    <span>✓</span> BENAR
+                  </button>
+                  <button class="tf-btn tf-btn-false \${answered ? 'disabled' : ''} \${answered && selectedAnswer === false ? (cur.isTrue === false ? 'selected-correct' : 'selected-wrong') : ''}" id="btn-choice-false" \${answered ? 'disabled' : ''}>
+                    <span>✕</span> SALAH
+                  </button>
+                </div>
+
+                \${feedbackHtml}
+              </div>
+            </div>
+          \`;
+
+          if (hasArabic) {
+            document.getElementById('btn-tf-speak')?.addEventListener('click', () => speak(cur.statement));
+          }
+          if (audioSrc) {
+            document.getElementById('btn-tf-audio')?.addEventListener('click', () => {
+              const a = document.getElementById('tf-audio');
+              if (a) a.play();
+            });
+          }
+
+          if (!answered) {
+            document.getElementById('btn-choice-true')?.addEventListener('click', () => handleAnswer(true));
+            document.getElementById('btn-choice-false')?.addEventListener('click', () => handleAnswer(false));
+            startTimer();
+          } else {
+            document.getElementById('btn-tf-next')?.addEventListener('click', () => {
+              currentIndex++;
+              answered = false;
+              selectedAnswer = null;
+              renderQuestion();
+            });
+          }
+        }
+
+        renderQuestion();
+      }
+
+      // 9. MEMORY CARD
+      function renderMemory() {
+        const rawPairs = data.items || [];
+        if (rawPairs.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada pasangan kartu memori dalam materi ini.</div>';
+          return;
+        }
+
+        const pairsPerGame = (data.settings && data.settings.memoryPairsPerGame) || 6;
+        let selectedPairs = [...rawPairs].sort(() => Math.random() - 0.5).slice(0, pairsPerGame);
+
+        let cards = [];
+        selectedPairs.forEach((p, idx) => {
+          cards.push({
+            id: 'a_' + idx,
+            pairId: idx,
+            type: 'arabic',
+            text: p.arabic,
+            meaning: p.meaning,
+            mediaAudioId: p.mediaAudioId,
+            mediaImageId: p.mediaImageId,
+            isFlipped: false,
+            isMatched: false
+          });
+          cards.push({
+            id: 'b_' + idx,
+            pairId: idx,
+            type: 'meaning',
+            text: p.meaning,
+            arabic: p.arabic,
+            mediaImageId: p.mediaImageId,
+            mediaAudioId: p.mediaAudioId,
+            isFlipped: false,
+            isMatched: false
+          });
+        });
+        cards.sort(() => Math.random() - 0.5);
+
+        let flippedIndices = [];
+        let moves = 0;
+        let matchedCount = 0;
+        let lockBoard = false;
+        let seconds = 0;
+        let timerId = null;
+
+        function startStopwatch() {
+          if (timerId) clearInterval(timerId);
+          seconds = 0;
+          timerId = setInterval(() => {
+            seconds++;
+            const tEl = document.getElementById('mem-time');
+            if (tEl) {
+              const m = Math.floor(seconds / 60);
+              const s = seconds % 60;
+              tEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+            }
+          }, 1000);
+        }
+
+        function renderBoard() {
+          if (matchedCount === selectedPairs.length) {
+            if (timerId) clearInterval(timerId);
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            const timeStr = m + ':' + (s < 10 ? '0' : '') + s;
+            viewport.innerHTML = \`
+              <div class="card" style="text-align:center; max-width:500px; margin:2rem auto; padding:2.5rem 1.5rem;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🎉</div>
+                <h2 style="font-size:1.75rem; font-weight:700; color:#1c1917; margin-bottom:0.5rem;">Luar Biasa!</h2>
+                <p style="color:#57534e; margin-bottom:1.5rem;">Kamu berhasil menemukan semua pasangan kartu!</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                  <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:0.75rem; padding:1rem;">
+                    <div style="font-size:0.8rem; color:#047857; font-weight:600;">LANGKAH</div>
+                    <div style="font-size:1.75rem; font-weight:700; color:#065f46;">\${moves}</div>
+                  </div>
+                  <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:0.75rem; padding:1rem;">
+                    <div style="font-size:0.8rem; color:#047857; font-weight:600;">WAKTU</div>
+                    <div style="font-size:1.75rem; font-weight:700; color:#065f46;">\${timeStr}</div>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="btn-mem-restart" style="padding:0.75rem 2rem; font-size:1rem;">
+                  🔄 Main Lagi
+                </button>
+              </div>
+            \`;
+            document.getElementById('btn-mem-restart').addEventListener('click', () => {
+              renderMemory();
+            });
+            return;
+          }
+
+          const m = Math.floor(seconds / 60);
+          const s = seconds % 60;
+          const timeStr = m + ':' + (s < 10 ? '0' : '') + s;
+
+          viewport.innerHTML = \`
+            <div style="max-width:850px; margin:0 auto; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; background:#fff; padding:0.75rem 1.25rem; border-radius:0.75rem; border:1px solid #e7e5e4;">
+                <div style="font-weight:600; color:#57534e;">Pasangan: <span style="color:#047857; font-weight:700;">\${matchedCount}/\${selectedPairs.length}</span></div>
+                <div style="display:flex; gap:1rem; align-items:center;">
+                  <span style="color:#57534e; font-weight:600;">Langkah: <span style="color:#1c1917; font-weight:700;">\${moves}</span></span>
+                  <span style="color:#57534e; font-weight:600;">⏱️ <span id="mem-time">\${timeStr}</span></span>
+                </div>
+              </div>
+
+              <div class="memory-grid">
+                \${cards.map((c, idx) => {
+                  const isUp = c.isFlipped || c.isMatched;
+                  const imgSrc = getMediaSrc(c.mediaImageId);
+                  return \`
+                    <div class="memory-card \${isUp ? 'flipped' : ''} \${c.isMatched ? 'matched' : ''}" data-card-idx="\${idx}">
+                      <div class="memory-card-inner">
+                        <div class="memory-face memory-front">
+                          <span>?</span>
+                        </div>
+                        <div class="memory-face memory-back">
+                          \${c.type === 'arabic' ? \`
+                            <div class="arabic-text \${fontClass}" style="font-size:1.5rem; font-weight:700; color:#047857; line-height:1.4;">
+                              \${filterHarakat(c.text)}
+                            </div>
+                          \` : \`
+                            \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:60px; object-fit:contain; margin-bottom:0.25rem;" />\` : ''}
+                            <div style="font-size:0.95rem; font-weight:700; color:#1c1917;">
+                              \${c.text}
+                            </div>
+                          \`}
+                        </div>
+                      </div>
+                    </div>
+                  \`;
+                }).join('')}
+              </div>
+            </div>
+          \`;
+
+          viewport.querySelectorAll('[data-card-idx]').forEach(cardEl => {
+            cardEl.addEventListener('click', () => {
+              if (lockBoard) return;
+              const idx = parseInt(cardEl.getAttribute('data-card-idx'));
+              const card = cards[idx];
+              if (card.isFlipped || card.isMatched) return;
+
+              sfxClick();
+              card.isFlipped = true;
+              flippedIndices.push(idx);
+              renderBoard();
+
+              if (flippedIndices.length === 2) {
+                moves++;
+                lockBoard = true;
+                const [i1, i2] = flippedIndices;
+                const c1 = cards[i1];
+                const c2 = cards[i2];
+
+                if (c1.pairId === c2.pairId && c1.type !== c2.type) {
+                  // MATCH
+                  sfxCorrect();
+                  if (c1.type === 'arabic') speak(c1.text);
+                  else if (c2.type === 'arabic') speak(c2.text);
+
+                  setTimeout(() => {
+                    c1.isMatched = true;
+                    c2.isMatched = true;
+                    flippedIndices = [];
+                    matchedCount++;
+                    lockBoard = false;
+                    renderBoard();
+                  }, 400);
+                } else {
+                  // MISMATCH
+                  sfxWrong();
+                  setTimeout(() => {
+                    c1.isFlipped = false;
+                    c2.isFlipped = false;
+                    flippedIndices = [];
+                    lockBoard = false;
+                    renderBoard();
+                  }, 900);
+                }
+              }
+            });
+          });
+        }
+
+        startStopwatch();
+        renderBoard();
+      }
+
+      // 10. RODA ACAK (SPINNER WHEEL)
+      function renderWheel() {
+        const rawEntries = data.items || [];
+        if (rawEntries.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada pilihan di roda acak ini.</div>';
+          return;
+        }
+
+        let entries = [...rawEntries];
+        let history = [];
+        let isSpinning = false;
+        let currentAngle = 0;
+        let selectedWinner = null;
+        const eliminateOption = data.settings && data.settings.wheelEliminateOnPick;
+        const isQuestionMode = data.settings && data.settings.wheelMode === 'questions';
+
+        const palette = [
+          '#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6',
+          '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
+        ];
+
+        function drawWheel(angle) {
+          const canvas = document.getElementById('wheel-canvas');
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          const size = canvas.width;
+          const center = size / 2;
+          const radius = center - 12;
+          ctx.clearRect(0, 0, size, size);
+
+          const total = entries.length;
+          if (total === 0) {
+            ctx.fillStyle = '#9ca3af';
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Roda Kosong', center, center);
+            return;
+          }
+
+          const arc = (2 * Math.PI) / total;
+
+          for (let i = 0; i < total; i++) {
+            const startA = angle + i * arc;
+            const endA = startA + arc;
+            const color = entries[i].color || palette[i % palette.length];
+
+            // Slice
+            ctx.beginPath();
+            ctx.moveTo(center, center);
+            ctx.arc(center, center, radius, startA, endA);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Text
+            ctx.save();
+            ctx.translate(center, center);
+            ctx.rotate(startA + arc / 2);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+
+            let label = entries[i].text || '';
+            if (label.length > 16) label = label.substring(0, 15) + '…';
+            ctx.fillText(label, radius - 16, 5);
+            ctx.restore();
+          }
+
+          // Center Hub
+          ctx.beginPath();
+          ctx.arc(center, center, 26, 0, 2 * Math.PI);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#e5e7eb';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(center, center, 10, 0, 2 * Math.PI);
+          ctx.fillStyle = '#047857';
+          ctx.fill();
+        }
+
+        function spin() {
+          if (isSpinning || entries.length === 0) return;
+          isSpinning = true;
+          selectedWinner = null;
+          updateView();
+
+          const total = entries.length;
+          const arc = (2 * Math.PI) / total;
+          const winningIdx = Math.floor(Math.random() * total);
+
+          // Calculate destination angle so pointer (angle = 0, at right) lands on winningIdx
+          const extraSpins = 4 + Math.floor(Math.random() * 3);
+          const sliceCenter = winningIdx * arc + arc / 2;
+          const targetAngle = 2 * Math.PI * extraSpins + (2 * Math.PI - sliceCenter);
+
+          const startA = currentAngle % (2 * Math.PI);
+          const diff = targetAngle;
+          const duration = 4000;
+          const startTime = performance.now();
+          let lastSector = -1;
+
+          function tick(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Quartic ease out
+            const ease = 1 - Math.pow(1 - progress, 4);
+            const curA = startA + diff * ease;
+            drawWheel(curA);
+
+            // Sector tick sound
+            const normalized = (2 * Math.PI - (curA % (2 * Math.PI))) % (2 * Math.PI);
+            const curSector = Math.floor(normalized / arc);
+            if (curSector !== lastSector) {
+              lastSector = curSector;
+              playTone(750, 600, 0.04, 'triangle');
+            }
+
+            if (progress < 1) {
+              requestAnimationFrame(tick);
+            } else {
+              currentAngle = curA;
+              isSpinning = false;
+              selectedWinner = entries[winningIdx];
+              history.unshift(selectedWinner.text);
+              sfxCorrect();
+              const hasArab = /[\\u0600-\\u06FF]/.test(selectedWinner.text);
+              if (hasArab) speak(selectedWinner.text);
+              updateView();
+            }
+          }
+
+          requestAnimationFrame(tick);
+        }
+
+        function updateView() {
+          viewport.innerHTML = \`
+            <div style="max-width:680px; margin:0 auto; width:100%; text-align:center;">
+              <div style="margin-bottom:1rem;">
+                <h2 style="font-size:1.5rem; font-weight:700; color:#1c1917;">Roda Acak</h2>
+                <p style="font-size:0.875rem; color:#6b7280;">Putar roda untuk memilih giliran atau pertanyaan acak</p>
+              </div>
+
+              <div class="wheel-container">
+                <canvas id="wheel-canvas" width="360" height="360"></canvas>
+                <div class="wheel-pointer"></div>
+              </div>
+
+              <div style="margin-top:1.5rem; display:flex; justify-content:center; gap:0.75rem;">
+                <button class="btn btn-primary" id="btn-spin" style="padding:0.75rem 2.5rem; font-size:1.15rem; font-weight:700;" \${isSpinning || entries.length === 0 ? 'disabled' : ''}>
+                  \${isSpinning ? '🌀 Memutar...' : '🎯 PUTAR RODA'}
+                </button>
+                \${entries.length < rawEntries.length ? \`<button class="btn btn-outline" id="btn-wheel-reset">🔄 Pulihkan Semua</button>\` : ''}
+              </div>
+
+              \${selectedWinner ? \`
+                <div style="margin-top:1.5rem; background:#ecfdf5; border:2px solid #10b981; border-radius:1rem; padding:1.5rem; text-align:center; animation:fadeIn 0.3s ease;">
+                  <div style="font-size:0.85rem; color:#047857; font-weight:700; text-transform:uppercase;">Hasil Terpilih 🎉</div>
+                  <div class="\${/[\\u0600-\\u06FF]/.test(selectedWinner.text) ? 'arabic-text ' + fontClass : ''}" style="font-size:2.2rem; font-weight:800; color:#065f46; margin:0.5rem 0;">
+                    \${selectedWinner.text}
+                  </div>
+                  \${isQuestionMode && selectedWinner.answer ? \`
+                    <div style="background:#fff; border-radius:0.5rem; padding:0.75rem; margin-top:0.75rem; border:1px solid #a7f3d0; text-align:left;">
+                      <div style="font-weight:700; font-size:0.85rem; color:#047857;">Jawaban / Penjelasan:</div>
+                      <div style="color:#1f2937; margin-top:0.25rem;">\${selectedWinner.answer}</div>
+                    </div>
+                  \` : ''}
+                  <div style="margin-top:1rem; display:flex; justify-content:center; gap:0.5rem;">
+                    \${/[\\u0600-\\u06FF]/.test(selectedWinner.text) ? \`<button class="btn btn-outline" id="btn-winner-speak">🔊 Bacakan</button>\` : ''}
+                    \${eliminateOption ? \`<button class="btn btn-outline" id="btn-winner-eliminate" style="color:#b91c1c; border-color:#fca5a5;">🗑️ Hapus dari Roda</button>\` : ''}
+                  </div>
+                </div>
+              \` : ''}
+
+              \${history.length > 0 ? \`
+                <div style="margin-top:1.5rem; text-align:left; background:#fff; border:1px solid #e7e5e4; border-radius:0.75rem; padding:1rem;">
+                  <div style="font-weight:600; font-size:0.875rem; color:#57534e; margin-bottom:0.5rem;">Riwayat Terpilih:</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                    \${history.map(h => \`<span style="background:#f3f4f6; padding:0.25rem 0.6rem; border-radius:9999px; font-size:0.8rem; color:#374151;">\${h}</span>\`).join('')}
+                  </div>
+                </div>
+              \` : ''}
+            </div>
+          \`;
+
+          drawWheel(currentAngle);
+
+          document.getElementById('btn-spin')?.addEventListener('click', spin);
+          document.getElementById('btn-wheel-reset')?.addEventListener('click', () => {
+            entries = [...rawEntries];
+            selectedWinner = null;
+            updateView();
+          });
+          if (selectedWinner) {
+            document.getElementById('btn-winner-speak')?.addEventListener('click', () => {
+              speak(selectedWinner.text);
+            });
+            document.getElementById('btn-winner-eliminate')?.addEventListener('click', () => {
+              entries = entries.filter(e => e.id !== selectedWinner.id);
+              selectedWinner = null;
+              updateView();
+            });
+          }
+        }
+
+        updateView();
       }
 
     })();

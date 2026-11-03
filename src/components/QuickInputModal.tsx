@@ -45,6 +45,15 @@ export default function QuickInputModal({
   } else if (templateType === 'word-table') {
     exampleFormat = 'كَتَبَ | يَكْتُبُ | اُكْتُبْ | كِتَابَةً | Menulis\nقَرَأَ | يَقْرَأُ | اِقْرَأْ | قِرَاءَةً | Membaca\nدَرَسَ | يَدْرُسُ | اُدْرُسْ | دِرَاسَةً | Belajar';
     placeholder = 'Tempel baris tabel (Kolom 1 | Kolom 2 | Kolom 3 ... atau salin langsung dari Excel):\n' + exampleFormat;
+  } else if (templateType === 'true-false') {
+    exampleFormat = 'الشَّمْسُ تَطْلُعُ مِنَ الْمَشْرِقِ | B | Matahari terbit dari timur\nالسَّمَكُ يَعِيشُ فِي السَّمَاءِ | S | Ikan hidup di air, bukan di langit\nالْمَدْرَسَةُ مَكَانٌ لِلتَّعَلُّمِ | B | Sekolah tempat belajar';
+    placeholder = 'Tempel pernyataan (Pernyataan | B atau S | Penjelasan opsional):\n' + exampleFormat;
+  } else if (templateType === 'memory') {
+    exampleFormat = 'كِتَابٌ | Buku\nقَلَمٌ | Pena\nبَابٌ | Pintu\nمَسْجِدٌ | Masjid\nسَيَّارَةٌ | Mobil';
+    placeholder = 'Tempel pasangan kartu (Kata Arab | Arti):\n' + exampleFormat;
+  } else if (templateType === 'wheel') {
+    exampleFormat = 'مَا اسْمُكَ؟ | Jawab: اسْمِي... (Nama saya...)\nكَيْفَ حَالُكَ؟ | Jawab: بِخَيْرٍ وَالْحَمْدُ لِلَّهِ\nعُدَّ مِنْ 1 إِلَى 5 | وَاحِدٌ، اِثْنَانِ، ثَلَاثَةٌ، أَرْبَعَةٌ، خَمْسَةٌ\nأحمد | Giliran siswa\nفاطمة | Giliran siswa';
+    placeholder = 'Tempel entri roda (Teks Arab/Nama | Kunci/Penjelasan opsional):\n' + exampleFormat;
   } else {
     exampleFormat = 'كِتَابٌ | Buku\nقَلَمٌ | Pena\nحَقِيبَةٌ | Tas\nسَيَّارَةٌ | Mobil';
     placeholder = 'Tempel pasangan kata (Kata Arab | Arti):\n' + exampleFormat;

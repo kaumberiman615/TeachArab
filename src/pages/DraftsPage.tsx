@@ -328,6 +328,39 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               >
                 Mencocokkan
               </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'true-false' ? 'all' : 'true-false')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'true-false'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Benar/Salah
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'memory' ? 'all' : 'memory')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'memory'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Memory Card
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'wheel' ? 'all' : 'wheel')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'wheel'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Roda Acak
+              </button>
             </>
           )}
         </div>

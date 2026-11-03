@@ -1,4 +1,13 @@
-import { FlashcardItem, QuizItem, MatchingPair, TemplateType, QuizChoice } from '../types';
+import {
+  FlashcardItem,
+  QuizItem,
+  MatchingPair,
+  TemplateType,
+  QuizChoice,
+  TrueFalseItem,
+  MemoryCardPair,
+  WheelEntry,
+} from '../types';
 
 /**
  * Check if a string contains Arabic characters
@@ -377,6 +386,142 @@ export function parseQuickWordTable(rawText: string, columns?: any[]) {
   return items;
 }
 
+/**
+ * Parse multi-line raw text for True-False
+ * Format: pernyataan | B atau S | penjelasan (opsional)
+ */
+export function parseQuickTrueFalse(rawText: string): TrueFalseItem[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: TrueFalseItem[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    const statement = parts[0];
+    const answerStr = (parts[1] || 'B').toUpperCase().trim();
+    const explanation = parts[2] || '';
+
+    // True indicators: B, BENAR, TRUE, T, 1, ص, صحيح
+    const isTrue =
+      answerStr === 'B' ||
+      answerStr === 'BENAR' ||
+      answerStr === 'TRUE' ||
+      answerStr === 'T' ||
+      answerStr === '1' ||
+      answerStr === 'ص' ||
+      answerStr.includes('صَحِيح');
+
+    items.push({
+      id: 'tf_' + Math.random().toString(36).substring(2, 9),
+      statementArabic: statement,
+      statementIndo: isArabic(statement) ? '' : statement,
+      isTrue,
+      explanation: explanation || undefined,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text for Memory Card
+ * Format: kata Arab | arti
+ */
+export function parseQuickMemory(rawText: string): MemoryCardPair[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: MemoryCardPair[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    let arabic = parts[0];
+    let meaning = parts[1] || parts[0];
+
+    // Auto-swap if first part is Latin and second part is Arabic
+    if (!isArabic(arabic) && isArabic(meaning)) {
+      const temp = arabic;
+      arabic = meaning;
+      meaning = temp;
+    }
+
+    items.push({
+      id: 'mem_' + Math.random().toString(36).substring(2, 9),
+      arabic,
+      meaning,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text for Wheel
+ * Format: teks | jawaban atau penjelasan (opsional)
+ */
+export function parseQuickWheel(rawText: string): WheelEntry[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: WheelEntry[] = [];
+  const colors = [
+    '#059669',
+    '#4f46e5',
+    '#d97706',
+    '#dc2626',
+    '#0891b2',
+    '#7c3aed',
+    '#ea580c',
+    '#0d9488',
+    '#2563eb',
+    '#db2777',
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    items.push({
+      id: 'wh_' + Math.random().toString(36).substring(2, 9),
+      text: parts[0],
+      answerOrExplanation: parts[1] || undefined,
+      color: colors[i % colors.length],
+    });
+  }
+
+  return items;
+}
+
 export function parseQuickInput(type: string, rawText: string, extra?: any) {
   if (type === 'flashcard') {
     return parseQuickFlashcards(rawText);
@@ -398,6 +543,15 @@ export function parseQuickInput(type: string, rawText: string, extra?: any) {
   }
   if (type === 'word-table') {
     return parseQuickWordTable(rawText, extra?.columns);
+  }
+  if (type === 'true-false') {
+    return parseQuickTrueFalse(rawText);
+  }
+  if (type === 'memory') {
+    return parseQuickMemory(rawText);
+  }
+  if (type === 'wheel') {
+    return parseQuickWheel(rawText);
   }
   return [];
 }

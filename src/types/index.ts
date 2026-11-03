@@ -6,7 +6,10 @@ export type TemplateType =
   | 'slide'
   | 'vocab-picture'
   | 'reading'
-  | 'word-table';
+  | 'word-table'
+  | 'true-false'
+  | 'memory'
+  | 'wheel';
 
 export type TemplateCategory = 'materi' | 'game';
 
@@ -116,6 +119,34 @@ export interface WordTableRow {
   values: Record<string, string>; // columnId -> cell text
 }
 
+// 8. True-False Item (Benar atau Salah)
+export interface TrueFalseItem {
+  id: string;
+  statementArabic: string;
+  statementIndo?: string;
+  isTrue: boolean; // true = Benar, false = Salah
+  explanation?: string;
+  mediaImageId?: string;
+  mediaAudioId?: string;
+}
+
+// 9. Memory Card Pair
+export interface MemoryCardPair {
+  id: string;
+  arabic: string; // Sisi A
+  meaning: string; // Sisi B (arti teks)
+  mediaImageId?: string; // Sisi B (opsi gambar)
+  mediaAudioId?: string; // Sisi B (opsi audio)
+}
+
+// 10. Wheel Entry (Roda Acak / Spinner)
+export interface WheelEntry {
+  id: string;
+  text: string; // Arab atau Indonesia
+  answerOrExplanation?: string;
+  color?: string; // Hex color code
+}
+
 export type TemplateItem =
   | FlashcardItem
   | QuizItem
@@ -123,7 +154,10 @@ export type TemplateItem =
   | SlideItem
   | VocabPictureItem
   | ReadingSentence
-  | WordTableRow;
+  | WordTableRow
+  | TrueFalseItem
+  | MemoryCardPair
+  | WheelEntry;
 
 export interface DraftSettings {
   // Quiz settings
@@ -135,6 +169,22 @@ export interface DraftSettings {
   // Matching game settings
   shufflePositions?: boolean; // Acak posisi kiri & kanan
   pairsPerRound?: number; // 0 = semua pasangan, atau 4, 6, 8 pasangan
+
+  // True-False settings
+  tfTimerSeconds?: number;
+  tfQuestionsPerGame?: number;
+  tfPointsPerQuestion?: number;
+  tfShuffle?: boolean;
+
+  // Memory Card settings
+  memoryPairsPerGame?: number; // 4, 6, 8, 10
+  memoryPreviewBriefly?: boolean;
+  memoryTimeLimit?: number; // in seconds, 0 = no limit
+
+  // Wheel settings
+  wheelMode?: 'students' | 'questions';
+  wheelEliminateOnPick?: boolean;
+  wheelSound?: boolean;
 
   // Team mode settings
   teamMode?: boolean;
