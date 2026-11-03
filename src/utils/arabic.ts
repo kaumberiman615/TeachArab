@@ -101,3 +101,54 @@ export const ARABIC_KEYBOARD_LAYOUT = {
   numbers: ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '٠'],
   punctuation: ['؟', '،', '؛', '.', '!', ':', '«', '»', '(', ')']
 };
+
+/**
+ * Split an Arabic word into individual letter units with their combining harakat attached.
+ * Example: "كِتَابٌ" -> ["كِ", "تَ", "ا", "بٌ"]
+ */
+export function splitArabicWordLetters(word: string): string[] {
+  if (!word) return [];
+  const clean = word.trim();
+  if (!clean) return [];
+
+  // Try Intl.Segmenter with grapheme granularity (standard in modern browsers)
+  if (typeof Intl !== 'undefined' && (Intl as any).Segmenter) {
+    try {
+      const segmenter = new (Intl as any).Segmenter('ar', { granularity: 'grapheme' });
+      const segments: string[] = [];
+      for (const seg of segmenter.segment(clean)) {
+        const text = seg.segment.trim();
+        if (text) {
+          segments.push(text);
+        }
+      }
+      if (segments.length > 0) {
+        return segments;
+      }
+    } catch {
+      // fallback below
+    }
+  }
+
+  // Regex fallback: Base letter (or digit/char) followed by 0 or more combining diacritics
+  const regex = /[^\u064B-\u065F\u0670\u06D6-\u06ED\s][\u064B-\u065F\u0670\u06D6-\u06ED]*/g;
+  const matches = clean.match(regex);
+  if (matches && matches.length > 0) {
+    return matches;
+  }
+
+  return clean.split('').filter((c) => c.trim().length > 0);
+}
+
+/**
+ * Split an Arabic sentence into words (separated by spaces)
+ */
+export function splitArabicSentenceWords(sentence: string): string[] {
+  if (!sentence) return [];
+  return sentence
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 0);
+}
+
