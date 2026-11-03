@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Draft, TemplateType, MediaItem, ThemeConfig, DraftSettings, isMatchingTemplate, CloudProject } from '../types';
 import { getTemplateOrNull } from '../templates/registry';
+import { getCategoryByTemplateType } from '../templates/categories';
 import { saveDraft, getDraft } from '../services/storage';
 import { useAuth } from '../services/authContext';
 import { saveDraftToCloud, getProjectById, toggleProjectPublic, type FailedFileUpload } from '../services/cloudProjects';
@@ -502,23 +503,52 @@ export default function EditorPage({
   const EditorComponent = templateDef.EditorComponent;
   const PlayerComponent = templateDef.PlayerComponent;
 
+  const category = getCategoryByTemplateType(draft.templateType);
+  const isMateri = category === 'materi';
+  const categoryLabel = isMateri ? 'Materi' : 'Game';
+  const backRoute = isMateri ? '/materi' : '/game';
+
   return (
     <div className="min-h-screen bg-stone-100 flex flex-col pb-32">
       {/* Top Action Toolbar */}
       <div className="bg-white border-b border-stone-200 px-4 sm:px-6 py-3 sticky top-16 z-30 shadow-2xs">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Back & Title input */}
-          <div className="flex items-center gap-3 flex-1 min-w-[240px]">
+          <div className="flex items-center gap-3 flex-1 min-w-[260px]">
             <button
               type="button"
-              onClick={() => onNavigate('/draf')}
-              className="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
-              title="Kembali ke Daftar Draf"
+              onClick={() => onNavigate(backRoute)}
+              className="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer shrink-0"
+              title={`Kembali ke Galeri ${categoryLabel}`}
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
+              {/* Breadcrumb & Category Badge */}
+              <div className="flex items-center gap-1.5 text-[11px] text-stone-400 px-1 mb-0.5">
+                <button
+                  type="button"
+                  onClick={() => onNavigate(backRoute)}
+                  className={`font-semibold hover:underline cursor-pointer ${
+                    isMateri ? 'text-emerald-700' : 'text-indigo-700'
+                  }`}
+                >
+                  {categoryLabel}
+                </button>
+                <span>&gt;</span>
+                <span className="font-semibold text-stone-700">{templateDef.name}</span>
+                <span
+                  className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-full border uppercase ml-1 ${
+                    isMateri
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+                  }`}
+                >
+                  {categoryLabel}
+                </span>
+              </div>
+
               <input
                 type="text"
                 value={draft.title}
@@ -527,10 +557,6 @@ export default function EditorPage({
                 className="w-full text-base sm:text-lg font-bold text-stone-900 bg-transparent border-b border-transparent hover:border-stone-300 focus:border-emerald-600 focus:bg-stone-50 px-1 py-0.5 rounded transition-all focus:outline-hidden"
               />
               <div className="flex items-center gap-2 text-[11px] text-stone-500 px-1">
-                <span className="font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded">
-                  {templateDef.name}
-                </span>
-                <span>·</span>
                 <span className="flex items-center gap-1">
                   {saveStatus === 'saved' ? (
                     <>
@@ -716,6 +742,9 @@ export default function EditorPage({
             onAddMedia={handleAddMedia}
             onRemoveMedia={handleRemoveMedia}
             onOpenQuickInput={() => setShowQuickInput(true)}
+            onUpdateSettings={(newSettings: DraftSettings) =>
+              setDraft((prev) => ({ ...prev, settings: newSettings }))
+            }
           />
         </div>
 

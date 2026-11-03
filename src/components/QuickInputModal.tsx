@@ -33,6 +33,18 @@ export default function QuickInputModal({
   } else if (templateType === 'kuis') {
     exampleFormat = 'مَا هَذَا؟ (Buku) | كِتَابٌ | قَلَمٌ | بَابٌ | كُرْسِيٌّ | A | Buku adalah kitaabun\nApa arti مَسْجِدٌ? | Sekolah | Masjid | Rumah | Pasar | B | Masjid tempat ibadah';
     placeholder = 'Tempel soal kuis (Soal | Pilihan A | B | C | D | Kunci [A-D] | Penjelasan):\n' + exampleFormat;
+  } else if (templateType === 'slide') {
+    exampleFormat = 'مَرْحَبًا بِكُمْ | Selamat datang di pembelajaran bahasa Arab\nKeutamaan Bahasa Arab | 1. Bahasa Al-Qur\'an\n2. Bahasa internasional\nHuruf Hijaiyah | Pelajari makharijul huruf dengan fasih';
+    placeholder = 'Tempel slide (Judul | Isi Teks):\n' + exampleFormat;
+  } else if (templateType === 'vocab-picture') {
+    exampleFormat = 'أَسَدٌ | Asadun | Singa\nفِيلٌ | Fiilun | Gajah\nقِطَّةٌ | Qiththatun | Kucing';
+    placeholder = 'Tempel kosakata (Kata Arab | Latin | Arti - gambar dapat diunggah setelahnya):\n' + exampleFormat;
+  } else if (templateType === 'reading') {
+    exampleFormat = 'إِسْمِي عُمَرُ، أَنَا طَالِبٌ فِي المَدْرَسَةِ. | Namaku Umar, aku seorang siswa di sekolah.\nأَسْتَيْقِظُ مِنَ النَّوْمِ صَبَاحًا بَاكِرًا. | Aku bangun dari tidur pagi-pagi sekali.';
+    placeholder = 'Tempel kalimat qira\'ah (Kalimat Arab | Terjemahan):\n' + exampleFormat;
+  } else if (templateType === 'word-table') {
+    exampleFormat = 'كَتَبَ | يَكْتُبُ | اُكْتُبْ | كِتَابَةً | Menulis\nقَرَأَ | يَقْرَأُ | اِقْرَأْ | قِرَاءَةً | Membaca\nدَرَسَ | يَدْرُسُ | اُدْرُسْ | دِرَاسَةً | Belajar';
+    placeholder = 'Tempel baris tabel (Kolom 1 | Kolom 2 | Kolom 3 ... atau salin langsung dari Excel):\n' + exampleFormat;
   } else {
     exampleFormat = 'كِتَابٌ | Buku\nقَلَمٌ | Pena\nحَقِيبَةٌ | Tas\nسَيَّارَةٌ | Mobil';
     placeholder = 'Tempel pasangan kata (Kata Arab | Arti):\n' + exampleFormat;

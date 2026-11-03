@@ -217,7 +217,167 @@ export function parseQuickMatching(rawText: string): MatchingPair[] {
   return items;
 }
 
-export function parseQuickInput(type: string, rawText: string) {
+/**
+ * Parse multi-line raw text into slides
+ * Format: judul | isi
+ */
+export function parseQuickSlide(rawText: string) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const items: any[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map(p => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map(p => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    const title = parts[0];
+    const content = parts.length > 1 ? parts.slice(1).join('\n') : '';
+
+    items.push({
+      id: 'slide_' + Math.random().toString(36).substring(2, 9),
+      title,
+      content,
+      layout: 'text-only',
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text into vocab pictures
+ * Format: kata Arab | latin | arti
+ */
+export function parseQuickVocabPicture(rawText: string) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const items: any[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map(p => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map(p => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map(p => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    let arabic = '';
+    let latin = '';
+    let meaning = '';
+
+    if (parts.length === 1) {
+      if (isArabic(parts[0])) {
+        arabic = parts[0];
+        meaning = parts[0];
+      } else {
+        meaning = parts[0];
+      }
+    } else if (parts.length === 2) {
+      arabic = parts[0];
+      meaning = parts[1];
+    } else {
+      arabic = parts[0];
+      latin = parts[1];
+      meaning = parts[2];
+    }
+
+    items.push({
+      id: 'vocab_' + Math.random().toString(36).substring(2, 9),
+      arabic,
+      latin: latin || undefined,
+      meaning,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text into reading sentences
+ * Format: kalimat Arab | terjemah
+ */
+export function parseQuickReading(rawText: string) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const items: any[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map(p => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map(p => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    const arabic = parts[0];
+    const translation = parts.length > 1 ? parts.slice(1).join(' | ') : '';
+
+    items.push({
+      id: 'sent_' + Math.random().toString(36).substring(2, 9),
+      arabic,
+      translation,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text into table rows
+ * Format: tempel dari Excel/CSV, satu baris satu baris tabel, dipisah | atau tab
+ */
+export function parseQuickWordTable(rawText: string, columns?: any[]) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const items: any[] = [];
+
+  const colIds = columns && columns.length > 0
+    ? columns.map(c => c.id)
+    : ['col_madhi', 'col_mudhari', 'col_amr', 'col_mashdar', 'col_arti'];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('\t')) {
+      parts = line.split('\t').map(p => p.trim());
+    } else if (line.includes('|')) {
+      parts = line.split('|').map(p => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map(p => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    const values: Record<string, string> = {};
+    colIds.forEach((colId, idx) => {
+      values[colId] = parts[idx] || '';
+    });
+
+    items.push({
+      id: 'row_' + Math.random().toString(36).substring(2, 9),
+      values,
+    });
+  }
+
+  return items;
+}
+
+export function parseQuickInput(type: string, rawText: string, extra?: any) {
   if (type === 'flashcard') {
     return parseQuickFlashcards(rawText);
   }
@@ -227,5 +387,18 @@ export function parseQuickInput(type: string, rawText: string) {
   if (type === 'matching' || type === 'mencocokkan') {
     return parseQuickMatching(rawText);
   }
+  if (type === 'slide') {
+    return parseQuickSlide(rawText);
+  }
+  if (type === 'vocab-picture') {
+    return parseQuickVocabPicture(rawText);
+  }
+  if (type === 'reading') {
+    return parseQuickReading(rawText);
+  }
+  if (type === 'word-table') {
+    return parseQuickWordTable(rawText, extra?.columns);
+  }
   return [];
 }
+

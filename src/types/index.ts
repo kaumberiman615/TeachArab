@@ -1,4 +1,13 @@
-export type TemplateType = 'flashcard' | 'kuis' | 'matching' | 'mencocokkan';
+export type TemplateType =
+  | 'flashcard'
+  | 'kuis'
+  | 'matching'
+  | 'mencocokkan'
+  | 'slide'
+  | 'vocab-picture'
+  | 'reading'
+  | 'word-table';
+
 export type TemplateCategory = 'materi' | 'game';
 
 export function isMatchingTemplate(type?: string): boolean {
@@ -23,7 +32,7 @@ export interface MediaItem {
   size: number;
 }
 
-// Flashcard Item
+// 1. Flashcard Item
 export interface FlashcardItem {
   id: string;
   arabic: string;
@@ -34,7 +43,7 @@ export interface FlashcardItem {
   mediaAudioId?: string;
 }
 
-// Quiz Choice (2 to 5 choices per question)
+// 2. Quiz Choice (2 to 5 choices per question)
 export interface QuizChoice {
   text: string;
   mediaImageId?: string;
@@ -53,7 +62,7 @@ export interface QuizItem {
   mediaAudioId?: string;
 }
 
-// Matching Item (Pairs)
+// 3. Matching Item (Pairs)
 export interface MatchingPair {
   id: string;
   arabic: string; // Left: Arabic text
@@ -62,7 +71,59 @@ export interface MatchingPair {
   mediaImageId?: string; // Right: optional image
 }
 
-export type TemplateItem = FlashcardItem | QuizItem | MatchingPair;
+// 4. Slide Item (Slide Materi)
+export type SlideLayout = 'text-only' | 'image-left' | 'image-right' | 'image-full' | 'big-title';
+
+export interface SlideItem {
+  id: string;
+  title: string;
+  content: string; // supports multiline, Arabic RTL and Indonesian
+  layout: SlideLayout;
+  mediaImageId?: string;
+  mediaAudioId?: string;
+  mediaVideoId?: string;
+  youtubeUrl?: string;
+  teacherNotes?: string;
+}
+
+// 5. Vocab Picture Item (Kosakata Bergambar)
+export interface VocabPictureItem {
+  id: string;
+  arabic: string; // with harakat
+  latin?: string;
+  meaning: string;
+  mediaImageId?: string;
+  mediaAudioId?: string;
+}
+
+// 6. Reading Sentence Item (Teks Bacaan / Qira'ah)
+export interface ReadingSentence {
+  id: string;
+  arabic: string;
+  translation: string;
+  mediaAudioId?: string;
+}
+
+// 7. Word Table Column & Row (Tabel/Daftar Kata: mufradat, tashrif)
+export interface WordTableColumn {
+  id: string;
+  name: string; // e.g. "Fi'il Madhi", "Fi'il Mudhari'", "Arti"
+  isArabic?: boolean; // whether column text is Arabic RTL
+}
+
+export interface WordTableRow {
+  id: string;
+  values: Record<string, string>; // columnId -> cell text
+}
+
+export type TemplateItem =
+  | FlashcardItem
+  | QuizItem
+  | MatchingPair
+  | SlideItem
+  | VocabPictureItem
+  | ReadingSentence
+  | WordTableRow;
 
 export interface DraftSettings {
   // Quiz settings
@@ -82,6 +143,18 @@ export interface DraftSettings {
 
   // Flashcard specific
   autoPlayAudio?: boolean;
+
+  // Slide specific
+  autoAdvanceSeconds?: number;
+
+  // Vocab Picture specific
+  vocabViewMode?: 'grid' | 'single';
+
+  // Reading specific
+  fullAudioId?: string;
+
+  // Word table specific
+  columns?: WordTableColumn[];
 }
 
 export interface Draft {

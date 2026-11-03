@@ -6,13 +6,14 @@ import {
   duplicateCloudProject,
   toggleProjectPublic,
 } from '../services/cloudProjects';
-import { CloudProject } from '../types';
+import { CloudProject, TemplateType, isMatchingTemplate } from '../types';
 import { getTemplateOrNull } from '../templates/registry';
+import { getCategoryByTemplateType } from '../templates/categories';
+import CreateTemplateDropdown from '../components/CreateTemplateDropdown';
 import { ShareModal } from '../components/ShareModal';
 import { LoginExplanationModal } from '../components/LoginExplanationModal';
 import {
   Cloud,
-  Plus,
   Share2,
   Trash2,
   Copy,
@@ -21,11 +22,12 @@ import {
   Globe,
   Lock,
   Loader2,
-  AlertCircle,
   FolderArchive,
   Calendar,
   Layers,
-  Sparkles,
+  Search,
+  BookOpen,
+  Gamepad2,
 } from 'lucide-react';
 
 interface MyProjectsPageProps {
@@ -36,6 +38,9 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const [projects, setProjects] = useState<CloudProject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'materi' | 'game'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | TemplateType>('all');
   const [selectedShareProject, setSelectedShareProject] = useState<CloudProject | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -173,17 +178,37 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
     );
   }
 
+  // Count by category
+  const materiCount = projects.filter((p) => getCategoryByTemplateType(p.templateType) === 'materi').length;
+  const gameCount = projects.filter((p) => getCategoryByTemplateType(p.templateType) === 'game').length;
+
+  const filteredProjects = projects.filter((p) => {
+    const matchesSearch =
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const projCategory = getCategoryByTemplateType(p.templateType);
+    const matchesCategory = categoryFilter === 'all' || projCategory === categoryFilter;
+
+    const matchesTemplate =
+      selectedFilter === 'all' ||
+      p.templateType === selectedFilter ||
+      (isMatchingTemplate(selectedFilter) && isMatchingTemplate(p.templateType));
+
+    return matchesSearch && matchesCategory && matchesTemplate;
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200 mb-6">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
             <h1 className="text-2xl font-bold tracking-tight text-stone-900">
               Materi Saya
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-              {projects.length} Materi
+              {projects.length} Proyek Cloud
             </span>
           </div>
           <p className="text-xs text-stone-500">
@@ -201,14 +226,181 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
             <span>Draf Lokal</span>
           </button>
 
+          {/* Buat Baru Dropdown with 2 Groups */}
+          <CreateTemplateDropdown onSelect={(type) => onNavigate(`/buat/${type}`)} />
+        </div>
+      </div>
+
+      {/* Two-Tier Filter: Category Level (Semua | Materi | Game) + Template Sub-filter */}
+      <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-2xs space-y-3 mb-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari materi tersimpan..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-emerald-600 focus:bg-white"
+            />
+          </div>
+
+          {/* Primary Category Filter (Semua | Materi | Game) */}
+          <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-xl border border-stone-200 w-full sm:w-auto overflow-x-auto text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => {
+                setCategoryFilter('all');
+                setSelectedFilter('all');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                categoryFilter === 'all'
+                  ? 'bg-white text-stone-900 shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Semua ({projects.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setCategoryFilter('materi');
+                setSelectedFilter('all');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                categoryFilter === 'materi'
+                  ? 'bg-emerald-700 text-white shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Materi ({materiCount})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setCategoryFilter('game');
+                setSelectedFilter('all');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                categoryFilter === 'game'
+                  ? 'bg-indigo-700 text-white shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <Gamepad2 className="w-3.5 h-3.5" />
+              <span>Game ({gameCount})</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Sub-filter per template */}
+        <div className="pt-2 border-t border-stone-100 flex items-center gap-1.5 overflow-x-auto text-xs">
+          <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider shrink-0 mr-1">
+            Format:
+          </span>
+
           <button
             type="button"
-            onClick={() => onNavigate('/')}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+            onClick={() => setSelectedFilter('all')}
+            className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+              selectedFilter === 'all'
+                ? 'bg-stone-900 text-white border-stone-900 font-bold'
+                : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+            }`}
           >
-            <Plus className="w-4 h-4" />
-            <span>Buat Materi Baru</span>
+            Semua Format
           </button>
+
+          {(categoryFilter === 'all' || categoryFilter === 'materi') && (
+            <>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'slide' ? 'all' : 'slide')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'slide'
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Slide
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'vocab-picture' ? 'all' : 'vocab-picture')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'vocab-picture'
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Kosakata Gambar
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'reading' ? 'all' : 'reading')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'reading'
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Qira'ah
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'word-table' ? 'all' : 'word-table')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'word-table'
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Tabel / Tashrif
+              </button>
+            </>
+          )}
+
+          {(categoryFilter === 'all' || categoryFilter === 'game') && (
+            <>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'flashcard' ? 'all' : 'flashcard')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'flashcard'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Flashcard
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'kuis' ? 'all' : 'kuis')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'kuis'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Kuis
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(isMatchingTemplate(selectedFilter) ? 'all' : 'matching')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  isMatchingTemplate(selectedFilter)
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Mencocokkan
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -218,29 +410,25 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
           <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-stone-500 text-xs font-medium">Memuat materi cloud Anda...</p>
         </div>
-      ) : projects.length === 0 ? (
+      ) : filteredProjects.length === 0 ? (
         <div className="bg-white rounded-3xl border border-stone-200 p-12 text-center max-w-lg mx-auto shadow-xs">
           <div className="w-14 h-14 bg-stone-100 text-stone-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Layers className="w-7 h-7" />
           </div>
           <h3 className="text-lg font-bold text-stone-900 mb-1">
-            Belum Ada Materi di Cloud
+            Belum Ada Materi yang Cocok
           </h3>
           <p className="text-stone-500 text-xs leading-relaxed mb-6">
-            Materi yang Anda buat di editor dapat disimpan ke akun cloud atau dibagikan langsung ke siswa lewat link publik.
+            {searchQuery || selectedFilter !== 'all' || categoryFilter !== 'all'
+              ? 'Tidak ditemukan proyek materi dengan filter pencarian tersebut.'
+              : 'Materi yang Anda buat di editor dapat disimpan ke akun cloud atau dibagikan langsung ke siswa lewat link publik.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-2.5 justify-center">
-            <button
-              type="button"
-              onClick={() => onNavigate('/')}
-              className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
-            >
-              Mulai Buat Materi
-            </button>
+            <CreateTemplateDropdown onSelect={(type) => onNavigate(`/buat/${type}`)} />
             <button
               type="button"
               onClick={() => onNavigate('/draf')}
-              className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+              className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
             >
               Lihat Draf Browser
             </button>
@@ -248,9 +436,11 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((proj) => {
+          {filteredProjects.map((proj) => {
             const templateDef = getTemplateOrNull(proj.templateType) || getTemplateOrNull('flashcard')!;
             const Icon = templateDef.icon;
+            const category = getCategoryByTemplateType(proj.templateType);
+            const isMateri = category === 'materi';
             const itemCount = Array.isArray(proj.content?.items) ? proj.content.items.length : 0;
             const updatedDate = new Date(proj.updatedAt || proj.createdAt).toLocaleDateString('id-ID', {
               day: 'numeric',
@@ -264,17 +454,31 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
                 className="bg-white rounded-2xl border border-stone-200 hover:border-emerald-300 transition-all p-5 shadow-xs flex flex-col justify-between group"
               >
                 <div>
-                  {/* Top tags */}
+                  {/* Top tags: Category Badge + Template Badge + Privacy Status */}
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 text-[11px] font-bold">
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{templateDef.name}</span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {/* Category Badge */}
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          isMateri
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+                        }`}
+                      >
+                        {isMateri ? 'Materi' : 'Game'}
+                      </span>
+
+                      {/* Template Name */}
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[11px] font-bold border border-stone-200">
+                        <Icon className="w-3 h-3 text-stone-600" />
+                        <span>{templateDef.name}</span>
+                      </div>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => handleTogglePublic(proj.id, proj.isPublic, proj.shareId)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
                         proj.isPublic
                           ? 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200'
                           : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -282,7 +486,7 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
                       title={proj.isPublic ? 'Klik untuk matikan link' : 'Klik untuk aktifkan link'}
                     >
                       {proj.isPublic ? <Globe className="w-3 h-3 text-emerald-600" /> : <Lock className="w-3 h-3" />}
-                      <span>{proj.isPublic ? 'Link Publik' : 'Privat'}</span>
+                      <span>{proj.isPublic ? 'Publik' : 'Privat'}</span>
                     </button>
                   </div>
 
@@ -349,7 +553,7 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
                       title="Hapus Materi"
                     >
                       {deletingId === proj.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-rose-500" />
+                        <Loader2 className="w-4 h-4 animate-spin text-stone-500" />
                       ) : (
                         <Trash2 className="w-4 h-4" />
                       )}
@@ -359,7 +563,7 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
                   <button
                     type="button"
                     onClick={() => setSelectedShareProject(proj)}
-                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs active:scale-95"
+                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-95"
                   >
                     <Share2 className="w-3.5 h-3.5" />
                     <span>Bagikan</span>
@@ -371,13 +575,13 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
         </div>
       )}
 
-      {/* Share Modal */}
+      {/* Share Modal Dialog */}
       {selectedShareProject && (
         <ShareModal
-          isOpen={Boolean(selectedShareProject)}
+          isOpen={true}
           onClose={() => setSelectedShareProject(null)}
-          title={selectedShareProject.title}
           shareId={selectedShareProject.shareId}
+          title={selectedShareProject.title}
           isPublic={selectedShareProject.isPublic}
           onTogglePublic={async (status) => {
             await handleTogglePublic(

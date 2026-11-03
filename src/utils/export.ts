@@ -264,6 +264,139 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
       color: #065f46;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+    /* Slide styles */
+    .slide-canvas {
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 1.25rem;
+      padding: 2.5rem;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .slide-dots {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .slide-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #d6d3d1;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .slide-dot.active {
+      width: 24px;
+      background: #059669;
+    }
+    /* Vocab Picture styles */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .vocab-card {
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .vocab-card:hover {
+      border-color: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    /* Reading styles */
+    .sentence-card {
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 1rem;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 0.75rem;
+    }
+    .sentence-card:hover {
+      border-color: #10b981;
+    }
+    .sentence-card.active {
+      border-color: #059669;
+      background: #f0fdf4;
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+    }
+    /* Word Table styles */
+    .table-container {
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 1rem;
+      overflow-x: auto;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .data-table th {
+      background: #047857;
+      color: #fff;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .data-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #f5f5f4;
+      font-size: 0.95rem;
+    }
+    .data-table tr:hover td {
+      background: #f0fdf4;
+    }
+    .masked-cell {
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 0.35rem;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-block;
+      user-select: none;
+    }
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      .printable-area, .printable-area * {
+        visibility: visible !important;
+      }
+      .printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .data-table th, .data-table td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -369,6 +502,14 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         renderQuiz();
       } else if (data.templateType === 'mencocokkan' || data.templateType === 'matching') {
         renderMatching();
+      } else if (data.templateType === 'slide') {
+        renderSlide();
+      } else if (data.templateType === 'vocab-picture') {
+        renderVocabPicture();
+      } else if (data.templateType === 'reading') {
+        renderReading();
+      } else if (data.templateType === 'word-table') {
+        renderWordTable();
       }
 
       // 1. FLASHCARD
@@ -815,6 +956,484 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         }
 
         updateBoard();
+      }
+
+      // 4. SLIDE MATERI
+      function renderSlide() {
+        let currentIndex = 0;
+        let showNotes = false;
+        let currentAudio = null;
+        const items = data.items || [];
+        if (items.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada slide dalam materi ini.</div>';
+          return;
+        }
+
+        function updateSlide() {
+          const slide = items[currentIndex];
+          const imgSrc = getMediaSrc(slide.mediaImageId);
+          const audioSrc = getMediaSrc(slide.mediaAudioId);
+          const title = filterHarakat(slide.title || '');
+          const content = filterHarakat(slide.content || '');
+
+          let bodyHtml = '';
+          if (slide.layout === 'big-title') {
+            bodyHtml = \`
+              <div style="text-align:center; margin:auto 0; padding:2rem 0;">
+                <div style="font-size:2.8rem; font-weight:700; color:#047857; margin-bottom:1.5rem;" class="arabic-text \${fontClass}">
+                  \${title}
+                </div>
+                \${content ? \`<div style="font-size:1.25rem; color:#44403c; max-width:700px; margin:0 auto; line-height:1.8; white-space:pre-line;">\${content}</div>\` : ''}
+                \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:220px; margin:1.5rem auto 0; border-radius:0.75rem; object-fit:contain; display:block;" />\` : ''}
+              </div>
+            \`;
+          } else if (slide.layout === 'image-left') {
+            bodyHtml = \`
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2rem; align-items:center;">
+                <div>
+                  \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:280px; width:100%; border-radius:0.75rem; object-fit:contain;" />\` : '<div style="background:#f5f5f4; border:1px dashed #d6d3d1; height:200px; border-radius:0.75rem; display:flex; align-items:center; justify-content:center; color:#78716c;">Media visual</div>'}
+                </div>
+                <div>
+                  <h2 style="font-size:1.8rem; font-weight:700; color:#1c1917; margin-bottom:1rem;" class="arabic-text \${fontClass}">\${title}</h2>
+                  <div style="font-size:1.05rem; color:#44403c; line-height:1.8; white-space:pre-line;">\${content}</div>
+                </div>
+              </div>
+            \`;
+          } else if (slide.layout === 'image-right') {
+            bodyHtml = \`
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2rem; align-items:center;">
+                <div>
+                  <h2 style="font-size:1.8rem; font-weight:700; color:#1c1917; margin-bottom:1rem;" class="arabic-text \${fontClass}">\${title}</h2>
+                  <div style="font-size:1.05rem; color:#44403c; line-height:1.8; white-space:pre-line;">\${content}</div>
+                </div>
+                <div>
+                  \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:280px; width:100%; border-radius:0.75rem; object-fit:contain;" />\` : '<div style="background:#f5f5f4; border:1px dashed #d6d3d1; height:200px; border-radius:0.75rem; display:flex; align-items:center; justify-content:center; color:#78716c;">Media visual</div>'}
+                </div>
+              </div>
+            \`;
+          } else if (slide.layout === 'image-full') {
+            bodyHtml = \`
+              <div style="text-align:center;">
+                <h2 style="font-size:1.5rem; font-weight:700; color:#1c1917; margin-bottom:1rem;" class="arabic-text \${fontClass}">\${title}</h2>
+                \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:360px; max-width:100%; border-radius:0.75rem; object-fit:contain; margin-bottom:1rem;" />\` : ''}
+                \${content ? \`<div style="font-size:0.95rem; color:#57534e; max-width:640px; margin:0 auto; white-space:pre-line;">\${content}</div>\` : ''}
+              </div>
+            \`;
+          } else {
+            bodyHtml = \`
+              <div style="max-width:760px; margin:auto; width:100%;">
+                <h2 style="font-size:2rem; font-weight:700; color:#1c1917; text-align:center; border-bottom:1px solid #f5f5f4; padding-bottom:1rem; margin-bottom:1.5rem;" class="arabic-text \${fontClass}">
+                  \${title}
+                </h2>
+                <div style="font-size:1.15rem; color:#44403c; line-height:2; white-space:pre-line; background:#fafaf9; padding:1.5rem; border-radius:0.75rem; border:1px solid #f5f5f4;">
+                  \${content}
+                </div>
+              </div>
+            \`;
+          }
+
+          viewport.innerHTML = \`
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <div class="badge">Slide \${currentIndex + 1} dari \${items.length}</div>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-outline" id="btn-slide-audio">🔊 Putar Audio</button>
+                \${slide.teacherNotes ? \`<button class="btn btn-outline" id="btn-slide-notes">\${showNotes ? 'Tutup Catatan' : '📝 Catatan Guru'}</button>\` : ''}
+              </div>
+            </div>
+
+            <div class="slide-canvas">
+              \${bodyHtml}
+              \${showNotes && slide.teacherNotes ? \`
+                <div style="margin-top:1.5rem; padding:1rem; background:#fffbeb; border:1px solid #fef3c7; border-radius:0.5rem; font-size:0.875rem; color:#92400e;">
+                  <strong>Catatan Guru:</strong> \${slide.teacherNotes}
+                </div>
+              \` : ''}
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem;">
+              <button class="btn btn-outline" id="btn-slide-prev" \${currentIndex === 0 ? 'disabled' : ''}>← Sebelumnya</button>
+              <div class="slide-dots">
+                \${items.map((_, i) => \`<span class="slide-dot \${i === currentIndex ? 'active' : ''}" data-idx="\${i}"></span>\`).join('')}
+              </div>
+              <button class="btn btn-primary" id="btn-slide-next" \${currentIndex === items.length - 1 ? 'disabled' : ''}>Berikutnya →</button>
+            </div>
+          \`;
+
+          document.getElementById('btn-slide-prev')?.addEventListener('click', () => {
+            if (currentIndex > 0) { currentIndex--; updateSlide(); }
+          });
+          document.getElementById('btn-slide-next')?.addEventListener('click', () => {
+            if (currentIndex < items.length - 1) { currentIndex++; updateSlide(); }
+          });
+          document.getElementById('btn-slide-audio')?.addEventListener('click', () => {
+            if (audioSrc) {
+              if (currentAudio) { currentAudio.pause(); }
+              currentAudio = new Audio(audioSrc);
+              currentAudio.play().catch(() => speak(title));
+            } else {
+              speak(title);
+            }
+          });
+          document.getElementById('btn-slide-notes')?.addEventListener('click', () => {
+            showNotes = !showNotes;
+            updateSlide();
+          });
+          viewport.querySelectorAll('.slide-dot').forEach(el => {
+            el.addEventListener('click', () => {
+              const idx = parseInt(el.getAttribute('data-idx'));
+              if (!isNaN(idx)) { currentIndex = idx; updateSlide(); }
+            });
+          });
+        }
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === ' ') {
+            if (currentIndex < items.length - 1) { currentIndex++; updateSlide(); }
+          } else if (e.key === 'ArrowLeft') {
+            if (currentIndex > 0) { currentIndex--; updateSlide(); }
+          }
+        });
+
+        updateSlide();
+      }
+
+      // 5. KOSAKATA BERGAMBAR
+      function renderVocabPicture() {
+        let viewMode = 'single';
+        let currentIndex = 0;
+        const items = data.items || [];
+        if (items.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada kosakata bergambar.</div>';
+          return;
+        }
+
+        function updateVocab() {
+          if (viewMode === 'single') {
+            const item = items[currentIndex];
+            const imgSrc = getMediaSrc(item.mediaImageId);
+            const audioSrc = getMediaSrc(item.mediaAudioId);
+
+            viewport.innerHTML = \`
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <div class="badge">Kartu \${currentIndex + 1} dari \${items.length}</div>
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn btn-outline" id="btn-toggle-view">Mode Grid</button>
+                  <button class="btn btn-outline" id="toggle-harakat">\${showHarakat ? 'Sembunyikan Harakat' : 'Tampilkan Harakat'}</button>
+                </div>
+              </div>
+
+              <div class="card" id="card-speak" style="cursor:pointer; text-align:center; padding:2.5rem; max-width:600px; margin:0 auto;">
+                \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:220px; margin-bottom:1.5rem; object-fit:contain; border-radius:0.75rem;" />\` : ''}
+                <div class="arabic-text \${fontClass}" style="font-size:3.2rem; font-weight:700; color:#047857; margin-bottom:0.5rem;">
+                  \${filterHarakat(item.arabic)}
+                </div>
+                \${showLatin && item.latin ? \`<div style="font-size:1.15rem; color:#78716c; font-style:italic; margin-bottom:0.5rem;">\${item.latin}</div>\` : ''}
+                <div style="font-size:1.8rem; font-weight:700; color:#1c1917; margin-top:0.5rem;">
+                  \${item.meaning}
+                </div>
+                <div style="margin-top:1.5rem;">
+                  <button class="btn btn-primary" id="btn-vocab-sound">🔊 Dengarkan Pelafalan</button>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:center; gap:1rem; margin-top:1.5rem;">
+                <button class="btn btn-outline" id="btn-vp-prev" \${currentIndex === 0 ? 'disabled' : ''}>← Sebelumnya</button>
+                <button class="btn btn-primary" id="btn-vp-next" \${currentIndex === items.length - 1 ? 'disabled' : ''}>Berikutnya →</button>
+              </div>
+            \`;
+
+            document.getElementById('btn-vp-prev')?.addEventListener('click', () => {
+              if (currentIndex > 0) { currentIndex--; updateVocab(); }
+            });
+            document.getElementById('btn-vp-next')?.addEventListener('click', () => {
+              if (currentIndex < items.length - 1) { currentIndex++; updateVocab(); }
+            });
+            const playSound = () => {
+              if (audioSrc) {
+                const aud = new Audio(audioSrc);
+                aud.play().catch(() => speak(item.arabic));
+              } else {
+                speak(item.arabic);
+              }
+            };
+            document.getElementById('btn-vocab-sound')?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              playSound();
+            });
+            document.getElementById('card-speak')?.addEventListener('click', playSound);
+            document.getElementById('btn-toggle-view')?.addEventListener('click', () => {
+              viewMode = 'grid';
+              updateVocab();
+            });
+            document.getElementById('toggle-harakat')?.addEventListener('click', () => {
+              showHarakat = !showHarakat;
+              updateVocab();
+            });
+          } else {
+            viewport.innerHTML = \`
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <div class="badge">\${items.length} Kosakata</div>
+                <button class="btn btn-outline" id="btn-toggle-single">Mode Satu Per Satu</button>
+              </div>
+
+              <div class="vocab-grid">
+                \${items.map((it, idx) => {
+                  const imgSrc = getMediaSrc(it.mediaImageId);
+                  return \`
+                    <div class="vocab-card" data-idx="\${idx}">
+                      \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:120px; object-fit:contain; border-radius:0.5rem; margin-bottom:0.75rem;" />\` : ''}
+                      <div class="arabic-text \${fontClass}" style="font-size:1.8rem; font-weight:700; color:#047857;">
+                        \${filterHarakat(it.arabic)}
+                      </div>
+                      \${showLatin && it.latin ? \`<div style="font-size:0.85rem; color:#78716c; font-style:italic;">\${it.latin}</div>\` : ''}
+                      <div style="font-size:1.1rem; font-weight:700; color:#1c1917; margin-top:0.35rem;">
+                        \${it.meaning}
+                      </div>
+                      <div style="margin-top:0.75rem; font-size:0.8rem; color:#059669; font-weight:600;">
+                        🔊 Ketuk bersuara
+                      </div>
+                    </div>
+                  \`;
+                }).join('')}
+              </div>
+            \`;
+
+            document.getElementById('btn-toggle-single')?.addEventListener('click', () => {
+              viewMode = 'single';
+              updateVocab();
+            });
+
+            viewport.querySelectorAll('.vocab-card').forEach(el => {
+              el.addEventListener('click', () => {
+                const idx = parseInt(el.getAttribute('data-idx'));
+                const it = items[idx];
+                const audioSrc = getMediaSrc(it.mediaAudioId);
+                if (audioSrc) {
+                  const aud = new Audio(audioSrc);
+                  aud.play().catch(() => speak(it.arabic));
+                } else {
+                  speak(it.arabic);
+                }
+              });
+            });
+          }
+        }
+
+        updateVocab();
+      }
+
+      // 6. TEKS BACAAN (QIRA'AH)
+      function renderReading() {
+        let activeIdx = 0;
+        let revealed = {};
+        let showAll = false;
+        let fontScale = 0;
+        const items = data.items || [];
+        if (items.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada teks bacaan.</div>';
+          return;
+        }
+
+        function updateReading() {
+          const fontSizeRem = 1.7 + fontScale * 0.25;
+
+          viewport.innerHTML = \`
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+              <div class="badge">\${items.length} Kalimat Qira'ah</div>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-outline" id="btn-toggle-harakat">\${showHarakat ? 'Harakat: Aktif' : 'Harakat: Mati'}</button>
+                <button class="btn btn-outline" id="btn-toggle-all">\${showAll ? 'Sembunyikan Semua Arti' : 'Tampilkan Semua Arti'}</button>
+                <button class="btn btn-outline" id="btn-font-minus">A-</button>
+                <button class="btn btn-outline" id="btn-font-plus">A+</button>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+              \${items.map((it, idx) => {
+                const isRevealed = showAll || revealed[idx];
+                const isSelected = activeIdx === idx;
+                return \`
+                  <div class="sentence-card \${isSelected ? 'active' : ''}" data-idx="\${idx}">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+                      <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <span class="badge" style="background:#f5f5f4; color:#57534e;">\${idx + 1}</span>
+                        <button class="btn btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" data-speak="\${idx}">🔊</button>
+                      </div>
+                      <div class="arabic-text \${fontClass}" style="flex:1; text-align:right; font-weight:700; color:#1c1917; font-size:\${fontSizeRem}rem;">
+                        \${filterHarakat(it.arabic)}
+                      </div>
+                    </div>
+                    <div style="margin-top:0.75rem; padding-top:0.5rem; border-top:1px solid #f5f5f4; display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+                      <span style="color:#059669; font-weight:600; cursor:pointer;" data-toggle-trans="\${idx}">
+                        \${isRevealed ? 'Tutup Arti' : '👁️ Lihat Terjemah'}
+                      </span>
+                      \${isRevealed ? \`<span style="color:#065f46; font-style:italic;">\${it.translation}</span>\` : ''}
+                    </div>
+                  </div>
+                \`;
+              }).join('')}
+            </div>
+          \`;
+
+          document.getElementById('btn-toggle-harakat')?.addEventListener('click', () => {
+            showHarakat = !showHarakat;
+            updateReading();
+          });
+          document.getElementById('btn-toggle-all')?.addEventListener('click', () => {
+            showAll = !showAll;
+            updateReading();
+          });
+          document.getElementById('btn-font-minus')?.addEventListener('click', () => {
+            if (fontScale > -2) { fontScale--; updateReading(); }
+          });
+          document.getElementById('btn-font-plus')?.addEventListener('click', () => {
+            if (fontScale < 3) { fontScale++; updateReading(); }
+          });
+
+          viewport.querySelectorAll('[data-speak]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const idx = parseInt(btn.getAttribute('data-speak'));
+              activeIdx = idx;
+              const it = items[idx];
+              const audioSrc = getMediaSrc(it.mediaAudioId);
+              if (audioSrc) {
+                const aud = new Audio(audioSrc);
+                aud.play().catch(() => speak(it.arabic));
+              } else {
+                speak(it.arabic);
+              }
+              updateReading();
+            });
+          });
+
+          viewport.querySelectorAll('[data-toggle-trans]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const idx = parseInt(btn.getAttribute('data-toggle-trans'));
+              revealed[idx] = !revealed[idx];
+              updateReading();
+            });
+          });
+
+          viewport.querySelectorAll('.sentence-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const idx = parseInt(card.getAttribute('data-idx'));
+              activeIdx = idx;
+              updateReading();
+            });
+          });
+        }
+
+        updateReading();
+      }
+
+      // 7. TABEL / TASHRIF KATA
+      function renderWordTable() {
+        let hiddenCols = {};
+        let revealedCells = {};
+        const items = data.items || [];
+        const columns = (data.settings && data.settings.columns && data.settings.columns.length > 0)
+          ? data.settings.columns
+          : [
+              { id: 'col_madhi', name: "Madhi", isArabic: true },
+              { id: 'col_mudhari', name: "Mudhari'", isArabic: true },
+              { id: 'col_amr', name: "Amr", isArabic: true },
+              { id: 'col_mashdar', name: "Mashdar", isArabic: true },
+              { id: 'col_arti', name: "Arti", isArabic: false }
+            ];
+
+        if (items.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada baris dalam tabel ini.</div>';
+          return;
+        }
+
+        function updateTable() {
+          viewport.innerHTML = \`
+            <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <span style="font-size:0.8rem; font-weight:700; color:#44403c;">Sembunyikan Kolom Hafalan:</span>
+                \${columns.map((col) => \`
+                  <button class="btn btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem; \${hiddenCols[col.id] ? 'background:#fef3c7; border-color:#fde68a; color:#92400e;' : ''}" data-hide-col="\${col.id}">
+                    \${hiddenCols[col.id] ? '🙈 ' : ''}\${col.name}
+                  </button>
+                \`).join('')}
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-outline" id="btn-toggle-harakat">\${showHarakat ? 'Harakat: Aktif' : 'Harakat: Mati'}</button>
+                <button class="btn btn-primary" id="btn-print-table">🖨️ Cetak Tabel</button>
+              </div>
+            </div>
+
+            <div class="printable-area table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width:40px; text-align:center;">No</th>
+                    \${columns.map(col => \`<th style="\${col.isArabic ? 'text-align:right;' : 'text-align:left;'}">\${col.name}</th>\`).join('')}
+                    <th class="no-print" style="width:50px; text-align:center;">Suara</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  \${items.map((row, rIdx) => \`
+                    <tr>
+                      <td style="text-align:center; font-weight:600; color:#78716c;">\${rIdx + 1}</td>
+                      \${columns.map(col => {
+                        const val = (row.values && row.values[col.id]) || '';
+                        const cellKey = rIdx + '_' + col.id;
+                        const isHidden = hiddenCols[col.id] && !revealedCells[cellKey];
+                        return \`
+                          <td style="\${col.isArabic ? 'text-align:right; font-weight:700; font-size:1.25rem;' : ''}" class="\${col.isArabic ? fontClass : ''}">
+                            \${isHidden ? \`<span class="masked-cell" data-reveal="\${cellKey}">❓ Klik buka</span>\` : filterHarakat(val)}
+                          </td>
+                        \`;
+                      }).join('')}
+                      <td class="no-print" style="text-align:center;">
+                        <button class="btn btn-outline" style="padding:0.2rem 0.5rem; font-size:0.75rem;" data-row-sound="\${rIdx}">🔊</button>
+                      </td>
+                    </tr>
+                  \`).join('')}
+                </tbody>
+              </table>
+            </div>
+          \`;
+
+          document.getElementById('btn-print-table')?.addEventListener('click', () => {
+            window.print();
+          });
+          document.getElementById('btn-toggle-harakat')?.addEventListener('click', () => {
+            showHarakat = !showHarakat;
+            updateTable();
+          });
+
+          viewport.querySelectorAll('[data-hide-col]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const colId = btn.getAttribute('data-hide-col');
+              hiddenCols[colId] = !hiddenCols[colId];
+              updateTable();
+            });
+          });
+
+          viewport.querySelectorAll('[data-reveal]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const key = btn.getAttribute('data-reveal');
+              revealedCells[key] = true;
+              updateTable();
+            });
+          });
+
+          viewport.querySelectorAll('[data-row-sound]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const rIdx = parseInt(btn.getAttribute('data-row-sound'));
+              const row = items[rIdx];
+              const arabCol = columns.find(c => c.isArabic);
+              const text = arabCol && row.values ? row.values[arabCol.id] : (row.values ? Object.values(row.values)[0] : '');
+              if (text) speak(text);
+            });
+          });
+        }
+
+        updateTable();
       }
 
     })();

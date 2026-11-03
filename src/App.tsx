@@ -7,6 +7,8 @@ import DraftsPage from './pages/DraftsPage';
 import HelpPage from './pages/HelpPage';
 import MyProjectsPage from './pages/MyProjectsPage';
 import PublicSharePage from './pages/PublicSharePage';
+import MateriGalleryPage from './pages/MateriGalleryPage';
+import GameGalleryPage from './pages/GameGalleryPage';
 import { AuthProvider } from './services/authContext';
 import { TemplateType } from './types';
 import { getTemplate } from './templates/registry';
@@ -60,6 +62,10 @@ export default function App() {
 
   if (pathOnly === '/' || pathOnly === '') {
     content = <HomePage onNavigate={navigate} onSelectTemplate={handleSelectTemplate} />;
+  } else if (pathOnly === '/materi' || pathOnly === '/materi/') {
+    content = <MateriGalleryPage onNavigate={navigate} onSelectTemplate={handleSelectTemplate} />;
+  } else if (pathOnly === '/game' || pathOnly === '/game/') {
+    content = <GameGalleryPage onNavigate={navigate} onSelectTemplate={handleSelectTemplate} />;
   } else if (pathOnly.startsWith('/buat/')) {
     const typeStr = pathOnly.replace('/buat/', '');
     content = (
