@@ -3,6 +3,7 @@ import { QuizItem, MediaItem, ThemeConfig, DraftSettings, QuizChoice } from '../
 import { speakArabic, removeHarakat } from '../../utils/arabic';
 import { soundManager } from '../../utils/sound';
 import { normalizeQuizChoices } from './schema';
+import { getMediaUrl } from '../../utils/media';
 import {
   Volume2,
   Trophy,
@@ -437,9 +438,9 @@ export default function QuizPlayer({
           </div>
         )}
 
-        {currentImage && (
+        {getMediaUrl(currentImage) && (
           <img
-            src={URL.createObjectURL(currentImage.blob)}
+            src={getMediaUrl(currentImage)!}
             alt="Soal"
             className="max-h-36 sm:max-h-48 mx-auto mb-4 rounded-xl object-contain border border-stone-200"
           />
@@ -471,12 +472,12 @@ export default function QuizPlayer({
             </button>
           )}
 
-          {currentAudio && (
+          {getMediaUrl(currentAudio) && (
             <button
               type="button"
               onClick={() => {
-                const url = URL.createObjectURL(currentAudio.blob);
-                new Audio(url).play();
+                const url = getMediaUrl(currentAudio);
+                if (url) new Audio(url).play();
               }}
               className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
@@ -539,9 +540,9 @@ export default function QuizPlayer({
               </span>
 
               <div className="flex-1 flex items-center gap-2 overflow-hidden">
-                {choiceImg && (
+                {getMediaUrl(choiceImg) && (
                   <img
-                    src={URL.createObjectURL(choiceImg.blob)}
+                    src={getMediaUrl(choiceImg)!}
                     alt="Foto Pilihan"
                     className="w-12 h-12 object-cover rounded border border-stone-200 shrink-0"
                   />

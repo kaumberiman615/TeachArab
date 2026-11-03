@@ -4,6 +4,8 @@ import { removeHarakat, speakArabic } from '../../utils/arabic';
 import { soundManager } from '../../utils/sound';
 import { Volume2, ChevronLeft, ChevronRight, Shuffle, RotateCcw, Maximize2, Minimize2, Eye, EyeOff } from 'lucide-react';
 
+import { getMediaUrl } from '../../utils/media';
+
 interface FlashcardPlayerProps {
   items: FlashcardItem[];
   theme: ThemeConfig;
@@ -114,9 +116,9 @@ export default function FlashcardPlayer({
   const currentAudio = currentItem.mediaAudioId ? mediaFiles[currentItem.mediaAudioId] : null;
 
   const playRecordedAudio = () => {
-    if (currentAudio?.blob) {
-      const url = URL.createObjectURL(currentAudio.blob);
-      const audio = new Audio(url);
+    const audioUrl = getMediaUrl(currentAudio);
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
       audio.play();
     }
   };
@@ -204,9 +206,9 @@ export default function FlashcardPlayer({
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center my-auto">
-              {currentImage && (
+              {getMediaUrl(currentImage) && (
                 <img
-                  src={URL.createObjectURL(currentImage.blob)}
+                  src={getMediaUrl(currentImage)!}
                   alt="Ilustrasi"
                   className="max-h-28 sm:max-h-36 max-w-full object-contain mb-4 rounded-lg shadow-2xs"
                 />

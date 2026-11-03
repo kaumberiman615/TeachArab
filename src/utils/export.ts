@@ -31,12 +31,19 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
           const base64 = await blobToBase64(item.blob);
           mediaBase64Map[id] = {
             base64,
-            mimeType: item.mimeType,
-            name: item.name
+            mimeType: item.mimeType || 'application/octet-stream',
+            name: item.name || id,
           };
-        } catch (e) {
-          console.warn('Failed to convert media to base64', id, e);
+        } catch (e: unknown) {
+          const err = e as { name?: string; message?: string };
+          console.warn(`[generateOfflineHTML] Failed to convert media to base64: ${err.name} - ${err.message}`, id);
         }
+      } else if (item && (item as any).url) {
+        mediaBase64Map[id] = {
+          base64: (item as any).url,
+          mimeType: item.mimeType || 'application/octet-stream',
+          name: item.name || id,
+        };
       }
     }
   }
@@ -875,12 +882,19 @@ export async function exportDraftAsJson(draft: Draft): Promise<Blob> {
           const base64 = await blobToBase64(item.blob);
           mediaBase64Map[id] = {
             base64,
-            mimeType: item.mimeType,
-            name: item.name
+            mimeType: item.mimeType || 'application/octet-stream',
+            name: item.name || id,
           };
-        } catch (e) {
-          console.warn('Failed base64 conversion', e);
+        } catch (e: unknown) {
+          const err = e as { name?: string; message?: string };
+          console.warn(`[exportDraftAsJson] Failed base64 conversion: ${err.name} - ${err.message}`, id);
         }
+      } else if (item && (item as any).url) {
+        mediaBase64Map[id] = {
+          base64: (item as any).url,
+          mimeType: item.mimeType || 'application/octet-stream',
+          name: item.name || id,
+        };
       }
     }
   }

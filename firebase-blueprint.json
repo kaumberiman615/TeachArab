@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Learning material or game project created by a teacher",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the teacher owning this project",
+          "maxLength": 128
+        },
+        "templateType": {
+          "type": "string",
+          "description": "Type of template (flashcard, quiz, matching)",
+          "maxLength": 64
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the project/material",
+          "maxLength": 200
+        },
+        "content": {
+          "type": "object",
+          "description": "JSON object holding template-specific content data"
+        },
+        "mediaRefs": {
+          "type": "object",
+          "description": "Mapping from media ID to Cloudinary or public media URL"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when the project was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp when the project was last updated"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the project is shared publicly for students via link"
+        },
+        "shareId": {
+          "type": "string",
+          "description": "Unique public sharing identifier",
+          "maxLength": 64
+        }
+      },
+      "required": ["ownerId", "templateType", "title", "content", "createdAt", "updatedAt", "isPublic", "shareId"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": {
+        "$ref": "Project"
+      },
+      "description": "Collection of projects created by teachers"
+    }
+  }
+}

@@ -107,3 +107,22 @@ export interface DraftSummary {
   updatedAt: number;
   createdAt: number;
 }
+
+export interface CloudProject {
+  id: string;
+  ownerId: string;
+  templateType: TemplateType;
+  title: string;
+  description?: string;
+  content: {
+    theme: ThemeConfig;
+    settings: DraftSettings;
+    items: any[];
+    mediaUrls?: Record<string, string>;
+  };
+  mediaRefs: Record<string, string>; // mediaId -> Firebase Storage Download URL
+  createdAt: number;
+  updatedAt: number;
+  isPublic: boolean;
+  shareId: string;
+}

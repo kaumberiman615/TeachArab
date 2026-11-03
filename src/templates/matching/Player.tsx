@@ -15,6 +15,8 @@ import {
   MoveHorizontal,
 } from 'lucide-react';
 
+import { getMediaUrl } from '../../utils/media';
+
 interface MatchingPlayerProps {
   items: MatchingPair[];
   theme: ThemeConfig;
@@ -23,21 +25,12 @@ interface MatchingPlayerProps {
   isProjectorMode?: boolean;
 }
 
-function ImageBlobPreview({ blob, alt }: { blob: Blob; alt: string }) {
-  const [objectUrl, setObjectUrl] = useState<string>('');
-
-  useEffect(() => {
-    const url = URL.createObjectURL(blob);
-    setObjectUrl(url);
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [blob]);
-
-  if (!objectUrl) return null;
+function ImageMediaPreview({ media, alt }: { media: any; alt: string }) {
+  const url = getMediaUrl(media);
+  if (!url) return null;
   return (
     <img
-      src={objectUrl}
+      src={url}
       alt={alt}
       className="max-h-16 max-w-full object-contain mb-2 rounded"
     />
@@ -515,7 +508,7 @@ export default function MatchingPlayer({
                 }`}
               >
                 {attachedImg && (
-                  <ImageBlobPreview blob={attachedImg.blob} alt="Gambar Arti" />
+                  <ImageMediaPreview media={attachedImg} alt="Gambar Arti" />
                 )}
                 <div className="text-base sm:text-lg font-bold">
                   {item.meaning}
