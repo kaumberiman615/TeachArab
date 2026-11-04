@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Draft } from '../types';
 import { getDraft } from '../services/storage';
-import { getTemplate } from '../templates/registry';
+import { getTemplateOrNull } from '../templates/registry';
 import ExportModal from '../components/ExportModal';
 import {
   ArrowLeft,
@@ -70,7 +70,28 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
     );
   }
 
-  const templateDef = getTemplate(draft.templateType);
+  const templateDef = getTemplateOrNull(draft.templateType);
+  if (!templateDef) {
+    return (
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center border border-stone-200 shadow-md">
+          <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+          <h2 className="text-xl font-bold text-stone-900 mb-1">Template Tidak Ditemukan</h2>
+          <p className="text-stone-500 text-xs mb-6">
+            Format template "{draft.templateType}" tidak terdaftar dalam Teach Arab.
+          </p>
+          <button
+            type="button"
+            onClick={() => onNavigate('/draf')}
+            className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs cursor-pointer shadow-xs"
+          >
+            Kembali ke Draf Saya
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const PlayerComponent = templateDef.PlayerComponent;
 
   return (

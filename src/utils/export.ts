@@ -515,7 +515,103 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
       border-bottom: 16px solid transparent;
       border-right: 28px solid #ef4444;
       z-index: 10;
-      filter: drop-shadow(-2px 0 2px rgba(0,0,0,0.3));
+    /* Letter Order & Sentence Order styles */
+    .lo-slot {
+      width: 56px;
+      height: 64px;
+      border-radius: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      border: 2px dashed #d6d3d1;
+      background: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .lo-slot.filled {
+      background: #4f46e5;
+      color: #ffffff;
+      border: 2px solid #4338ca;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+    .lo-slot.correct {
+      background: #059669 !important;
+      border-color: #047857 !important;
+      color: #ffffff !important;
+    }
+    .lo-slot.wrong {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #b91c1c !important;
+    }
+    .lo-card-btn {
+      width: 56px;
+      height: 64px;
+      border-radius: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      border: 2px solid #e5e7eb;
+      background: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .lo-card-btn:hover {
+      background: #eef2ff;
+      border-color: #a5b4fc;
+      transform: translateY(-2px);
+    }
+    .so-word-btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      border: 2px solid #e5e7eb;
+      background: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .so-word-btn:hover {
+      background: #eef2ff;
+      border-color: #a5b4fc;
+      transform: translateY(-2px);
+    }
+    .so-placed-word {
+      padding: 0.6rem 1.25rem;
+      border-radius: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: #4f46e5;
+      color: #ffffff;
+      border: 2px solid #4338ca;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+    .so-placed-word.correct {
+      background: #059669 !important;
+      border-color: #047857 !important;
+    }
+    .so-placed-word.wrong {
+      background: #fee2e2 !important;
+      color: #b91c1c !important;
+      border-color: #ef4444 !important;
     }
   </style>
 </head>
@@ -636,6 +732,10 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         renderMemory();
       } else if (data.templateType === 'wheel') {
         renderWheel();
+      } else if (data.templateType === 'letter-order') {
+        renderLetterOrder();
+      } else if (data.templateType === 'sentence-order') {
+        renderSentenceOrder();
       }
 
       // 1. FLASHCARD
@@ -2142,6 +2242,515 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         }
 
         updateView();
+      }
+
+      // 11. SUSUN HURUF (LETTER ORDER)
+      function renderLetterOrder() {
+        const rawItems = data.items || [];
+        if (rawItems.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada kata dalam materi ini.</div>';
+          return;
+        }
+
+        const shouldShuffle = data.settings && data.settings.letterShuffle !== false;
+        let items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+        const ignoreHarakat = data.settings && data.settings.letterIgnoreHarakat;
+
+        function splitArabicLetters(word) {
+          if (!word) return [];
+          const clean = word.trim();
+          const regex = /[^\u064B-\u065F\u0670\u06D6-\u06ED\s][\u064B-\u065F\u0670\u06D6-\u06ED]*/g;
+          const matches = clean.match(regex);
+          return matches && matches.length > 0 ? matches : clean.split('').filter((c) => c.trim().length > 0);
+        }
+
+        let currentIndex = 0;
+        let score = 0;
+        let targetLetters = [];
+        let availablePool = [];
+        let placedLetters = [];
+        let isEvaluated = false;
+        let isCorrect = false;
+        let feedbackMsg = '';
+
+        function setupCurrent() {
+          const cur = items[currentIndex];
+          if (!cur) return;
+          targetLetters = splitArabicLetters(cur.arabic);
+          availablePool = targetLetters
+            .map((l, i) => ({ uid: i + '_' + Math.random().toString(36).substring(2, 7), letter: l, originalIndex: i }))
+            .sort(() => Math.random() - 0.5);
+          placedLetters = new Array(targetLetters.length).fill(null);
+          isEvaluated = false;
+          isCorrect = false;
+          feedbackMsg = '';
+        }
+
+        function renderResults() {
+          const totalScore = items.length * 10;
+          const pct = Math.round((score / totalScore) * 100) || 0;
+          viewport.innerHTML = \`
+            <div class="card" style="text-align:center; max-width:550px; margin:2rem auto; padding:2.5rem 1.5rem;">
+              <div style="font-size:3rem; margin-bottom:1rem;">\${pct >= 70 ? '🎉' : '💪'}</div>
+              <h2 style="font-size:1.75rem; font-weight:700; color:#1c1917; margin-bottom:0.5rem;">Permainan Selesai!</h2>
+              <p style="color:#57534e; margin-bottom:1.5rem;">Kamu telah menyelesaikan seluruh teka-teki kata.</p>
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;">
+                <div style="font-size:0.875rem; color:#047857; font-weight:600; text-transform:uppercase;">Skor Akhir</div>
+                <div style="font-size:3rem; font-weight:800; color:#065f46;">\${score} <span style="font-size:1.25rem; font-weight:500; color:#6b7280;">/ \${totalScore}</span></div>
+                <div style="font-size:0.95rem; color:#047857; margin-top:0.25rem;">Ketepatan: \${pct}%</div>
+              </div>
+              <button class="btn btn-primary" id="btn-lo-restart" style="padding:0.75rem 2rem; font-size:1rem;">
+                🔄 Main Lagi
+              </button>
+            </div>
+          \`;
+          document.getElementById('btn-lo-restart').addEventListener('click', () => {
+            currentIndex = 0;
+            score = 0;
+            items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+            setupCurrent();
+            updateScreen();
+          });
+        }
+
+        function updateScreen() {
+          if (currentIndex >= items.length) {
+            renderResults();
+            return;
+          }
+
+          const cur = items[currentIndex];
+          const imgSrc = getMediaSrc(cur.mediaImageId);
+          const audioSrc = getMediaSrc(cur.mediaAudioId);
+
+          viewport.innerHTML = \`
+            <div style="max-width:680px; margin:0 auto; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; background:#fff; padding:0.75rem 1.25rem; border-radius:0.75rem; border:1px solid #e7e5e4;">
+                <div style="font-weight:600; color:#57534e;">Kata \${currentIndex + 1} dari \${items.length}</div>
+                <div style="background:#ecfdf5; color:#065f46; padding:0.25rem 0.6rem; border-radius:9999px; font-weight:700; font-size:0.875rem;">Skor: \${score}</div>
+              </div>
+
+              <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+                \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:140px; border-radius:0.75rem; margin-bottom:1rem; object-fit:contain;" />\` : ''}
+
+                <div style="margin-bottom:0.75rem;">
+                  <span style="font-size:0.8rem; color:#78716c; font-weight:600; text-transform:uppercase;">Petunjuk Arti:</span>
+                  <div style="font-size:1.35rem; font-weight:700; color:#1c1917; margin-top:0.25rem;">\${cur.meaning}</div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1.5rem;">
+                  <button class="btn btn-outline" id="btn-lo-speak" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🔊 Bacakan</button>
+                  \${audioSrc ? \`<audio id="lo-audio" src="\${audioSrc}"></audio><button class="btn btn-outline" id="btn-lo-audio" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🎵 Audio</button>\` : ''}
+                </div>
+
+                <!-- Answer assembly area (RTL) -->
+                <div style="background:#f5f5f4; border:2px dashed #cbd5e1; border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:#64748b; margin-bottom:0.75rem;">
+                    <span>Kotak Jawaban (Kanan ➔ Kiri)</span>
+                    <span>\${placedLetters.filter(Boolean).length} / \${targetLetters.length} terisi</span>
+                  </div>
+                  <div dir="rtl" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap;">
+                    \${placedLetters.map((card, sIdx) => {
+                      if (card) {
+                        const statusClass = isEvaluated ? (isCorrect ? 'correct' : 'wrong') : 'filled';
+                        return \`<div class="lo-slot \${statusClass} \${fontClass}" data-slot-idx="\${sIdx}" title="Ketuk untuk mengembalikan">\${card.letter}</div>\`;
+                      } else {
+                        return \`<div class="lo-slot" data-slot-idx="\${sIdx}" style="color:#d6d3d1;">_</div>\`;
+                      }
+                    }).join('')}
+                  </div>
+                </div>
+
+                \${feedbackMsg ? \`
+                  <div style="padding:0.75rem 1rem; border-radius:0.75rem; margin-bottom:1.25rem; font-size:0.9rem; font-weight:600; background:\${isCorrect ? '#ecfdf5' : '#fef2f2'}; color:\${isCorrect ? '#065f46' : '#991b1b'}; border:1px solid \${isCorrect ? '#a7f3d0' : '#fecaca'};">
+                    \${feedbackMsg}
+                  </div>
+                \` : ''}
+
+                <!-- Action buttons -->
+                <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                  \${!isCorrect ? \`
+                    <button class="btn btn-primary" id="btn-lo-check">✓ Periksa</button>
+                    <button class="btn btn-outline" id="btn-lo-hint">💡 Petunjuk</button>
+                    <button class="btn btn-outline" id="btn-lo-reset">🔄 Acak Ulang</button>
+                  \` : \`
+                    <button class="btn btn-primary" id="btn-lo-next" style="padding:0.6rem 1.8rem; font-size:1rem;">Kata Berikutnya ➔</button>
+                  \`}
+                </div>
+
+                <!-- Available pool -->
+                <div style="border-top:1px solid #e7e5e4; padding-top:1.25rem;">
+                  <div style="font-size:0.85rem; font-weight:600; color:#57534e; margin-bottom:0.75rem;">
+                    Pilihan Huruf (Ketuk untuk Menyusun):
+                  </div>
+                  <div dir="rtl" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap;">
+                    \${availablePool.length === 0 ? '<span style="font-size:0.85rem; color:#9ca3af; font-style:italic;">Semua huruf sudah diletakkan</span>' : ''}
+                    \${availablePool.map((c, pIdx) => \`
+                      <button class="lo-card-btn \${fontClass}" data-pool-idx="\${pIdx}">\${c.letter}</button>
+                    \`).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          \`;
+
+          document.getElementById('btn-lo-speak')?.addEventListener('click', () => speak(cur.arabic));
+          document.getElementById('btn-lo-audio')?.addEventListener('click', () => {
+            const a = document.getElementById('lo-audio');
+            if (a) a.play();
+          });
+
+          // Placed letters click: return to pool
+          viewport.querySelectorAll('[data-slot-idx]').forEach(slotEl => {
+            slotEl.addEventListener('click', () => {
+              if (isCorrect) return;
+              const sIdx = parseInt(slotEl.getAttribute('data-slot-idx'));
+              const card = placedLetters[sIdx];
+              if (!card) return;
+              sfxClick();
+              availablePool.push(card);
+              placedLetters[sIdx] = null;
+              isEvaluated = false;
+              feedbackMsg = '';
+              updateScreen();
+            });
+          });
+
+          // Pool cards click: place into first empty slot
+          viewport.querySelectorAll('[data-pool-idx]').forEach(poolEl => {
+            poolEl.addEventListener('click', () => {
+              if (isCorrect) return;
+              const pIdx = parseInt(poolEl.getAttribute('data-pool-idx'));
+              const emptyIdx = placedLetters.findIndex(s => s === null);
+              if (emptyIdx === -1) return;
+              sfxClick();
+              const card = availablePool.splice(pIdx, 1)[0];
+              placedLetters[emptyIdx] = card;
+              isEvaluated = false;
+              feedbackMsg = '';
+              updateScreen();
+            });
+          });
+
+          document.getElementById('btn-lo-reset')?.addEventListener('click', () => {
+            sfxClick();
+            setupCurrent();
+            updateScreen();
+          });
+
+          document.getElementById('btn-lo-hint')?.addEventListener('click', () => {
+            if (isCorrect) return;
+            let targetIdx = -1;
+            for (let i = 0; i < targetLetters.length; i++) {
+              if (!placedLetters[i] || placedLetters[i].letter !== targetLetters[i]) {
+                targetIdx = i;
+                break;
+              }
+            }
+            if (targetIdx === -1) return;
+
+            const existing = placedLetters[targetIdx];
+            if (existing) availablePool.push(existing);
+
+            const needed = targetLetters[targetIdx];
+            const pIdx = availablePool.findIndex(c => ignoreHarakat ? filterHarakat(c.letter) === filterHarakat(needed) : c.letter === needed);
+            if (pIdx !== -1) {
+              sfxClick();
+              const card = availablePool.splice(pIdx, 1)[0];
+              placedLetters[targetIdx] = card;
+              isEvaluated = false;
+              feedbackMsg = '';
+              updateScreen();
+            }
+          });
+
+          document.getElementById('btn-lo-check')?.addEventListener('click', () => {
+            const allFilled = placedLetters.every(s => s !== null);
+            if (!allFilled) {
+              feedbackMsg = 'Letakkan semua huruf pada kotak jawaban terlebih dahulu!';
+              isEvaluated = true;
+              isCorrect = false;
+              sfxWrong();
+              updateScreen();
+              return;
+            }
+            const assembled = placedLetters.map(c => c.letter).join('');
+            const target = cur.arabic.trim();
+            const matches = ignoreHarakat ? filterHarakat(assembled) === filterHarakat(target) : assembled === target;
+            isEvaluated = true;
+            isCorrect = matches;
+            if (matches) {
+              score += 10;
+              sfxCorrect();
+              feedbackMsg = 'Benar! Susunan huruf sangat tepat! 🎉';
+            } else {
+              sfxWrong();
+              feedbackMsg = 'Susunan belum tepat. Periksa kembali urutan huruf dari kanan ke kiri.';
+            }
+            updateScreen();
+          });
+
+          document.getElementById('btn-lo-next')?.addEventListener('click', () => {
+            currentIndex++;
+            setupCurrent();
+            updateScreen();
+          });
+        }
+
+        setupCurrent();
+        updateScreen();
+      }
+
+      // 12. SUSUN KALIMAT (SENTENCE ORDER)
+      function renderSentenceOrder() {
+        const rawItems = data.items || [];
+        if (rawItems.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada kalimat dalam materi ini.</div>';
+          return;
+        }
+
+        const shouldShuffle = data.settings && data.settings.sentenceShuffle !== false;
+        let items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+
+        function splitSentenceWords(sentence) {
+          if (!sentence) return [];
+          const firstVar = sentence.split('/')[0] || '';
+          return firstVar.trim().split(/\\s+/).filter(w => w.length > 0);
+        }
+
+        function getValidSentences(raw) {
+          if (!raw) return [];
+          return raw.split('/').map(s => s.trim().split(/\\s+/).filter(Boolean).join(' ')).filter(s => s.length > 0);
+        }
+
+        let currentIndex = 0;
+        let score = 0;
+        let canonicalWords = [];
+        let availablePool = [];
+        let placedWords = [];
+        let isEvaluated = false;
+        let isCorrect = false;
+        let feedbackMsg = '';
+
+        function setupCurrent() {
+          const cur = items[currentIndex];
+          if (!cur) return;
+          canonicalWords = splitSentenceWords(cur.sentenceArabic);
+          availablePool = canonicalWords
+            .map((w, i) => ({ uid: i + '_' + Math.random().toString(36).substring(2, 7), word: w, originalIndex: i }))
+            .sort(() => Math.random() - 0.5);
+          placedWords = [];
+          isEvaluated = false;
+          isCorrect = false;
+          feedbackMsg = '';
+        }
+
+        function renderResults() {
+          const totalScore = items.length * 10;
+          const pct = Math.round((score / totalScore) * 100) || 0;
+          viewport.innerHTML = \`
+            <div class="card" style="text-align:center; max-width:550px; margin:2rem auto; padding:2.5rem 1.5rem;">
+              <div style="font-size:3rem; margin-bottom:1rem;">\${pct >= 70 ? '🎉' : '💪'}</div>
+              <h2 style="font-size:1.75rem; font-weight:700; color:#1c1917; margin-bottom:0.5rem;">Permainan Selesai!</h2>
+              <p style="color:#57534e; margin-bottom:1.5rem;">Mumtaz! Kamu telah menyelesaikan seluruh kalimat.</p>
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;">
+                <div style="font-size:0.875rem; color:#047857; font-weight:600; text-transform:uppercase;">Skor Akhir</div>
+                <div style="font-size:3rem; font-weight:800; color:#065f46;">\${score} <span style="font-size:1.25rem; font-weight:500; color:#6b7280;">/ \${totalScore}</span></div>
+                <div style="font-size:0.95rem; color:#047857; margin-top:0.25rem;">Ketepatan: \${pct}%</div>
+              </div>
+              <button class="btn btn-primary" id="btn-so-restart" style="padding:0.75rem 2rem; font-size:1rem;">
+                🔄 Main Lagi
+              </button>
+            </div>
+          \`;
+          document.getElementById('btn-so-restart').addEventListener('click', () => {
+            currentIndex = 0;
+            score = 0;
+            items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+            setupCurrent();
+            updateScreen();
+          });
+        }
+
+        function updateScreen() {
+          if (currentIndex >= items.length) {
+            renderResults();
+            return;
+          }
+
+          const cur = items[currentIndex];
+          const audioSrc = getMediaSrc(cur.mediaAudioId);
+
+          viewport.innerHTML = \`
+            <div style="max-width:750px; margin:0 auto; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; background:#fff; padding:0.75rem 1.25rem; border-radius:0.75rem; border:1px solid #e7e5e4;">
+                <div style="font-weight:600; color:#57534e;">Kalimat \${currentIndex + 1} dari \${items.length}</div>
+                <div style="background:#ecfdf5; color:#065f46; padding:0.25rem 0.6rem; border-radius:9999px; font-weight:700; font-size:0.875rem;">Skor: \${score}</div>
+              </div>
+
+              <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+                <div style="margin-bottom:0.75rem;">
+                  <span style="font-size:0.8rem; color:#78716c; font-weight:600; text-transform:uppercase;">Arti Kalimat:</span>
+                  <div style="font-size:1.35rem; font-weight:700; color:#1c1917; margin-top:0.25rem;">\${cur.translation}</div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1.5rem;">
+                  <button class="btn btn-outline" id="btn-so-speak" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🔊 Bacakan</button>
+                  \${audioSrc ? \`<audio id="so-audio" src="\${audioSrc}"></audio><button class="btn btn-outline" id="btn-so-audio" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🎵 Audio</button>\` : ''}
+                </div>
+
+                <!-- Placed Words area (RTL) -->
+                <div style="background:#f5f5f4; border:2px dashed #cbd5e1; border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:#64748b; margin-bottom:0.75rem;">
+                    <span>Susunan Kalimat Jawaban (Kanan ➔ Kiri)</span>
+                    <span>\${placedWords.length} / \${canonicalWords.length} kata</span>
+                  </div>
+                  <div dir="rtl" style="display:flex; justify-content:flex-start; gap:0.5rem; flex-wrap:wrap; min-height:56px; align-items:center;">
+                    \${placedWords.length === 0 ? '<span style="font-size:0.85rem; color:#9ca3af; font-style:italic; margin:0 auto;">Ketuk kata-kata di bawah untuk menyusun kalimat</span>' : ''}
+                    \${placedWords.map((card, pIdx) => {
+                      const statusClass = isEvaluated ? (isCorrect ? 'correct' : 'wrong') : '';
+                      return \`<div class="so-placed-word \${statusClass} \${fontClass}" data-placed-idx="\${pIdx}" title="Ketuk untuk mengembalikan">\${card.word}</div>\`;
+                    }).join('')}
+                  </div>
+                </div>
+
+                \${feedbackMsg ? \`
+                  <div style="padding:0.75rem 1rem; border-radius:0.75rem; margin-bottom:1.25rem; font-size:0.9rem; font-weight:600; background:\${isCorrect ? '#ecfdf5' : '#fef2f2'}; color:\${isCorrect ? '#065f46' : '#991b1b'}; border:1px solid \${isCorrect ? '#a7f3d0' : '#fecaca'};">
+                    \${feedbackMsg}
+                  </div>
+                \` : ''}
+
+                <!-- Action buttons -->
+                <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                  \${!isCorrect ? \`
+                    <button class="btn btn-primary" id="btn-so-check">✓ Periksa</button>
+                    <button class="btn btn-outline" id="btn-so-hint">💡 Petunjuk</button>
+                    <button class="btn btn-outline" id="btn-so-reset">🗑️ Hapus Semua</button>
+                  \` : \`
+                    <button class="btn btn-primary" id="btn-so-next" style="padding:0.6rem 1.8rem; font-size:1rem;">Kalimat Berikutnya ➔</button>
+                  \`}
+                </div>
+
+                <!-- Available words pool -->
+                <div style="border-top:1px solid #e7e5e4; padding-top:1.25rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <span style="font-size:0.85rem; font-weight:600; color:#57534e;">Pilihan Kata (Ketuk untuk Menyusun):</span>
+                    <button class="btn btn-outline" id="btn-so-shuffle" style="padding:0.25rem 0.5rem; font-size:0.75rem;">🔄 Acak Pilihan</button>
+                  </div>
+                  <div dir="rtl" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap;">
+                    \${availablePool.length === 0 ? '<span style="font-size:0.85rem; color:#9ca3af; font-style:italic;">Semua kata sudah diletakkan</span>' : ''}
+                    \${availablePool.map((c, poolIdx) => \`
+                      <button class="so-word-btn \${fontClass}" data-pool-idx="\${poolIdx}">\${c.word}</button>
+                    \`).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          \`;
+
+          document.getElementById('btn-so-speak')?.addEventListener('click', () => {
+            const first = cur.sentenceArabic.split('/')[0] || '';
+            speak(first);
+          });
+          document.getElementById('btn-so-audio')?.addEventListener('click', () => {
+            const a = document.getElementById('so-audio');
+            if (a) a.play();
+          });
+
+          // Placed words click: return to pool
+          viewport.querySelectorAll('[data-placed-idx]').forEach(el => {
+            el.addEventListener('click', () => {
+              if (isCorrect) return;
+              const idx = parseInt(el.getAttribute('data-placed-idx'));
+              const card = placedWords.splice(idx, 1)[0];
+              if (card) {
+                sfxClick();
+                availablePool.push(card);
+                isEvaluated = false;
+                feedbackMsg = '';
+                updateScreen();
+              }
+            });
+          });
+
+          // Pool words click: append to placedWords
+          viewport.querySelectorAll('[data-pool-idx]').forEach(el => {
+            el.addEventListener('click', () => {
+              if (isCorrect) return;
+              const idx = parseInt(el.getAttribute('data-pool-idx'));
+              const card = availablePool.splice(idx, 1)[0];
+              if (card) {
+                sfxClick();
+                placedWords.push(card);
+                isEvaluated = false;
+                feedbackMsg = '';
+                updateScreen();
+              }
+            });
+          });
+
+          document.getElementById('btn-so-reset')?.addEventListener('click', () => {
+            sfxClick();
+            setupCurrent();
+            updateScreen();
+          });
+
+          document.getElementById('btn-so-shuffle')?.addEventListener('click', () => {
+            sfxClick();
+            availablePool.sort(() => Math.random() - 0.5);
+            updateScreen();
+          });
+
+          document.getElementById('btn-so-hint')?.addEventListener('click', () => {
+            if (isCorrect) return;
+            const nextIdx = placedWords.length;
+            if (nextIdx >= canonicalWords.length) return;
+            const needed = canonicalWords[nextIdx];
+            const pIdx = availablePool.findIndex(c => c.word === needed);
+            if (pIdx !== -1) {
+              sfxClick();
+              const card = availablePool.splice(pIdx, 1)[0];
+              placedWords.push(card);
+              isEvaluated = false;
+              feedbackMsg = '';
+              updateScreen();
+            }
+          });
+
+          document.getElementById('btn-so-check')?.addEventListener('click', () => {
+            if (placedWords.length < canonicalWords.length) {
+              feedbackMsg = 'Letakkan semua kata terlebih dahulu sebelum memeriksa.';
+              isEvaluated = true;
+              isCorrect = false;
+              sfxWrong();
+              updateScreen();
+              return;
+            }
+            const assembled = placedWords.map(c => c.word.trim()).join(' ');
+            const valid = getValidSentences(cur.sentenceArabic);
+            const matches = valid.some(v => v === assembled);
+            isEvaluated = true;
+            isCorrect = matches;
+            if (matches) {
+              score += 10;
+              sfxCorrect();
+              feedbackMsg = 'Mumtaz! Susunan kalimat bahasa Arab sudah tepat! 🎉';
+            } else {
+              sfxWrong();
+              feedbackMsg = 'Urutan kalimat belum tepat. Susunlah kata dari kanan ke kiri.';
+            }
+            updateScreen();
+          });
+
+          document.getElementById('btn-so-next')?.addEventListener('click', () => {
+            currentIndex++;
+            setupCurrent();
+            updateScreen();
+          });
+        }
+
+        setupCurrent();
+        updateScreen();
       }
 
     })();

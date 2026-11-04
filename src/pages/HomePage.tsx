@@ -183,7 +183,7 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
               Buat Game Interaktif
             </h2>
             <p className="text-stone-500 text-sm mt-1">
-              Permainan interaktif untuk siswa: flashcard, kuis, mencocokkan. Didesain untuk aktivitas kelas yang seru dan kompetitif.
+              Permainan interaktif untuk siswa: flashcard, kuis, mencocokkan, susun huruf, susun kalimat, roda acak, dan memori kartu.
             </p>
           </div>
 

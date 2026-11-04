@@ -222,7 +222,7 @@ export default function Header({ currentPath, onNavigate }: HeaderProps) {
                         </span>
                       </div>
                       <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full font-bold">
-                        3 Permainan
+                        {gameTemplates.length} Permainan
                       </span>
                     </div>
 

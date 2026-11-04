@@ -53,6 +53,15 @@ import WheelEditor from './wheel/Editor';
 import WheelPlayer from './wheel/Player';
 import { DEFAULT_WHEEL_ENTRIES } from './wheel/schema';
 
+import LetterOrderEditor from './letter-order/Editor';
+import LetterOrderPlayer from './letter-order/Player';
+import { DEFAULT_LETTER_ORDER_ITEMS } from './letter-order/schema';
+
+import SentenceOrderEditor from './sentence-order/Editor';
+import SentenceOrderPlayer from './sentence-order/Player';
+import { DEFAULT_SENTENCE_ORDER_ITEMS } from './sentence-order/schema';
+import { SpellCheck, ListOrdered } from 'lucide-react';
+
 export interface TemplateDefinition {
   id: TemplateType;
   name: string;
@@ -486,6 +495,94 @@ const wheelDefinition: TemplateDefinition = {
   PlayerComponent: WheelPlayer,
 };
 
+// 11. Letter Order (Susun Huruf)
+const letterOrderDefinition: TemplateDefinition = {
+  id: 'letter-order',
+  name: 'Susun Huruf',
+  category: 'game',
+  description:
+    'Game menyusun kartu huruf hijaiyah teracak menjadi kata Arab yang tepat dengan kontrol klik atau drag and drop berarah RTL.',
+  badge: 'Game Kata',
+  icon: SpellCheck,
+  features: [
+    'Pecah Huruf & Harakat Akurat',
+    'RTL (Kanan ke Kiri)',
+    'Tombol Petunjuk & Acak Ulang',
+    'Mode Tim & Suara SFX',
+  ],
+  createDefaultDraft: (title = 'Susun Huruf: Mufrodat Penting') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Game menyusun kartu huruf Arab menjadi kata yang benar sesuai petunjuk arti.',
+    templateType: 'letter-order',
+    theme: {
+      palette: 'indigo',
+      fontFamily: 'Amiri',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: true,
+      soundEnabled: true,
+    },
+    settings: {
+      letterIgnoreHarakat: false,
+      letterShuffle: true,
+      teamMode: false,
+      teamCount: 2,
+      teamNames: ['Tim Merah', 'Tim Biru'],
+    },
+    items: DEFAULT_LETTER_ORDER_ITEMS,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: LetterOrderEditor,
+  PlayerComponent: LetterOrderPlayer,
+};
+
+// 12. Sentence Order (Susun Kalimat)
+const sentenceOrderDefinition: TemplateDefinition = {
+  id: 'sentence-order',
+  name: 'Susun Kalimat',
+  category: 'game',
+  description:
+    'Game merangkai potongan kata bahasa Arab menjadi kalimat sempurna sesuai petunjuk arti dan kaidah tata bahasa.',
+  badge: 'Game Kalimat',
+  icon: ListOrdered,
+  features: [
+    'Susun Kata Kanan ke Kiri',
+    'Mendukung Multi-Variasi Sah (/)',
+    'Petunjuk Arti & Audio',
+    'Mode Kompetisi Tim',
+  ],
+  createDefaultDraft: (title = 'Susun Kalimat: Jumlah Mufidah') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Latihan merangkai kata-kata Arab yang diacak menjadi kalimat berfaedah.',
+    templateType: 'sentence-order',
+    theme: {
+      palette: 'indigo',
+      fontFamily: 'Noto Naskh Arabic',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: false,
+      soundEnabled: true,
+    },
+    settings: {
+      sentenceShuffle: true,
+      sentenceAllowMultipleOrders: true,
+      teamMode: false,
+      teamCount: 2,
+      teamNames: ['Tim Merah', 'Tim Biru'],
+    },
+    items: DEFAULT_SENTENCE_ORDER_ITEMS,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: SentenceOrderEditor,
+  PlayerComponent: SentenceOrderPlayer,
+};
+
 export const TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
   flashcard: flashcardDefinition,
   kuis: quizDefinition,
@@ -498,6 +595,8 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
   'true-false': trueFalseDefinition,
   memory: memoryDefinition,
   wheel: wheelDefinition,
+  'letter-order': letterOrderDefinition,
+  'sentence-order': sentenceOrderDefinition,
 };
 
 export function isValidTemplateType(type: string): type is TemplateType {
@@ -512,7 +611,9 @@ export function isValidTemplateType(type: string): type is TemplateType {
     type === 'word-table' ||
     type === 'true-false' ||
     type === 'memory' ||
-    type === 'wheel'
+    type === 'wheel' ||
+    type === 'letter-order' ||
+    type === 'sentence-order'
   );
 }
 
@@ -543,6 +644,8 @@ export function getAllTemplates(): TemplateDefinition[] {
     trueFalseDefinition,
     memoryDefinition,
     wheelDefinition,
+    letterOrderDefinition,
+    sentenceOrderDefinition,
   ];
 }
 
@@ -563,6 +666,8 @@ export function getAllGameTemplates(): TemplateDefinition[] {
     trueFalseDefinition,
     memoryDefinition,
     wheelDefinition,
+    letterOrderDefinition,
+    sentenceOrderDefinition,
   ];
 }
 

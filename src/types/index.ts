@@ -9,7 +9,9 @@ export type TemplateType =
   | 'word-table'
   | 'true-false'
   | 'memory'
-  | 'wheel';
+  | 'wheel'
+  | 'letter-order'
+  | 'sentence-order';
 
 export type TemplateCategory = 'materi' | 'game';
 
@@ -147,6 +149,23 @@ export interface WheelEntry {
   color?: string; // Hex color code
 }
 
+// 11. Letter Order Item (Susun Huruf)
+export interface LetterOrderItem {
+  id: string;
+  arabic: string; // Target Arabic word, e.g. "كِتَابٌ"
+  meaning: string; // Meaning in Indonesian / hint
+  mediaImageId?: string; // Optional image
+  mediaAudioId?: string; // Optional audio recording
+}
+
+// 12. Sentence Order Item (Susun Kalimat)
+export interface SentenceOrderItem {
+  id: string;
+  sentenceArabic: string; // Target sentence (multiple acceptable orders separated by /)
+  translation: string; // Indonesian translation as hint
+  mediaAudioId?: string; // Optional audio
+}
+
 export type TemplateItem =
   | FlashcardItem
   | QuizItem
@@ -157,7 +176,9 @@ export type TemplateItem =
   | WordTableRow
   | TrueFalseItem
   | MemoryCardPair
-  | WheelEntry;
+  | WheelEntry
+  | LetterOrderItem
+  | SentenceOrderItem;
 
 export interface DraftSettings {
   // Quiz settings
@@ -205,6 +226,14 @@ export interface DraftSettings {
 
   // Word table specific
   columns?: WordTableColumn[];
+
+  // Letter Order specific
+  letterIgnoreHarakat?: boolean; // Abaikan harakat saat memeriksa
+  letterShuffle?: boolean;
+
+  // Sentence Order specific
+  sentenceAllowMultipleOrders?: boolean; // Izinkan variasi urutan benar (/)
+  sentenceShuffle?: boolean;
 }
 
 export interface Draft {

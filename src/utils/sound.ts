@@ -87,6 +87,11 @@ class SoundPlayer {
     osc.stop(now + 0.35);
   }
 
+  // Alias for playIncorrect
+  playWrong() {
+    this.playIncorrect();
+  }
+
   // Soft flip/click sound
   playClick() {
     const ctx = this.getContext();

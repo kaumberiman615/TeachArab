@@ -40,13 +40,13 @@ export default function GameGalleryPage({
             Game Interaktif Bahasa Arab
           </h1>
           <p className="mt-2 text-stone-600 text-sm sm:text-base leading-relaxed">
-            Permainan interaktif untuk siswa: flashcard, kuis, mencocokkan. Didesain untuk menciptakan suasana kelas yang kompetitif, menyenangkan, dan memacu keaktifan siswa belajar bahasa Arab.
+            Permainan interaktif untuk siswa: flashcard, kuis, mencocokkan, benar/salah, memory card, roda acak, susun huruf, dan susun kalimat. Didesain untuk menciptakan suasana kelas yang kompetitif, menyenangkan, dan memacu keaktifan siswa.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-stone-600">
             <span className="px-2.5 py-1 bg-white border border-stone-200 rounded-lg">✓ Mode Tim Kompetisi (2-4 Tim)</span>
             <span className="px-2.5 py-1 bg-white border border-stone-200 rounded-lg">✓ Timer & Skor Langsung</span>
-            <span className="px-2.5 py-1 bg-white border border-stone-200 rounded-lg">✓ Drag-and-Drop & Flip Interaktif</span>
+            <span className="px-2.5 py-1 bg-white border border-stone-200 rounded-lg">✓ Drag-and-Drop & Sentuh Interaktif</span>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function GameGalleryPage({
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-lg font-bold text-stone-900">Pilih Jenis Game</h2>
-            <p className="text-xs text-stone-500">Pilih salah satu dari 3 format game di bawah ini untuk mulai bermain</p>
+            <p className="text-xs text-stone-500">Pilih salah satu dari {gameTemplates.length} format game di bawah ini untuk mulai bermain</p>
           </div>
           <span className="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-full">
             {gameTemplates.length} Template Game

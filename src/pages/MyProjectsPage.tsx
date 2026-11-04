@@ -432,6 +432,28 @@ export default function MyProjectsPage({ onNavigate }: MyProjectsPageProps) {
               >
                 Roda Acak
               </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'letter-order' ? 'all' : 'letter-order')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'letter-order'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Susun Huruf
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'sentence-order' ? 'all' : 'sentence-order')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'sentence-order'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Susun Kalimat
+              </button>
             </>
           )}
         </div>

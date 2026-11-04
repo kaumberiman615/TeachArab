@@ -87,7 +87,32 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
     );
   }
 
-  const templateDef = getTemplateOrNull(project.templateType) || getTemplateOrNull('flashcard')!;
+  const templateDef = getTemplateOrNull(project.templateType);
+
+  if (!templateDef) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center border border-stone-200 shadow-xl">
+          <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-7 h-7" />
+          </div>
+          <h2 className="text-xl font-bold text-stone-900 mb-2">Template Tidak Ditemukan</h2>
+          <p className="text-stone-600 text-xs leading-relaxed mb-6">
+            Format materi ini (<code className="bg-stone-100 px-1 py-0.5 rounded font-mono">{project.templateType}</code>) tidak terdaftar dalam Teach Arab.
+          </p>
+          <button
+            type="button"
+            onClick={() => onNavigate('/')}
+            className="w-full py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Home className="w-4 h-4" />
+            <span>Kembali ke Beranda</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const PlayerComponent = templateDef.PlayerComponent;
 
   // Map mediaRefs and content.mediaUrls into mediaFiles shape expected by players

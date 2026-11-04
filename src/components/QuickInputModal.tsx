@@ -54,6 +54,12 @@ export default function QuickInputModal({
   } else if (templateType === 'wheel') {
     exampleFormat = 'مَا اسْمُكَ؟ | Jawab: اسْمِي... (Nama saya...)\nكَيْفَ حَالُكَ؟ | Jawab: بِخَيْرٍ وَالْحَمْدُ لِلَّهِ\nعُدَّ مِنْ 1 إِلَى 5 | وَاحِدٌ، اِثْنَانِ، ثَلَاثَةٌ، أَرْبَعَةٌ، خَمْسَةٌ\nأحمد | Giliran siswa\nفاطمة | Giliran siswa';
     placeholder = 'Tempel entri roda (Teks Arab/Nama | Kunci/Penjelasan opsional):\n' + exampleFormat;
+  } else if (templateType === 'letter-order') {
+    exampleFormat = 'كِتَابٌ | Buku\nقَلَمٌ | Pena / Pulpen\nمَدْرَسَةٌ | Sekolah\nبَابٌ | Pintu\nسَيَّارَةٌ | Mobil';
+    placeholder = 'Tempel kata susun huruf (Kata Arab | Arti petunjuk):\n' + exampleFormat;
+  } else if (templateType === 'sentence-order') {
+    exampleFormat = 'ذَهَبَ أَحْمَدُ إِلَى الْمَدْرَسَةِ / إِلَى الْمَدْرَسَةِ ذَهَبَ أَحْمَدُ | Ahmad pergi ke sekolah\nيَقْرَأُ الطَّالِبُ الْكِتَابَ فِي الْمَكْتَبَةِ | Siswa itu membaca buku di perpustakaan\nهَذَا بَيْتٌ جَمِيلٌ جِدًّا | Ini rumah yang sangat indah';
+    placeholder = 'Tempel kalimat (Kalimat Arab [gunakan / untuk variasi sah] | Terjemahan):\n' + exampleFormat;
   } else {
     exampleFormat = 'كِتَابٌ | Buku\nقَلَمٌ | Pena\nحَقِيبَةٌ | Tas\nسَيَّارَةٌ | Mobil';
     placeholder = 'Tempel pasangan kata (Kata Arab | Arti):\n' + exampleFormat;

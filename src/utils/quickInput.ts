@@ -7,6 +7,8 @@ import {
   TrueFalseItem,
   MemoryCardPair,
   WheelEntry,
+  LetterOrderItem,
+  SentenceOrderItem,
 } from '../types';
 
 /**
@@ -522,6 +524,90 @@ export function parseQuickWheel(rawText: string): WheelEntry[] {
   return items;
 }
 
+/**
+ * Parse multi-line raw text for Letter Order (Susun Huruf)
+ * Format: kata Arab | arti
+ */
+export function parseQuickLetterOrder(rawText: string): LetterOrderItem[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: LetterOrderItem[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    let arabic = parts[0];
+    let meaning = parts[1] || parts[0];
+
+    // Auto-swap if first part is Latin and second part is Arabic
+    if (!isArabic(arabic) && isArabic(meaning)) {
+      const temp = arabic;
+      arabic = meaning;
+      meaning = temp;
+    }
+
+    items.push({
+      id: 'lo_' + Math.random().toString(36).substring(2, 9),
+      arabic,
+      meaning,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text for Sentence Order (Susun Kalimat)
+ * Format: kalimat Arab | terjemah
+ */
+export function parseQuickSentenceOrder(rawText: string): SentenceOrderItem[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: SentenceOrderItem[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    let sentenceArabic = parts[0];
+    let translation = parts[1] || parts[0];
+
+    // Auto-swap if first part is Latin and second part is Arabic
+    if (!isArabic(sentenceArabic) && isArabic(translation)) {
+      const temp = sentenceArabic;
+      sentenceArabic = translation;
+      translation = temp;
+    }
+
+    items.push({
+      id: 'so_' + Math.random().toString(36).substring(2, 9),
+      sentenceArabic,
+      translation,
+    });
+  }
+
+  return items;
+}
+
 export function parseQuickInput(type: string, rawText: string, extra?: any) {
   if (type === 'flashcard') {
     return parseQuickFlashcards(rawText);
@@ -552,6 +638,12 @@ export function parseQuickInput(type: string, rawText: string, extra?: any) {
   }
   if (type === 'wheel') {
     return parseQuickWheel(rawText);
+  }
+  if (type === 'letter-order') {
+    return parseQuickLetterOrder(rawText);
+  }
+  if (type === 'sentence-order') {
+    return parseQuickSentenceOrder(rawText);
   }
   return [];
 }
