@@ -383,6 +383,28 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               >
                 Susun Kalimat
               </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'fill-blank' ? 'all' : 'fill-blank')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'fill-blank'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Isian Singkat
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedFilter(selectedFilter === 'guess' ? 'all' : 'guess')}
+                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  selectedFilter === 'guess'
+                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                Tebak Media
+              </button>
             </>
           )}
         </div>

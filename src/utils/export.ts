@@ -736,6 +736,10 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
         renderLetterOrder();
       } else if (data.templateType === 'sentence-order') {
         renderSentenceOrder();
+      } else if (data.templateType === 'fill-blank') {
+        renderFillBlank();
+      } else if (data.templateType === 'guess') {
+        renderGuess();
       }
 
       // 1. FLASHCARD
@@ -2743,6 +2747,461 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
           });
 
           document.getElementById('btn-so-next')?.addEventListener('click', () => {
+            currentIndex++;
+            setupCurrent();
+            updateScreen();
+          });
+        }
+
+        setupCurrent();
+        updateScreen();
+      }
+
+      // 13. ISIAN SINGKAT / LENGKAPI KALIMAT (FILL-BLANK)
+      function renderFillBlank() {
+        const rawItems = data.items || [];
+        if (rawItems.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada soal isian singkat dalam game ini.</div>';
+          return;
+        }
+
+        let currentIndex = 0;
+        let score = 0;
+        const pts = (data.settings && data.settings.fbPointsPerQuestion) || 10;
+        const shouldShuffle = data.settings && data.settings.fbShuffle;
+        let items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+
+        let userAnswer = '';
+        let isEvaluated = false;
+        let isCorrect = false;
+        let feedbackMsg = '';
+        let showKb = false;
+
+        function normText(txt, strict) {
+          if (!txt) return '';
+          let s = String(txt);
+          if (!strict && data.settings?.fbIgnoreHarakat !== false) s = s.replace(HARAKAT_REGEX, '');
+          if (data.settings?.fbNormalizeAlif !== false) s = s.replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627');
+          if (data.settings?.fbNormalizeTaMarbutah !== false) s = s.replace(/\u0629/g, '\u0647');
+          if (data.settings?.fbNormalizeYa !== false) s = s.replace(/\u0649/g, '\u064A');
+          s = s.replace(/\u0640/g, '');
+          return s.trim().replace(/\s+/g, ' ');
+        }
+
+        function renderResults() {
+          const totalScore = items.length * pts;
+          const pct = Math.round((score / totalScore) * 100) || 0;
+          viewport.innerHTML = \`
+            <div class="card" style="text-align:center; max-width:550px; margin:2rem auto; padding:2.5rem 1.5rem;">
+              <div style="font-size:3rem; margin-bottom:1rem;">\${pct >= 70 ? '🎉' : '💪'}</div>
+              <h2 style="font-size:1.75rem; font-weight:700; color:#1c1917; margin-bottom:0.5rem;">Latihan Selesai!</h2>
+              <p style="color:#57534e; margin-bottom:1.5rem;">Mumtaz! Kamu telah melengkapi seluruh kalimat.</p>
+              <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;">
+                <div style="font-size:0.875rem; color:#4338ca; font-weight:600; text-transform:uppercase;">Skor Akhir</div>
+                <div style="font-size:3rem; font-weight:800; color:#3730a3;">\${score} <span style="font-size:1.25rem; font-weight:500; color:#6b7280;">/ \${totalScore}</span></div>
+                <div style="font-size:0.95rem; color:#4338ca; margin-top:0.25rem;">Ketepatan: \${pct}%</div>
+              </div>
+              <button class="btn btn-primary" id="btn-fb-restart" style="padding:0.75rem 2rem; font-size:1rem; background:#4f46e5;">
+                🔄 Main Lagi
+              </button>
+            </div>
+          \`;
+          document.getElementById('btn-fb-restart').addEventListener('click', () => {
+            currentIndex = 0;
+            score = 0;
+            items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+            userAnswer = '';
+            isEvaluated = false;
+            isCorrect = false;
+            feedbackMsg = '';
+            updateScreen();
+          });
+        }
+
+        function updateScreen() {
+          if (currentIndex >= items.length) {
+            renderResults();
+            return;
+          }
+
+          const cur = items[currentIndex];
+          const imgSrc = getMediaSrc(cur.mediaImageId);
+          const audioSrc = getMediaSrc(cur.mediaAudioId);
+
+          // Split question around ___
+          const qParts = (cur.question || '').split('___');
+
+          const kbKeys = [
+            'ض','ص','ث','ق','ف','غ','ع','ه','خ','ح','ج','د',
+            'ش','س','ي','ب','ل','ا','ت','ن','م','ك','ط','ذ',
+            'ء','ؤ','ر','ى','ة','و','ز','ظ'
+          ];
+
+          viewport.innerHTML = \`
+            <div style="max-width:700px; margin:0 auto; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; background:#fff; padding:0.75rem 1.25rem; border-radius:0.75rem; border:1px solid #e7e5e4;">
+                <div style="font-weight:600; color:#57534e;">Soal \${currentIndex + 1} dari \${items.length}</div>
+                <div style="background:#eef2ff; color:#3730a3; padding:0.25rem 0.6rem; border-radius:9999px; font-weight:700; font-size:0.875rem;">Skor: \${score}</div>
+              </div>
+
+              <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+                \${imgSrc ? \`<img src="\${imgSrc}" style="max-height:160px; max-width:100%; border-radius:1rem; margin-bottom:1.25rem; object-fit:contain;" />\` : ''}
+
+                <div style="margin-bottom:1rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem; padding:1.25rem;">
+                  <span style="font-size:0.75rem; color:#64748b; font-weight:700; text-transform:uppercase; display:block; margin-bottom:0.5rem;">Lengkapi Kalimat:</span>
+                  <div class="arabic-text \${fontClass}" style="font-size:2rem; font-weight:700; color:#0f172a;">
+                    \${qParts[0] || ''}
+                    <span style="display:inline-block; padding:0.2rem 0.75rem; border-radius:0.5rem; background:\${isEvaluated ? (isCorrect ? '#dcfce7' : '#fee2e2') : '#e0e7ff'}; color:\${isEvaluated ? (isCorrect ? '#166534' : '#991b1b') : '#3730a3'}; border:2px \${isEvaluated ? 'solid' : 'dashed'} \${isEvaluated ? (isCorrect ? '#4ade80' : '#f87171') : '#818cf8'};">
+                      \${userAnswer || '......'}
+                    </span>
+                    \${qParts[1] || ''}
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1.5rem;">
+                  <button class="btn btn-outline" id="btn-fb-speak" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🔊 Dengarkan</button>
+                  \${audioSrc ? \`<audio id="fb-audio" src="\${audioSrc}"></audio><button class="btn btn-outline" id="btn-fb-audio" style="padding:0.35rem 0.75rem; font-size:0.8rem;">🎵 Audio</button>\` : ''}
+                </div>
+
+                <!-- Input Answer -->
+                <div style="margin-bottom:1rem; max-width:480px; margin-left:auto; margin-right:auto;">
+                  <input type="text" dir="rtl" id="fb-input" value="\${userAnswer}" class="\${fontClass}" placeholder="Ketik jawaban Arab di sini..." style="width:100%; padding:0.75rem 1rem; font-size:1.5rem; text-align:center; border:2px solid \${isEvaluated ? (isCorrect ? '#22c55e' : '#ef4444') : '#cbd5e1'}; border-radius:0.75rem; outline:none; background:#fff; font-weight:bold;" />
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; font-size:0.75rem; color:#64748b;">
+                    <span>Ketik langsung atau buka keyboard</span>
+                    <button type="button" id="btn-fb-toggle-kb" style="background:none; border:none; color:#4f46e5; font-weight:bold; cursor:pointer;">
+                      \${showKb ? 'Sembunyikan Keyboard' : 'Tampilkan Keyboard Arab'}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Virtual Keyboard -->
+                \${showKb ? \`
+                  <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:0.75rem; padding:0.75rem; margin-bottom:1rem; max-width:550px; margin-left:auto; margin-right:auto;">
+                    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px;" dir="rtl">
+                      \${kbKeys.map(k => \`<button type="button" data-key="\${k}" class="\${fontClass}" style="width:36px; height:36px; font-size:1.25rem; font-weight:bold; background:#fff; border:1px solid #94a3b8; border-radius:6px; cursor:pointer;">\${k}</button>\`).join('')}
+                      <button type="button" id="btn-fb-bksp" style="height:36px; padding:0 0.75rem; font-size:0.8rem; font-weight:bold; background:#e2e8f0; border:1px solid #94a3b8; border-radius:6px; cursor:pointer;">⌫ Hapus</button>
+                      <button type="button" data-key=" " style="height:36px; padding:0 1.25rem; font-size:0.8rem; font-weight:bold; background:#fff; border:1px solid #94a3b8; border-radius:6px; cursor:pointer;">Spasi</button>
+                    </div>
+                  </div>
+                \` : ''}
+
+                <!-- Feedback Banner -->
+                \${feedbackMsg ? \`
+                  <div style="padding:0.75rem; border-radius:0.75rem; font-weight:bold; font-size:0.9rem; margin-bottom:1rem; background:\${isCorrect ? '#dcfce7' : '#fee2e2'}; color:\${isCorrect ? '#15803d' : '#b91c1c'}; border:1px solid \${isCorrect ? '#86efac' : '#fca5a5'};">
+                    \${feedbackMsg}
+                  </div>
+                \` : ''}
+
+                \${isEvaluated && cur.explanation ? \`
+                  <div style="text-align:left; font-size:0.8rem; color:#475569; background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.5rem; padding:0.75rem; margin-bottom:1rem;">
+                    <strong>Penjelasan:</strong> \${cur.explanation}
+                  </div>
+                \` : ''}
+
+                <!-- Action Buttons -->
+                <div style="display:flex; justify-content:center; gap:0.75rem;">
+                  \${!isCorrect ? \`
+                    <button class="btn btn-primary" id="btn-fb-check" style="background:#16a34a; padding:0.6rem 1.75rem;">
+                      ✓ Periksa Jawaban
+                    </button>
+                    <button class="btn btn-outline" id="btn-fb-hint" style="padding:0.6rem 1rem;">
+                      💡 Petunjuk
+                    </button>
+                  \` : \`
+                    <button class="btn btn-primary" id="btn-fb-next" style="background:#4f46e5; padding:0.6rem 2rem;">
+                      Soal Berikutnya ➔
+                    </button>
+                  \`}
+                </div>
+              </div>
+            </div>
+          \`;
+
+          const inp = document.getElementById('fb-input');
+          inp?.addEventListener('input', (e) => {
+            userAnswer = e.target.value;
+            isEvaluated = false;
+            feedbackMsg = '';
+          });
+          inp?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              if (isCorrect) {
+                currentIndex++;
+                userAnswer = '';
+                isEvaluated = false;
+                feedbackMsg = '';
+                updateScreen();
+              } else {
+                checkAnswer();
+              }
+            }
+          });
+
+          document.getElementById('btn-fb-toggle-kb')?.addEventListener('click', () => {
+            showKb = !showKb;
+            updateScreen();
+          });
+
+          viewport.querySelectorAll('[data-key]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              userAnswer += btn.getAttribute('data-key');
+              updateScreen();
+              const inputEl = document.getElementById('fb-input');
+              inputEl?.focus();
+            });
+          });
+
+          document.getElementById('btn-fb-bksp')?.addEventListener('click', () => {
+            userAnswer = userAnswer.slice(0, -1);
+            updateScreen();
+            const inputEl = document.getElementById('fb-input');
+            inputEl?.focus();
+          });
+
+          document.getElementById('btn-fb-speak')?.addEventListener('click', () => {
+            speak((cur.question || '').replace('___', cur.answers[0] || ''));
+          });
+
+          document.getElementById('btn-fb-audio')?.addEventListener('click', () => {
+            const a = document.getElementById('fb-audio');
+            if (a) a.play();
+          });
+
+          document.getElementById('btn-fb-hint')?.addEventListener('click', () => {
+            const primary = cur.answers[0] || '';
+            const clean = primary.replace(HARAKAT_REGEX, '').trim();
+            if (clean.length > 0) {
+              feedbackMsg = 'Petunjuk: Huruf pertama jawaban adalah "' + clean[0] + '"';
+              updateScreen();
+            }
+          });
+
+          function checkAnswer() {
+            if (!userAnswer.trim()) {
+              feedbackMsg = 'Ketik jawaban Anda terlebih dahulu!';
+              isEvaluated = true;
+              isCorrect = false;
+              sfxWrong();
+              updateScreen();
+              return;
+            }
+
+            const strict = cur.strictHarakat || false;
+            const normUser = normText(userAnswer, strict);
+            const matches = cur.answers.some(ans => normText(ans, strict) === normUser);
+
+            isEvaluated = true;
+            isCorrect = matches;
+
+            if (matches) {
+              score += pts;
+              sfxCorrect();
+              feedbackMsg = 'Jawaban Anda Benar! Mumtaz! 🎉';
+            } else {
+              sfxWrong();
+              feedbackMsg = 'Kurang tepat. Jawaban yang benar: ' + (cur.answers[0] || '');
+            }
+            updateScreen();
+          }
+
+          document.getElementById('btn-fb-check')?.addEventListener('click', checkAnswer);
+
+          document.getElementById('btn-fb-next')?.addEventListener('click', () => {
+            currentIndex++;
+            userAnswer = '';
+            isEvaluated = false;
+            feedbackMsg = '';
+            updateScreen();
+          });
+        }
+
+        updateScreen();
+      }
+
+      // 14. TEBAK GAMBAR & AUDIO (GUESS)
+      function renderGuess() {
+        const rawItems = data.items || [];
+        if (rawItems.length === 0) {
+          viewport.innerHTML = '<div class="card" style="text-align:center;">Belum ada item tebak gambar dalam game ini.</div>';
+          return;
+        }
+
+        let currentIndex = 0;
+        let score = 0;
+        const shouldShuffle = data.settings?.guessShuffle !== false;
+        let items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+
+        const isBlurMode = data.settings?.guessBlurMode || false;
+        let blurPx = isBlurMode ? 18 : 0;
+        let selectedChoice = null;
+        let isEvaluated = false;
+        let isCorrect = false;
+        let shuffledChoices = [];
+
+        function renderResults() {
+          const totalScore = items.length * 10;
+          const pct = Math.round((score / totalScore) * 100) || 0;
+          viewport.innerHTML = \`
+            <div class="card" style="text-align:center; max-width:550px; margin:2rem auto; padding:2.5rem 1.5rem;">
+              <div style="font-size:3rem; margin-bottom:1rem;">\${pct >= 70 ? '🎉' : '💪'}</div>
+              <h2 style="font-size:1.75rem; font-weight:700; color:#1c1917; margin-bottom:0.5rem;">Permainan Selesai!</h2>
+              <p style="color:#57534e; margin-bottom:1.5rem;">Hebat! Kamu telah menyelesaikan seluruh tebakan.</p>
+              <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;">
+                <div style="font-size:0.875rem; color:#047857; font-weight:600; text-transform:uppercase;">Total Skor</div>
+                <div style="font-size:3rem; font-weight:800; color:#065f46;">\${score} <span style="font-size:1.25rem; font-weight:500; color:#6b7280;">/ \${totalScore}</span></div>
+                <div style="font-size:0.95rem; color:#047857; margin-top:0.25rem;">Ketepatan: \${pct}%</div>
+              </div>
+              <button class="btn btn-primary" id="btn-guess-restart" style="padding:0.75rem 2rem; font-size:1rem; background:#059669;">
+                🔄 Main Lagi
+              </button>
+            </div>
+          \`;
+          document.getElementById('btn-guess-restart').addEventListener('click', () => {
+            currentIndex = 0;
+            score = 0;
+            items = shouldShuffle ? [...rawItems].sort(() => Math.random() - 0.5) : [...rawItems];
+            setupCurrent();
+            updateScreen();
+          });
+        }
+
+        function setupCurrent() {
+          if (currentIndex >= items.length) return;
+          const cur = items[currentIndex];
+          blurPx = isBlurMode ? 18 : 0;
+          selectedChoice = null;
+          isEvaluated = false;
+          isCorrect = false;
+
+          let pool = (cur.wrongChoices || []).filter(c => c && c.trim());
+          if (pool.length < 3) {
+            const others = items.filter(it => it.id !== cur.id && it.answer).map(it => it.answer);
+            for (const o of others.sort(() => Math.random() - 0.5)) {
+              if (!pool.includes(o) && o !== cur.answer) pool.push(o);
+              if (pool.length >= 3) break;
+            }
+          }
+          shuffledChoices = Array.from(new Set([cur.answer, ...pool])).sort(() => Math.random() - 0.5);
+        }
+
+        function updateScreen() {
+          if (currentIndex >= items.length) {
+            renderResults();
+            return;
+          }
+
+          const cur = items[currentIndex];
+          const imgSrc = getMediaSrc(cur.mediaImageId);
+          const audioSrc = getMediaSrc(cur.mediaAudioId);
+
+          viewport.innerHTML = \`
+            <div style="max-width:700px; margin:0 auto; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; background:#fff; padding:0.75rem 1.25rem; border-radius:0.75rem; border:1px solid #e7e5e4;">
+                <div style="font-weight:600; color:#57534e;">Tebakan \${currentIndex + 1} dari \${items.length}</div>
+                <div style="background:#ecfdf5; color:#065f46; padding:0.25rem 0.6rem; border-radius:9999px; font-weight:700; font-size:0.875rem;">Skor: \${score}</div>
+              </div>
+
+              <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+                <!-- Clue Area -->
+                <div style="margin-bottom:1.5rem; display:flex; flex-direction:column; align-items:center;">
+                  \${imgSrc ? \`
+                    <div style="position:relative; width:100%; max-width:320px; height:220px; border-radius:1rem; overflow:hidden; border:2px solid #e2e8f0; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
+                      <img id="guess-img" src="\${imgSrc}" style="width:100%; height:100%; object-fit:contain; filter:blur(\${blurPx}px); transition:filter 0.4s ease;" />
+                      \${isBlurMode && blurPx > 0 && !isEvaluated ? \`
+                        <button type="button" id="btn-unblur" style="position:absolute; bottom:10px; right:10px; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:bold; background:rgba(0,0,0,0.7); color:#fff; border:none; border-radius:0.5rem; cursor:pointer;">👁 Pertajam</button>
+                      \` : ''}
+                    </div>
+                  \` : audioSrc ? \`
+                    <div style="padding:2rem; background:#ecfdf5; border:2px dashed #a7f3d0; border-radius:1rem; width:100%; max-width:320px;">
+                      <div style="font-size:2.5rem; margin-bottom:0.75rem;">🎧</div>
+                      <audio id="guess-audio" src="\${audioSrc}"></audio>
+                      <button class="btn btn-primary" id="btn-play-audio" style="background:#059669; font-size:0.85rem;">▶ Putar Audio Clue</button>
+                    </div>
+                  \` : \`
+                    <div style="padding:1.5rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem; width:100%; max-width:320px;">
+                      <button class="btn btn-outline" id="btn-guess-speak" style="font-size:0.85rem;">🔊 Dengarkan Pelafalan</button>
+                    </div>
+                  \`}
+
+                  \${cur.hint ? \`
+                    <div style="margin-top:0.75rem; font-size:0.85rem; color:#b45309; background:#fef3c7; border:1px solid #fde68a; border-radius:0.5rem; padding:0.4rem 1rem;">
+                      💡 <strong>Petunjuk:</strong> \${cur.hint}
+                    </div>
+                  \` : ''}
+                </div>
+
+                <!-- Choices -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; max-width:550px; margin:0 auto 1.5rem auto;">
+                  \${shuffledChoices.map(c => {
+                    const isAns = c.replace(HARAKAT_REGEX, '').trim() === cur.answer.replace(HARAKAT_REGEX, '').trim();
+                    const isSel = selectedChoice === c;
+                    let bg = '#f8fafc';
+                    let border = '#cbd5e1';
+                    let col = '#0f172a';
+                    if (isEvaluated) {
+                      if (isAns) { bg = '#16a34a'; border = '#16a34a'; col = '#fff'; }
+                      else if (isSel && !isCorrect) { bg = '#dc2626'; border = '#dc2626'; col = '#fff'; }
+                      else { bg = '#f1f5f9'; col = '#94a3b8'; }
+                    }
+                    return \`
+                      <button type="button" class="guess-choice-btn \${fontClass}" data-choice="\${c}" \${isEvaluated ? 'disabled' : ''} style="padding:1rem; font-size:1.75rem; font-weight:bold; background:\${bg}; border:2px solid \${border}; color:\${col}; border-radius:1rem; cursor:pointer; transition:all 0.2s;" dir="rtl">
+                        \${c}
+                      </button>
+                    \`;
+                  }).join('')}
+                </div>
+
+                <!-- Feedback -->
+                \${isEvaluated ? \`
+                  <div style="padding:1rem; border-radius:0.75rem; font-weight:bold; font-size:1rem; margin-bottom:1rem; background:\${isCorrect ? '#dcfce7' : '#fee2e2'}; color:\${isCorrect ? '#15803d' : '#b91c1c'}; border:1px solid \${isCorrect ? '#86efac' : '#fca5a5'};">
+                    \${isCorrect ? 'Tebakan Tepat! Mumtaz! 🎉' : 'Kurang tepat. Jawaban yang benar: ' + cur.answer}
+                  </div>
+                  <button class="btn btn-primary" id="btn-guess-next" style="background:#059669; padding:0.6rem 2rem;">
+                    Lanjut ke Tebakan Berikutnya ➔
+                  </button>
+                \` : ''}
+              </div>
+            </div>
+          \`;
+
+          document.getElementById('btn-unblur')?.addEventListener('click', () => {
+            blurPx = Math.max(0, blurPx - 6);
+            const img = document.getElementById('guess-img');
+            if (img) img.style.filter = 'blur(' + blurPx + 'px)';
+          });
+
+          document.getElementById('btn-play-audio')?.addEventListener('click', () => {
+            const a = document.getElementById('guess-audio');
+            if (a) a.play();
+          });
+
+          document.getElementById('btn-guess-speak')?.addEventListener('click', () => {
+            speak(cur.answer);
+          });
+
+          viewport.querySelectorAll('.guess-choice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              if (isEvaluated) return;
+              const ch = btn.getAttribute('data-choice');
+              selectedChoice = ch;
+              isEvaluated = true;
+              blurPx = 0;
+
+              const cleanCh = ch.replace(HARAKAT_REGEX, '').trim();
+              const cleanAns = cur.answer.replace(HARAKAT_REGEX, '').trim();
+              isCorrect = cleanCh === cleanAns;
+
+              if (isCorrect) {
+                score += 10;
+                sfxCorrect();
+              } else {
+                sfxWrong();
+              }
+              updateScreen();
+            });
+          });
+
+          document.getElementById('btn-guess-next')?.addEventListener('click', () => {
             currentIndex++;
             setupCurrent();
             updateScreen();

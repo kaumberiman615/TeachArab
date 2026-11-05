@@ -152,3 +152,56 @@ export function splitArabicSentenceWords(sentence: string): string[] {
     .filter((w) => w.length > 0);
 }
 
+export interface ArabicNormalizationOptions {
+  ignoreHarakat?: boolean;
+  normalizeAlif?: boolean; // أ إ آ ٱ -> ا
+  normalizeTaMarbutah?: boolean; // ة -> ه
+  normalizeYa?: boolean; // ى -> ي
+  removeTatweel?: boolean; // ـ
+  trimWhitespace?: boolean;
+}
+
+/**
+ * Normalizes Arabic text for flexible answer checking in quiz and fill-blank games.
+ */
+export function normalizeArabicText(
+  text: string,
+  options: ArabicNormalizationOptions = {}
+): string {
+  if (!text) return '';
+  let result = text;
+
+  // Trim and collapse whitespace
+  if (options.trimWhitespace !== false) {
+    result = result.trim().replace(/\s+/g, ' ');
+  }
+
+  // Remove tatweel (ـ)
+  if (options.removeTatweel !== false) {
+    result = result.replace(/[\u0640]/g, '');
+  }
+
+  // Remove harakat if requested (default true)
+  if (options.ignoreHarakat !== false) {
+    result = removeHarakat(result);
+  }
+
+  // Normalize Alif: [إأآٱ] -> ا
+  if (options.normalizeAlif) {
+    result = result.replace(/[إأآٱ]/g, 'ا');
+  }
+
+  // Normalize Ta Marbutah: ة -> ه
+  if (options.normalizeTaMarbutah) {
+    result = result.replace(/ة/g, 'ه');
+  }
+
+  // Normalize Ya / Alif Maqsurah: ى -> ي
+  if (options.normalizeYa) {
+    result = result.replace(/ى/g, 'ي');
+  }
+
+  return result.toLowerCase();
+}
+
+

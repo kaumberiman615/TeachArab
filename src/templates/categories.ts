@@ -67,7 +67,9 @@ export function getCategoryByTemplateType(templateType?: string): TemplateCatego
     cleanType === 'memory' ||
     cleanType === 'wheel' ||
     cleanType === 'letter-order' ||
-    cleanType === 'sentence-order'
+    cleanType === 'sentence-order' ||
+    cleanType === 'fill-blank' ||
+    cleanType === 'guess'
   ) {
     return 'game';
   }

@@ -11,7 +11,9 @@ export type TemplateType =
   | 'memory'
   | 'wheel'
   | 'letter-order'
-  | 'sentence-order';
+  | 'sentence-order'
+  | 'fill-blank'
+  | 'guess';
 
 export type TemplateCategory = 'materi' | 'game';
 
@@ -166,6 +168,28 @@ export interface SentenceOrderItem {
   mediaAudioId?: string; // Optional audio
 }
 
+// 13. Fill-in-the-Blank Item (Isian Singkat / Lengkapi Kalimat)
+export interface FillBlankItem {
+  id: string;
+  question: string; // Question with ___ placeholder
+  answers: string[]; // List of acceptable correct answers
+  explanation?: string;
+  mediaImageId?: string;
+  mediaAudioId?: string;
+  strictHarakat?: boolean; // If true, harakat must match strictly
+}
+
+// 14. Guess Item (Tebak Gambar / Tebak Audio)
+export interface GuessItem {
+  id: string;
+  answer: string; // Correct answer text
+  wrongChoices?: string[]; // 1 to 3 wrong choices (optional)
+  mediaImageId?: string; // Image clue
+  mediaAudioId?: string; // Audio clue
+  hint?: string; // Optional clue
+  answerMode?: 'choice' | 'text'; // 'choice' (multiple choice) or 'text' (typing)
+}
+
 export type TemplateItem =
   | FlashcardItem
   | QuizItem
@@ -178,7 +202,9 @@ export type TemplateItem =
   | MemoryCardPair
   | WheelEntry
   | LetterOrderItem
-  | SentenceOrderItem;
+  | SentenceOrderItem
+  | FillBlankItem
+  | GuessItem;
 
 export interface DraftSettings {
   // Quiz settings
@@ -234,6 +260,20 @@ export interface DraftSettings {
   // Sentence Order specific
   sentenceAllowMultipleOrders?: boolean; // Izinkan variasi urutan benar (/)
   sentenceShuffle?: boolean;
+
+  // Fill-Blank specific
+  fbIgnoreHarakat?: boolean; // Abaikan harakat global
+  fbNormalizeAlif?: boolean; // Samakan أ إ آ -> ا
+  fbNormalizeTaMarbutah?: boolean; // Samakan ة -> ه
+  fbNormalizeYa?: boolean; // Samakan ى -> ي
+  fbShuffle?: boolean;
+  fbPointsPerQuestion?: number;
+
+  // Guess specific
+  guessAnswerMode?: 'choice' | 'text';
+  guessBlurMode?: boolean; // Progressive image unblur
+  guessTimerSeconds?: number;
+  guessShuffle?: boolean;
 }
 
 export interface Draft {

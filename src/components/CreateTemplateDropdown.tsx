@@ -59,7 +59,7 @@ export default function CreateTemplateDropdown({
                 </span>
               </div>
               <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-                4 Format
+                {materiTemplates.length} Format
               </span>
             </div>
 
@@ -98,7 +98,7 @@ export default function CreateTemplateDropdown({
                 </span>
               </div>
               <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full font-bold">
-                3 Permainan
+                {gameTemplates.length} Permainan
               </span>
             </div>
 

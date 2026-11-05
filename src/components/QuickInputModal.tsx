@@ -60,6 +60,12 @@ export default function QuickInputModal({
   } else if (templateType === 'sentence-order') {
     exampleFormat = 'ذَهَبَ أَحْمَدُ إِلَى الْمَدْرَسَةِ / إِلَى الْمَدْرَسَةِ ذَهَبَ أَحْمَدُ | Ahmad pergi ke sekolah\nيَقْرَأُ الطَّالِبُ الْكِتَابَ فِي الْمَكْتَبَةِ | Siswa itu membaca buku di perpustakaan\nهَذَا بَيْتٌ جَمِيلٌ جِدًّا | Ini rumah yang sangat indah';
     placeholder = 'Tempel kalimat (Kalimat Arab [gunakan / untuk variasi sah] | Terjemahan):\n' + exampleFormat;
+  } else if (templateType === 'fill-blank') {
+    exampleFormat = 'يَذْهَبُ الطَّالِبُ إِلَى ___ صَبَاحًا | الْمَدْرَسَةِ | المدرسة | Siswa pergi ke sekolah\nأَنَا أَكْتُبُ بِـ ___ | الْقَلَمِ | القلم | Menulis dengan pena\nمَكَانُ الصَّلَاةِ هُوَ ___ | الْمَسْجِدُ | المسجد | Tempat salat adalah masjid';
+    placeholder = 'Tempel kalimat rumpang (Soal dengan ___ | Jawaban Benar | Alternatif opsional | Penjelasan opsional):\n' + exampleFormat;
+  } else if (templateType === 'guess') {
+    exampleFormat = 'جَمَلٌ | حِصَانٌ | فِيلٌ | Hewan gurun berpunuk (Unta)\nمَسْجِدٌ | مَدْرَسَةٌ | بَيْتٌ | Tempat ibadah umat Islam (Masjid)\nكِتَابٌ | قَلَمٌ | مِمْسَحَةٌ | Benda untuk dibaca (Buku)';
+    placeholder = 'Tempel tebakan (Jawaban Arab | Pilihan salah 1 | Pilihan salah 2 | Petunjuk opsional):\n' + exampleFormat;
   } else {
     exampleFormat = 'كِتَابٌ | Buku\nقَلَمٌ | Pena\nحَقِيبَةٌ | Tas\nسَيَّارَةٌ | Mobil';
     placeholder = 'Tempel pasangan kata (Kata Arab | Arti):\n' + exampleFormat;

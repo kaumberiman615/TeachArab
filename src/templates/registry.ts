@@ -60,7 +60,15 @@ import { DEFAULT_LETTER_ORDER_ITEMS } from './letter-order/schema';
 import SentenceOrderEditor from './sentence-order/Editor';
 import SentenceOrderPlayer from './sentence-order/Player';
 import { DEFAULT_SENTENCE_ORDER_ITEMS } from './sentence-order/schema';
-import { SpellCheck, ListOrdered } from 'lucide-react';
+
+import FillBlankEditor from './fill-blank/Editor';
+import FillBlankPlayer from './fill-blank/Player';
+import { DEFAULT_FILL_BLANK_ITEMS } from './fill-blank/schema';
+
+import GuessEditor from './guess/Editor';
+import GuessPlayer from './guess/Player';
+import { DEFAULT_GUESS_ITEMS } from './guess/schema';
+import { SpellCheck, ListOrdered, PenLine, Eye } from 'lucide-react';
 
 export interface TemplateDefinition {
   id: TemplateType;
@@ -583,6 +591,94 @@ const sentenceOrderDefinition: TemplateDefinition = {
   PlayerComponent: SentenceOrderPlayer,
 };
 
+// 13. Fill Blank (Isian Singkat / Lengkapi Kalimat)
+const fillBlankDefinition: TemplateDefinition = {
+  id: 'fill-blank',
+  name: 'Isian Singkat & Lengkapi Kalimat',
+  category: 'game',
+  description:
+    'Game melengkapi kalimat rumpang bahasa Arab (tanda ___) dengan keyboard virtual, toleransi harakat & alif, serta penilaian instan.',
+  badge: 'Game Isian',
+  icon: PenLine,
+  features: [
+    'Penanda Rumpang ___ Otomatis',
+    'Toleransi Harakat & Bentuk Alif',
+    'Keyboard Arab Virtual & Fisik',
+    'Petunjuk Huruf & Mode Tim',
+  ],
+  createDefaultDraft: (title = 'Latihan Isian Singkat Bahasa Arab') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Latihan melengkapi kalimat bahasa Arab dengan kata yang tepat.',
+    templateType: 'fill-blank',
+    theme: {
+      palette: 'indigo',
+      fontFamily: 'Noto Naskh Arabic',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: false,
+      soundEnabled: true,
+    },
+    settings: {
+      fbIgnoreHarakat: true,
+      fbNormalizeAlif: true,
+      fbNormalizeTaMarbutah: true,
+      fbNormalizeYa: true,
+      fbShuffle: false,
+      fbPointsPerQuestion: 10,
+    },
+    items: DEFAULT_FILL_BLANK_ITEMS,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: FillBlankEditor,
+  PlayerComponent: FillBlankPlayer,
+};
+
+// 14. Guess (Tebak Gambar & Audio)
+const guessDefinition: TemplateDefinition = {
+  id: 'guess',
+  name: 'Tebak Gambar & Audio',
+  category: 'game',
+  description:
+    'Game interaktif menebak kosa kata bahasa Arab berdasarkan petunjuk foto atau suara rekaman, dilengkapi efek gambar buram misterius.',
+  badge: 'Game Tebak Media',
+  icon: Eye,
+  features: [
+    'Petunjuk Foto & Audio Clue',
+    'Efek Buram Misterius (Progressive)',
+    'Pilihan Ganda & Ketik Mandiri',
+    'Mode Kompetisi Tim & Skor',
+  ],
+  createDefaultDraft: (title = 'Game Tebak Gambar & Audio Arab') => ({
+    id: 'draft_' + Math.random().toString(36).substring(2, 10),
+    title,
+    description: 'Tebak kosa kata bahasa Arab berdasarkan petunjuk visual atau audio.',
+    templateType: 'guess',
+    theme: {
+      palette: 'emerald',
+      fontFamily: 'Noto Naskh Arabic',
+      fontSize: 'large',
+      showHarakat: true,
+      showLatin: false,
+      soundEnabled: true,
+    },
+    settings: {
+      guessAnswerMode: 'choice',
+      guessBlurMode: false,
+      guessTimerSeconds: 0,
+      guessShuffle: true,
+    },
+    items: DEFAULT_GUESS_ITEMS,
+    mediaFiles: {},
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }),
+  EditorComponent: GuessEditor,
+  PlayerComponent: GuessPlayer,
+};
+
 export const TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
   flashcard: flashcardDefinition,
   kuis: quizDefinition,
@@ -597,6 +693,8 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
   wheel: wheelDefinition,
   'letter-order': letterOrderDefinition,
   'sentence-order': sentenceOrderDefinition,
+  'fill-blank': fillBlankDefinition,
+  guess: guessDefinition,
 };
 
 export function isValidTemplateType(type: string): type is TemplateType {
@@ -613,7 +711,9 @@ export function isValidTemplateType(type: string): type is TemplateType {
     type === 'memory' ||
     type === 'wheel' ||
     type === 'letter-order' ||
-    type === 'sentence-order'
+    type === 'sentence-order' ||
+    type === 'fill-blank' ||
+    type === 'guess'
   );
 }
 
@@ -646,6 +746,8 @@ export function getAllTemplates(): TemplateDefinition[] {
     wheelDefinition,
     letterOrderDefinition,
     sentenceOrderDefinition,
+    fillBlankDefinition,
+    guessDefinition,
   ];
 }
 
@@ -668,6 +770,8 @@ export function getAllGameTemplates(): TemplateDefinition[] {
     wheelDefinition,
     letterOrderDefinition,
     sentenceOrderDefinition,
+    fillBlankDefinition,
+    guessDefinition,
   ];
 }
 

@@ -9,6 +9,8 @@ import {
   WheelEntry,
   LetterOrderItem,
   SentenceOrderItem,
+  FillBlankItem,
+  GuessItem,
 } from '../types';
 
 /**
@@ -608,6 +610,90 @@ export function parseQuickSentenceOrder(rawText: string): SentenceOrderItem[] {
   return items;
 }
 
+/**
+ * Parse multi-line raw text into fill-blank items
+ * Format: soal (dengan ___) | jawaban utama | jawaban alternatif (opsional) | penjelasan (opsional)
+ */
+export function parseQuickFillBlank(rawText: string): FillBlankItem[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: FillBlankItem[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    let question = parts[0];
+    if (!question.includes('___')) {
+      question += ' ___';
+    }
+
+    const answers: string[] = [];
+    if (parts[1]) answers.push(parts[1]);
+    if (parts[2]) answers.push(parts[2]);
+    if (answers.length === 0) answers.push('');
+
+    const explanation = parts[3] || undefined;
+
+    items.push({
+      id: 'fb_' + Math.random().toString(36).substring(2, 9),
+      question,
+      answers,
+      explanation,
+      strictHarakat: false,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Parse multi-line raw text into guess items
+ * Format: jawaban | pilihan salah 1 | pilihan salah 2 [| petunjuk/arti]
+ */
+export function parseQuickGuess(rawText: string): GuessItem[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const items: GuessItem[] = [];
+
+  for (const line of lines) {
+    let parts: string[] = [];
+    if (line.includes('|')) {
+      parts = line.split('|').map((p) => p.trim());
+    } else if (line.includes('\t')) {
+      parts = line.split('\t').map((p) => p.trim());
+    } else if (line.includes(';')) {
+      parts = line.split(';').map((p) => p.trim());
+    } else {
+      parts = [line];
+    }
+
+    if (parts.length === 0 || !parts[0]) continue;
+
+    const answer = parts[0];
+    const wrongChoices = [parts[1] || '', parts[2] || '', parts[3] || ''];
+    const hint = parts[4] || undefined;
+
+    items.push({
+      id: 'guess_' + Math.random().toString(36).substring(2, 9),
+      answer,
+      wrongChoices,
+      hint,
+      answerMode: 'choice',
+    });
+  }
+
+  return items;
+}
+
 export function parseQuickInput(type: string, rawText: string, extra?: any) {
   if (type === 'flashcard') {
     return parseQuickFlashcards(rawText);
@@ -644,6 +730,12 @@ export function parseQuickInput(type: string, rawText: string, extra?: any) {
   }
   if (type === 'sentence-order') {
     return parseQuickSentenceOrder(rawText);
+  }
+  if (type === 'fill-blank') {
+    return parseQuickFillBlank(rawText);
+  }
+  if (type === 'guess') {
+    return parseQuickGuess(rawText);
   }
   return [];
 }
