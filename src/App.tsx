@@ -120,41 +120,44 @@ export default function App() {
         {/* Main Content Area */}
         <main className="flex-1">{content}</main>
 
-        {/* Footer (Clean, unboxed, quiet) */}
+        {/* Playful Footer */}
         {!isStandaloneView && (
-          <footer className="bg-white border-t border-stone-200 py-6 px-4 sm:px-6 text-center text-xs text-stone-600">
-            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <footer className="bg-white border-t-2 border-stone-100 py-8 px-4 sm:px-6 text-center text-xs text-stone-600">
+            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-stone-800">Teach Arab</span>
-                <span aria-hidden="true">·</span>
-                <span>Perangkat Ajar & Game Bahasa Arab Interaktif</span>
+                <div className="w-6 h-6 rounded-lg bg-[#0A254D] text-[#FED034] font-black font-amiri flex items-center justify-center text-sm">
+                  ض
+                </div>
+                <span className="font-black text-[#0A254D] text-sm">Teach<span className="text-[#FF3B8D]">Arab</span></span>
+                <span className="text-stone-300" aria-hidden="true">·</span>
+                <span className="font-medium text-stone-500">Materi & Game Bahasa Arab Interaktif</span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-3 font-bold text-xs text-stone-600">
                 <button
                   type="button"
                   onClick={() => navigate('/materi-saya')}
-                  className="hover:text-stone-900 transition-colors cursor-pointer text-emerald-800 font-semibold"
+                  className="hover:text-[#00B4D8] transition-colors cursor-pointer text-[#0A254D]"
                 >
                   Materi Saya
                 </button>
-                <span aria-hidden="true">·</span>
+                <span className="text-stone-300" aria-hidden="true">·</span>
                 <button
                   type="button"
                   onClick={() => navigate('/draf')}
-                  className="hover:text-stone-900 transition-colors cursor-pointer"
+                  className="hover:text-[#0A254D] transition-colors cursor-pointer"
                 >
                   Draf Lokal
                 </button>
-                <span aria-hidden="true">·</span>
+                <span className="text-stone-300" aria-hidden="true">·</span>
                 <button
                   type="button"
                   onClick={() => navigate('/bantuan')}
-                  className="hover:text-stone-900 transition-colors cursor-pointer"
+                  className="hover:text-[#FF3B8D] transition-colors cursor-pointer"
                 >
                   Panduan
                 </button>
-                <span aria-hidden="true">·</span>
-                <span>Mode Tamu 100% Offline Didukung</span>
+                <span className="text-stone-300" aria-hidden="true">·</span>
+                <span className="text-stone-400 font-semibold">100% Offline & Mandiri</span>
               </div>
             </div>
           </footer>
