@@ -119,27 +119,27 @@ export default function VocabPicturePlayer({
   return (
     <div className="w-full flex flex-col justify-between space-y-4 select-none">
       {/* Top Controls Bar */}
-      <div className="flex items-center justify-between px-2">
-        <div className="text-xs font-semibold text-stone-600 flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 px-2">
+        <div className="text-xs font-black text-playful-navy flex items-center gap-2">
+          <span className="px-3 py-1 rounded-full bg-playful-yellow text-playful-navy border-2 border-playful-navy shadow-playful-xs">
             {items.length} Kosakata
           </span>
           {viewMode === 'single' && (
-            <span>
+            <span className="bg-white px-3 py-1 rounded-full border-2 border-playful-navy/30">
               Kartu {currentIndex + 1} dari {items.length}
             </span>
           )}
         </div>
 
         {/* View mode toggle */}
-        <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs font-bold">
+        <div className="flex items-center gap-1 bg-white p-1 rounded-full border-2 border-playful-navy shadow-playful-xs text-xs font-black">
           <button
             type="button"
             onClick={() => setViewMode('single')}
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`min-h-[38px] px-4 py-1.5 rounded-full flex items-center gap-1.5 cursor-pointer transition-all ${
               viewMode === 'single'
-                ? 'bg-white text-emerald-800 shadow-2xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-playful-pink text-white shadow-xs'
+                : 'text-playful-navy hover:bg-playful-yellow/30'
             }`}
           >
             <Square className="w-3.5 h-3.5" />
@@ -149,10 +149,10 @@ export default function VocabPicturePlayer({
           <button
             type="button"
             onClick={() => setViewMode('grid')}
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`min-h-[38px] px-4 py-1.5 rounded-full flex items-center gap-1.5 cursor-pointer transition-all ${
               viewMode === 'grid'
-                ? 'bg-white text-emerald-800 shadow-2xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-playful-cyan text-white shadow-xs'
+                : 'text-playful-navy hover:bg-playful-yellow/30'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
@@ -166,14 +166,14 @@ export default function VocabPicturePlayer({
         <div className="space-y-4">
           <div
             onClick={() => handlePlaySound(currentItem)}
-            className={`relative bg-white rounded-3xl border-2 transition-all p-6 sm:p-10 text-center shadow-lg cursor-pointer group flex flex-col items-center justify-center ${
+            className={`relative bg-white rounded-3xl border-3 transition-all p-6 sm:p-10 text-center shadow-playful-sm cursor-pointer group flex flex-col items-center justify-center print:border-none print:shadow-none ${
               activeSpeakingId === currentItem.id
-                ? 'border-emerald-500 ring-4 ring-emerald-100'
-                : 'border-stone-200 hover:border-emerald-300'
+                ? 'border-playful-pink ring-4 ring-pink-100 scale-[1.01]'
+                : 'border-playful-navy hover:border-playful-cyan'
             } ${isProjectorMode ? 'min-h-[58vh]' : 'min-h-[420px]'}`}
           >
             {/* Sound indicator badge */}
-            <div className="absolute top-4 right-4 p-2.5 rounded-2xl bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors shadow-2xs">
+            <div className="no-print absolute top-4 right-4 p-3 rounded-2xl bg-playful-yellow text-playful-navy border-2 border-playful-navy group-hover:bg-playful-pink group-hover:text-white transition-colors shadow-playful-xs">
               <Volume2
                 className={`w-5 h-5 ${activeSpeakingId === currentItem.id ? 'animate-bounce' : ''}`}
               />
@@ -185,19 +185,19 @@ export default function VocabPicturePlayer({
                 <img
                   src={currentImageUrl}
                   alt={currentItem.meaning}
-                  className="max-h-60 sm:max-h-72 w-auto max-w-full rounded-2xl object-contain border border-stone-100 shadow-xs group-hover:scale-102 transition-transform"
+                  className="max-h-60 sm:max-h-72 w-auto max-w-full rounded-2xl object-contain border-2 border-playful-navy/20 shadow-xs group-hover:scale-102 transition-transform"
                 />
               ) : (
-                <div className="w-48 h-48 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400 gap-2">
+                <div className="w-48 h-48 bg-stone-50 rounded-2xl border-2 border-dashed border-playful-navy/30 flex flex-col items-center justify-center text-stone-400 gap-2">
                   <ImageIcon className="w-10 h-10 text-stone-300" />
-                  <span className="text-xs">Ketuk untuk pelafalan</span>
+                  <span className="text-xs font-semibold">Ketuk untuk pelafalan</span>
                 </div>
               )}
             </div>
 
             {/* Arabic Word */}
             <div
-              className={`text-4xl sm:text-6xl font-bold text-emerald-900 mb-2 leading-relaxed ${fontClass}`}
+              className={`text-4xl sm:text-6xl font-black text-playful-navy mb-2 leading-relaxed ${fontClass}`}
               dir="rtl"
             >
               {filterText(currentItem.arabic)}
@@ -205,31 +205,31 @@ export default function VocabPicturePlayer({
 
             {/* Latin */}
             {theme.showLatin && currentItem.latin && (
-              <div className="text-base sm:text-lg font-medium text-stone-500 italic mb-1">
+              <div className="text-base sm:text-lg font-semibold text-stone-500 italic mb-1">
                 {currentItem.latin}
               </div>
             )}
 
             {/* Indonesian Meaning */}
-            <div className="text-xl sm:text-2xl font-extrabold text-stone-900 mt-2">
+            <div className="text-2xl sm:text-3xl font-black text-playful-navy mt-2">
               {currentItem.meaning}
             </div>
 
-            <div className="mt-4 text-[11px] text-stone-400 font-medium">
+            <div className="no-print mt-4 text-xs text-stone-400 font-bold">
               Ketuk kartu untuk mendengarkan pelafalan fasih
             </div>
           </div>
 
           {/* Single Mode Navigation Footer */}
-          <div className="flex items-center justify-between px-2">
+          <div className="no-print flex items-center justify-between px-2">
             <button
               type="button"
               onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
               disabled={currentIndex === 0}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`min-h-[44px] px-5 py-2.5 rounded-full text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer ${
                 currentIndex === 0
-                  ? 'opacity-40 cursor-not-allowed bg-stone-100 text-stone-400'
-                  : 'bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 shadow-2xs active:scale-95'
+                  ? 'opacity-40 cursor-not-allowed bg-stone-100 text-stone-400 border-2 border-stone-200'
+                  : 'bg-white hover:bg-stone-100 text-playful-navy border-2 border-playful-navy shadow-playful-xs active:translate-y-0.5'
               }`}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -240,7 +240,7 @@ export default function VocabPicturePlayer({
             <button
               type="button"
               onClick={() => handlePlaySound(currentItem)}
-              className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs transition-colors cursor-pointer active:scale-95"
+              className="min-h-[44px] px-6 py-2.5 bg-playful-yellow hover:bg-yellow-300 text-playful-navy border-2 border-playful-navy rounded-full text-xs font-black flex items-center gap-2 shadow-playful-xs transition-all cursor-pointer active:translate-y-0.5"
             >
               <Volume2 className="w-4 h-4" />
               <span>Lafalkan (Suara)</span>
@@ -250,10 +250,10 @@ export default function VocabPicturePlayer({
               type="button"
               onClick={() => setCurrentIndex((prev) => Math.min(items.length - 1, prev + 1))}
               disabled={currentIndex === items.length - 1}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`min-h-[44px] px-5 py-2.5 rounded-full text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer ${
                 currentIndex === items.length - 1
-                  ? 'opacity-40 cursor-not-allowed bg-stone-100 text-stone-400'
-                  : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs active:scale-95'
+                  ? 'opacity-40 cursor-not-allowed bg-stone-100 text-stone-400 border-2 border-stone-200'
+                  : 'bg-playful-pink hover:bg-pink-600 text-white border-2 border-playful-navy shadow-playful-xs active:translate-y-0.5'
               }`}
             >
               <span>Berikutnya</span>
@@ -265,8 +265,8 @@ export default function VocabPicturePlayer({
 
       {/* 2. GRID VIEW (All cards on 1 page) */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {items.map((item, idx) => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 print:grid-cols-3">
+          {items.map((item) => {
             const imgItem = item.mediaImageId ? mediaFiles[item.mediaImageId] : null;
             const imgUrl = imgItem ? getMediaUrl(imgItem) : null;
             const isSpeaking = activeSpeakingId === item.id;
@@ -275,14 +275,14 @@ export default function VocabPicturePlayer({
               <div
                 key={item.id}
                 onClick={() => handlePlaySound(item)}
-                className={`bg-white rounded-2xl border p-4 text-center cursor-pointer transition-all hover:shadow-md flex flex-col justify-between group ${
+                className={`bg-white rounded-3xl border-3 p-4 text-center cursor-pointer transition-all flex flex-col justify-between group print:border-stone-300 print:shadow-none ${
                   isSpeaking
-                    ? 'border-emerald-500 ring-2 ring-emerald-200 bg-emerald-50/20'
-                    : 'border-stone-200 hover:border-emerald-300'
+                    ? 'border-playful-pink ring-4 ring-pink-100 bg-pink-50/20'
+                    : 'border-playful-navy shadow-playful-xs hover:shadow-playful-sm hover:-translate-y-0.5'
                 }`}
               >
                 {/* Image */}
-                <div className="h-32 w-full flex items-center justify-center mb-3 overflow-hidden rounded-xl bg-stone-50">
+                <div className="h-32 w-full flex items-center justify-center mb-3 overflow-hidden rounded-2xl bg-stone-50 border border-stone-100">
                   {imgUrl ? (
                     <img
                       src={imgUrl}
@@ -292,7 +292,7 @@ export default function VocabPicturePlayer({
                   ) : (
                     <div className="text-stone-300 flex flex-col items-center gap-1">
                       <ImageIcon className="w-8 h-8" />
-                      <span className="text-[10px]">Tanpa Gambar</span>
+                      <span className="text-[10px] font-bold">Tanpa Gambar</span>
                     </div>
                   )}
                 </div>
@@ -300,24 +300,24 @@ export default function VocabPicturePlayer({
                 {/* Text Block */}
                 <div className="space-y-1">
                   <div
-                    className={`text-2xl font-bold text-emerald-900 leading-snug ${fontClass}`}
+                    className={`text-2xl sm:text-3xl font-black text-playful-navy leading-snug ${fontClass}`}
                     dir="rtl"
                   >
                     {filterText(item.arabic)}
                   </div>
 
                   {theme.showLatin && item.latin && (
-                    <div className="text-xs text-stone-500 italic truncate">{item.latin}</div>
+                    <div className="text-xs text-stone-500 font-medium italic truncate">{item.latin}</div>
                   )}
 
-                  <div className="text-sm font-extrabold text-stone-900 truncate">
+                  <div className="text-sm font-black text-stone-800 truncate">
                     {item.meaning}
                   </div>
                 </div>
 
                 {/* Sound button footer */}
-                <div className="mt-3 pt-2 border-t border-stone-100 flex items-center justify-center">
-                  <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1 group-hover:underline">
+                <div className="no-print mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-center">
+                  <span className="min-h-[36px] px-3 py-1 rounded-full bg-playful-yellow/30 text-xs font-black text-playful-navy flex items-center gap-1 group-hover:bg-playful-yellow transition-colors">
                     <Volume2 className="w-3.5 h-3.5" />
                     <span>Lafalkan</span>
                   </span>

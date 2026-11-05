@@ -18,6 +18,12 @@ import {
   ArrowRight,
   Info,
 } from 'lucide-react';
+import {
+  GameStartScreen,
+  GameTopBar,
+  GameFeedbackBanner,
+  GameResultScreen,
+} from '../../components/game/GameShared';
 
 interface TrueFalsePlayerProps {
   items: TrueFalseItem[];
@@ -174,46 +180,16 @@ export default function TrueFalsePlayer({
   // 1. START SCREEN
   if (gameState === 'start') {
     return (
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 text-center shadow-xs max-w-xl mx-auto my-4 space-y-6">
-        <div className="w-16 h-16 rounded-3xl bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto text-2xl font-black shadow-xs">
-          ✓✗
-        </div>
-
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
-            Game: Benar atau Salah?
-          </h2>
-          <p className="text-xs sm:text-sm text-stone-500 mt-2 leading-relaxed">
-            Tentukan apakah pernyataan bahasa Arab yang ditampilkan adalah <strong>BENAR</strong> atau <strong>SALAH</strong>!
-          </p>
-        </div>
-
-        <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 text-xs text-stone-600 space-y-2 text-left">
-          <div className="flex justify-between py-1 border-b border-stone-100">
-            <span className="text-stone-500">Jumlah Pernyataan:</span>
-            <span className="font-bold text-stone-900">{items.length} Soal</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-stone-100">
-            <span className="text-stone-500">Batas Waktu per Soal:</span>
-            <span className="font-bold text-stone-900">{timerLimit > 0 ? `${timerLimit} Detik` : 'Tanpa Batas'}</span>
-          </div>
-          {isTeam && (
-            <div className="flex justify-between py-1">
-              <span className="text-stone-500">Mode Tim:</span>
-              <span className="font-bold text-indigo-700">{teamCount} Tim Kompetisi</span>
-            </div>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={startGame}
-          className="w-full py-4 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-base rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
-        >
-          <Play className="w-5 h-5 fill-current" />
-          <span>Mulai Bermain</span>
-        </button>
-      </div>
+      <GameStartScreen
+        title="Game: Benar atau Salah?"
+        description="Tentukan apakah pernyataan bahasa Arab yang ditampilkan adalah BENAR (صَحِيح) atau SALAH (خَطَأ)!"
+        itemCount={items.length}
+        itemLabel="Pernyataan"
+        onStart={startGame}
+        isTeam={isTeam}
+        teamCount={teamCount}
+        teamNames={teamNames}
+      />
     );
   }
 
@@ -221,48 +197,17 @@ export default function TrueFalsePlayer({
   if (gameState === 'finished') {
     const maxScore = runtimeQuestions.length * pointsPerQuestion;
     return (
-      <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 text-center shadow-md max-w-xl mx-auto my-4 space-y-6 animate-in fade-in zoom-in-95">
-        <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
-          <Trophy className="w-10 h-10" />
-        </div>
-
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Permainan Selesai!</h2>
-          <p className="text-stone-500 text-xs sm:text-sm mt-1">
-            Kerja bagus! Anda telah menyelesaikan seluruh pernyataan.
-          </p>
-        </div>
-
-        {isTeam ? (
-          <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-2">
-            <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Hasil Akhir Tim</h4>
-            <div className="grid grid-cols-2 gap-3">
-              {teamNames.map((name, idx) => (
-                <div key={idx} className="p-3 bg-white border border-stone-200 rounded-xl">
-                  <div className="text-xs font-semibold text-stone-600">{name}</div>
-                  <div className="text-2xl font-black text-indigo-700 mt-1">{teamScores[idx]}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl">
-            <div className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Skor Akhir</div>
-            <div className="text-4xl sm:text-5xl font-black text-emerald-700 mt-1">
-              {score} <span className="text-lg text-emerald-600 font-semibold">/ {maxScore}</span>
-            </div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={startGame}
-          className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-2xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Mainkan Lagi</span>
-        </button>
-      </div>
+      <GameResultScreen
+        title="Permainan Selesai!"
+        message="Mumtaz! Kamu telah menyelesaikan seluruh latihan Benar atau Salah."
+        score={score}
+        maxScore={maxScore}
+        scoreLabel="Poin"
+        onRestart={startGame}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+      />
     );
   }
 
@@ -275,67 +220,35 @@ export default function TrueFalsePlayer({
   const imageUrl = imageMedia ? getMediaUrl(imageMedia) : undefined;
 
   return (
-    <div className={`space-y-4 max-w-3xl mx-auto ${isProjectorMode ? 'p-4 sm:p-8' : ''}`}>
-      {/* Top Bar: Progress, Timer, Team badge, Audio & Fullscreen */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-3 px-4 shadow-2xs flex items-center justify-between gap-3">
-        {/* Question Counter */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-extrabold text-stone-800 bg-stone-100 border border-stone-200 px-2.5 py-1 rounded-lg">
-            Soal {currentIndex + 1} / {runtimeQuestions.length}
-          </span>
+    <div className={`space-y-5 max-w-3xl mx-auto ${isProjectorMode ? 'p-4 sm:p-8' : ''}`}>
+      <GameTopBar
+        score={score}
+        scoreLabel="Poin"
+        roundText={`Soal ${currentIndex + 1} / ${runtimeQuestions.length}`}
+        timerSeconds={timerLimit > 0 && !isAnswered ? timeLeft : undefined}
+        soundMuted={soundMuted}
+        onToggleSound={() => {
+          const next = !soundMuted;
+          setSoundMuted(next);
+          soundManager.setMuted(next);
+        }}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        onReset={startGame}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+        currentTeamIdx={currentTeam}
+      />
 
-          {timerLimit > 0 && !isAnswered && (
-            <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg ${
-              timeLeft <= 5 ? 'bg-rose-100 text-rose-700 animate-pulse' : 'bg-stone-100 text-stone-700'
-            }`}>
-              <Clock className="w-3.5 h-3.5" />
-              <span>{timeLeft}s</span>
-            </div>
-          )}
-        </div>
-
-        {/* Team Indicator */}
-        {isTeam && (
-          <div className="flex items-center gap-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-lg">
-            <Users className="w-3.5 h-3.5" />
-            <span>Giliran: {teamNames[currentTeam]} ({teamScores[currentTeam]} Poin)</span>
-          </div>
-        )}
-
-        {/* Controls: Sound & Fullscreen */}
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              const next = !soundMuted;
-              setSoundMuted(next);
-              soundManager.setMuted(next);
-            }}
-            className="p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
-            title={soundMuted ? 'Nyalakan Efek Suara' : 'Matikan Suara'}
-          >
-            {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
-            title="Layar Penuh"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Question Card */}
-      <div className="bg-white border border-stone-200 rounded-3xl p-6 sm:p-10 shadow-xs text-center space-y-6">
+      {/* Main Statement Card */}
+      <div className="bg-white border-2 border-[#0A254D]/15 rounded-3xl p-6 sm:p-10 shadow-[0_8px_0_rgba(10,37,77,0.06)] text-center space-y-6">
         {imageUrl && (
           <div className="flex justify-center">
             <img
               src={imageUrl}
               alt="Media soal"
-              className="max-h-48 sm:max-h-56 rounded-2xl object-contain border border-stone-200 shadow-2xs"
+              className="max-h-48 sm:max-h-56 rounded-2xl object-contain border-2 border-[#0A254D]/10 shadow-xs"
             />
           </div>
         )}
@@ -343,26 +256,26 @@ export default function TrueFalsePlayer({
         {/* Arabic Statement */}
         <div
           dir="rtl"
-          className={`text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 leading-[1.8] ${fontClass}`}
+          className={`text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0A254D] leading-[2.1] ${fontClass}`}
         >
           {statementText}
         </div>
 
         {/* Indonesian translation */}
         {q.statementIndo && (
-          <div className="text-sm sm:text-base text-stone-500 font-medium">
+          <div className="text-base sm:text-lg text-[#0A254D]/70 font-semibold bg-slate-50 py-2 px-4 rounded-xl inline-block max-w-xl mx-auto">
             "{q.statementIndo}"
           </div>
         )}
 
         {/* Listen / TTS Button */}
-        <div className="pt-2">
+        <div className="pt-1">
           <button
             type="button"
             onClick={() => speakArabic(q.statementArabic)}
-            className="px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer inline-flex items-center gap-1.5"
+            className="px-4 py-2 bg-[#00B4D8]/10 hover:bg-[#00B4D8]/20 text-[#00B4D8] border border-[#00B4D8]/30 text-xs font-black rounded-full transition-all cursor-pointer inline-flex items-center gap-2 active:scale-95"
           >
-            <Volume2 className="w-3.5 h-3.5" />
+            <Volume2 className="w-4 h-4" />
             <span>Dengarkan Pelafalan</span>
           </button>
         </div>
@@ -373,66 +286,38 @@ export default function TrueFalsePlayer({
             <button
               type="button"
               onClick={() => handleChoose(true)}
-              className="py-5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-lg sm:text-xl shadow-md hover:shadow-lg transition-all cursor-pointer flex flex-col items-center justify-center gap-1 active:scale-95"
+              className="py-5 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl font-black text-xl shadow-[0_6px_0_#059669] hover:shadow-[0_8px_0_#059669] active:translate-y-1.5 active:shadow-[0_2px_0_#059669] transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5"
             >
-              <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
-              <span>BENAR</span>
-              <span className="text-xs font-normal opacity-85">صَحِيح</span>
+              <CheckCircle2 className="w-9 h-9 stroke-[2.5]" />
+              <span className="tracking-wide">BENAR</span>
+              <span className="text-sm font-bold opacity-90 font-amiri">صَحِيح</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleChoose(false)}
-              className="py-5 px-6 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-lg sm:text-xl shadow-md hover:shadow-lg transition-all cursor-pointer flex flex-col items-center justify-center gap-1 active:scale-95"
+              className="py-5 px-6 bg-[#FF3B8D] hover:bg-[#E02674] text-white rounded-3xl font-black text-xl shadow-[0_6px_0_#C7175E] hover:shadow-[0_8px_0_#C7175E] active:translate-y-1.5 active:shadow-[0_2px_0_#C7175E] transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5"
             >
-              <XCircle className="w-8 h-8 stroke-[2.5]" />
-              <span>SALAH</span>
-              <span className="text-xs font-normal opacity-85">خَطَأ</span>
+              <XCircle className="w-9 h-9 stroke-[2.5]" />
+              <span className="tracking-wide">SALAH</span>
+              <span className="text-sm font-bold opacity-90 font-amiri">خَطَأ</span>
             </button>
           </div>
         ) : (
           /* Feedback Banner & Explanation */
           <div className="pt-4 space-y-4 max-w-lg mx-auto animate-in fade-in zoom-in-95">
-            <div
-              className={`p-4 rounded-2xl border flex items-center justify-center gap-2 font-bold text-sm sm:text-base ${
+            <GameFeedbackBanner
+              isCorrect={isCorrect}
+              title={isCorrect ? 'Jawaban Tepat!' : 'Kurang Tepat!'}
+              message={
                 isCorrect
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                  : 'bg-rose-50 border-rose-200 text-rose-900'
-              }`}
-            >
-              {isCorrect ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                  <span>Jawaban Tepat! (+{pointsPerQuestion} Poin)</span>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-rose-600" />
-                  <span>
-                    Jawaban Kurang Tepat! Jawaban yang benar adalah{' '}
-                    <strong>{q.isTrue ? 'BENAR (صَحِيح)' : 'SALAH (خَطَأ)'}</strong>
-                  </span>
-                </>
-              )}
-            </div>
-
-            {q.explanation && (
-              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left text-xs text-stone-700 flex items-start gap-2">
-                <Info className="w-4 h-4 text-stone-500 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-stone-900">Penjelasan:</strong> {q.explanation}
-                </div>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="w-full py-3.5 bg-stone-900 hover:bg-black text-white font-extrabold text-sm rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>{currentIndex < runtimeQuestions.length - 1 ? 'Soal Berikutnya' : 'Lihat Hasil Akhir'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+                  ? `Pernyataan ini memang ${q.isTrue ? 'BENAR' : 'SALAH'}! (+${pointsPerQuestion} Poin)`
+                  : `Jawaban yang benar adalah ${q.isTrue ? 'BENAR (صَحِيح)' : 'SALAH (خَطَأ)'}.`
+              }
+              explanation={q.explanation}
+              actionLabel={currentIndex < runtimeQuestions.length - 1 ? 'Soal Berikutnya' : 'Lihat Hasil Akhir'}
+              onAction={handleNext}
+            />
           </div>
         )}
       </div>

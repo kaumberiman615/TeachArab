@@ -20,6 +20,11 @@ import {
   Lightbulb,
   Sparkles,
 } from 'lucide-react';
+import {
+  GameStartScreen,
+  GameTopBar,
+  GameResultScreen,
+} from '../../components/game/GameShared';
 
 interface LetterOrderPlayerProps {
   items: LetterOrderItem[];
@@ -302,113 +307,55 @@ export default function LetterOrderPlayer({
   // START SCREEN
   if (gameState === 'start') {
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center max-w-xl mx-auto my-auto min-h-[460px]">
-        <div className="w-20 h-20 bg-indigo-100 text-indigo-700 rounded-3xl flex items-center justify-center mb-6 shadow-inner animate-bounce">
-          <Sparkles className="w-10 h-10" />
-        </div>
-
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 mb-2">
-          Game Susun Huruf (تَرْتِيبُ الْحُرُوفِ)
-        </h1>
-        <p className="text-stone-600 text-sm leading-relaxed mb-6 max-w-md">
-          Susun kartu-kartu huruf hijaiyah yang teracak agar membentuk kata bahasa Arab yang tepat dari arah kanan ke kiri!
-        </p>
-
-        {isTeam && (
-          <div className="w-full bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6 text-left">
-            <div className="flex items-center gap-2 font-bold text-xs text-indigo-900 mb-2 uppercase tracking-wider">
-              <Users className="w-4 h-4 text-indigo-700" />
-              <span>Kompetisi Mode Tim ({teamCount} Tim)</span>
+      <GameStartScreen
+        title="Susun Huruf (تَرْتِيبُ الْحُرُوفِ)"
+        description="Susun kartu-kartu huruf hijaiyah yang teracak agar membentuk kata bahasa Arab yang tepat dari arah kanan ke kiri!"
+        itemCount={items.length}
+        itemLabel="Kata Arab"
+        onStart={startGame}
+        isTeam={isTeam}
+        teamCount={teamCount}
+        teamNames={teamNames}
+        extraInfo={
+          <div className="bg-slate-50 border border-[#0A254D]/15 rounded-2xl p-4 text-xs text-[#0A254D] flex items-center justify-around">
+            <div>
+              <span className="text-[#0A254D]/60 block text-[11px] font-bold">Cek Harakat</span>
+              <strong className="text-sm font-black text-[#0A254D]">
+                {ignoreHarakat ? 'Abaikan Harakat' : 'Wajib Teliti'}
+              </strong>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {teamNames.map((name, i) => (
-                <div key={i} className="bg-white p-2 rounded-lg border border-indigo-100 font-semibold text-stone-800">
-                  {name}
-                </div>
-              ))}
+            <div className="h-6 w-px bg-[#0A254D]/15" />
+            <div>
+              <span className="text-[#0A254D]/60 block text-[11px] font-bold">Arah Jawaban</span>
+              <strong className="text-sm font-black text-[#00B4D8]">RTL (Kanan ➔ Kiri)</strong>
+            </div>
+            <div className="h-6 w-px bg-[#0A254D]/15" />
+            <div>
+              <span className="text-[#0A254D]/60 block text-[11px] font-bold">Interaksi</span>
+              <strong className="text-sm font-black text-[#FF3B8D]">Klik / Sentuh & Drag</strong>
             </div>
           </div>
-        )}
-
-        <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 w-full mb-6 text-xs text-stone-600 flex items-center justify-around">
-          <div>
-            <span className="text-stone-400 block text-[11px]">Jumlah Kata</span>
-            <strong className="text-sm font-bold text-stone-900">{items.length} Kata</strong>
-          </div>
-          <div className="h-6 w-px bg-stone-200" />
-          <div>
-            <span className="text-stone-400 block text-[11px]">Cek Harakat</span>
-            <strong className="text-sm font-bold text-stone-900">
-              {ignoreHarakat ? 'Abaikan Harakat' : 'Wajib Teliti'}
-            </strong>
-          </div>
-          <div className="h-6 w-px bg-stone-200" />
-          <div>
-            <span className="text-stone-400 block text-[11px]">Input Kartu</span>
-            <strong className="text-sm font-bold text-stone-900">Klik / Sentuh & Drag</strong>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={startGame}
-          className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all text-base"
-        >
-          <Play className="w-5 h-5 fill-current" />
-          <span>Mulai Bermain</span>
-        </button>
-      </div>
+        }
+      />
     );
   }
 
   // FINISHED SCREEN
   if (gameState === 'finished') {
     const totalPossible = runtimeItems.length * 10;
-    const pct = Math.round((score / totalPossible) * 100) || 0;
 
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center max-w-lg mx-auto my-auto min-h-[460px]">
-        <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-3xl flex items-center justify-center mb-4 shadow-sm animate-bounce">
-          <Trophy className="w-10 h-10" />
-        </div>
-
-        <h2 className="text-2xl font-extrabold text-stone-900 mb-1">Permainan Selesai!</h2>
-        <p className="text-xs text-stone-500 mb-6">Hebat! Kamu telah menyelesaikan seluruh teka-teki kata.</p>
-
-        {isTeam ? (
-          <div className="w-full bg-white border border-stone-200 rounded-2xl p-5 mb-6 shadow-xs">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-stone-400 mb-3">Papan Skor Tim</h3>
-            <div className="space-y-2">
-              {teamNames.map((name, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-3 rounded-xl bg-stone-50 border border-stone-200"
-                >
-                  <span className="font-bold text-sm text-stone-800">{name}</span>
-                  <span className="font-extrabold text-base text-indigo-700">{teamScores[idx]} Poin</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="w-full bg-indigo-50 border border-indigo-200 rounded-2xl p-6 mb-6">
-            <div className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">Skor Akhir</div>
-            <div className="text-4xl font-black text-indigo-700 mb-1">
-              {score} <span className="text-lg font-medium text-indigo-400">/ {totalPossible}</span>
-            </div>
-            <div className="text-xs font-semibold text-indigo-800">Tingkat Ketepatan: {pct}%</div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={startGame}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md cursor-pointer transition-all flex items-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Mainkan Lagi</span>
-        </button>
-      </div>
+      <GameResultScreen
+        title="Mumtaz! Susun Huruf Selesai!"
+        message="Hebat sekali! Kamu telah berhasil menyusun seluruh teka-teki kata bahasa Arab."
+        score={score}
+        maxScore={totalPossible}
+        scoreLabel="Poin"
+        onRestart={startGame}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+      />
     );
   }
 
@@ -416,68 +363,44 @@ export default function LetterOrderPlayer({
   const targetLetters = currentItem ? splitArabicWordLetters(currentItem.arabic) : [];
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto space-y-4">
-      {/* Top Header Bar */}
-      <div className="flex items-center justify-between bg-white border border-stone-200 rounded-2xl p-3 shadow-2xs">
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-xl text-xs font-bold border border-indigo-100">
-            Kata {currentIndex + 1} / {runtimeItems.length}
-          </div>
-          {isTeam && (
-            <div className="px-3 py-1 bg-amber-50 text-amber-900 rounded-xl text-xs font-bold border border-amber-200 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-amber-700" />
-              <span>Giliran: {teamNames[currentTeam]}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="px-3 py-1 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-bold border border-emerald-100">
-            Skor: {score}
-          </div>
-          <button
-            type="button"
-            onClick={() => setSoundMuted(!soundMuted)}
-            className="p-1.5 hover:bg-stone-100 rounded-lg text-stone-600 cursor-pointer"
-            title={soundMuted ? 'Nyalakan Suara' : 'Bisukan Suara'}
-          >
-            {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-emerald-600" />}
-          </button>
-          {!isProjectorMode && (
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="p-1.5 hover:bg-stone-100 rounded-lg text-stone-600 cursor-pointer"
-              title="Layar Penuh"
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
-          )}
-        </div>
-      </div>
+    <div className="flex flex-col w-full max-w-4xl mx-auto space-y-5">
+      <GameTopBar
+        score={score}
+        scoreLabel="Poin"
+        roundText={`Kata ${currentIndex + 1} / ${runtimeItems.length}`}
+        soundMuted={soundMuted}
+        onToggleSound={() => setSoundMuted(!soundMuted)}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        onReset={startGame}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+        currentTeamIdx={currentTeam}
+      />
 
       {/* Main Game Card */}
-      <div className="bg-white border border-stone-200 rounded-3xl p-5 sm:p-8 shadow-xs flex flex-col items-center text-center space-y-6">
+      <div className="bg-white border-2 border-[#0A254D]/15 rounded-3xl p-6 sm:p-8 shadow-[0_8px_0_rgba(10,37,77,0.06)] flex flex-col items-center text-center space-y-6">
         {/* Clue / Hint Section */}
         <div className="flex flex-col items-center space-y-2">
           {imageUrl && (
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden border border-stone-200 shadow-2xs mb-2 bg-stone-50">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden border-2 border-[#0A254D]/10 shadow-xs mb-2 bg-slate-50 flex items-center justify-center">
               <img src={imageUrl} alt="Ilustrasi kata" className="w-full h-full object-contain p-2" />
             </div>
           )}
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">Arti / Petunjuk:</span>
-            <h3 className="text-lg sm:text-xl font-bold text-stone-900">{currentItem.meaning || 'Susun huruf'}</h3>
+            <span className="text-xs font-black text-[#0A254D]/60 uppercase tracking-wider">Arti / Petunjuk:</span>
+            <h3 className="text-xl sm:text-2xl font-black text-[#0A254D]">{currentItem.meaning || 'Susun huruf'}</h3>
           </div>
 
           <div className="flex items-center gap-2 pt-1">
             <button
               type="button"
               onClick={handleSpeak}
-              className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
+              className="px-4 py-2 bg-[#00B4D8]/10 hover:bg-[#00B4D8]/20 text-[#00B4D8] border border-[#00B4D8]/30 text-xs font-black rounded-full flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
             >
-              <Volume2 className="w-3.5 h-3.5 text-indigo-600" />
+              <Volume2 className="w-4 h-4" />
               <span>Dengarkan Pelafalan</span>
             </button>
             {audioUrl && (
@@ -487,13 +410,15 @@ export default function LetterOrderPlayer({
         </div>
 
         {/* Answer Assembly Drop Zone (RTL direction!) */}
-        <div className="w-full max-w-2xl bg-stone-50 border-2 border-dashed border-indigo-200 rounded-2xl p-4 sm:p-6">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-3 px-1">
-            <span className="font-semibold flex items-center gap-1 text-indigo-900">
+        <div className="w-full max-w-2xl bg-sky-50/50 border-2 border-dashed border-[#00B4D8]/40 rounded-3xl p-5 sm:p-7 shadow-xs">
+          <div className="flex items-center justify-between text-xs text-[#0A254D]/70 mb-3 px-1 font-bold">
+            <span className="flex items-center gap-1.5 text-[#0A254D]">
               <span>Kotak Jawaban</span>
-              <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">RTL: Kanan ➔ Kiri</span>
+              <span className="text-[10px] bg-[#00B4D8] text-white font-black px-2 py-0.5 rounded-full shadow-xs">
+                RTL: Kanan ➔ Kiri
+              </span>
             </span>
-            <span className="text-stone-400">
+            <span className="text-[#0A254D]/60">
               {placedLetters.filter(Boolean).length} dari {targetLetters.length} huruf terisi
             </span>
           </div>
@@ -501,7 +426,7 @@ export default function LetterOrderPlayer({
           {/* Slots container with RTL direction */}
           <div
             dir="rtl"
-            className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap min-h-[72px]"
+            className="flex items-center justify-center gap-2.5 sm:gap-4 flex-wrap min-h-[80px]"
           >
             {placedLetters.map((card, slotIdx) => (
               <div
@@ -511,30 +436,30 @@ export default function LetterOrderPlayer({
                   card
                     ? isEvaluated
                       ? isCorrect
-                        ? 'bg-emerald-600 text-white shadow-md border-2 border-emerald-500 scale-102'
-                        : 'bg-rose-50 text-rose-700 border-2 border-rose-300'
-                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md border-2 border-indigo-500 active:scale-95'
-                    : 'bg-white border-2 border-dashed border-stone-300 text-stone-300 hover:border-indigo-400'
+                        ? 'bg-emerald-500 text-white shadow-[0_4px_0_#059669] border-2 border-emerald-600 scale-102'
+                        : 'bg-rose-50 text-rose-700 border-2 border-rose-400 shadow-[0_4px_0_#FB7185]'
+                      : 'bg-[#00B4D8] hover:bg-[#0096B4] text-white shadow-[0_4px_0_#007791] border-2 border-[#00B4D8] active:translate-y-1'
+                    : 'bg-white border-2 border-dashed border-[#0A254D]/20 text-[#0A254D]/30 hover:border-[#00B4D8]'
                 }`}
                 title={card ? 'Klik/ketuk untuk mengembalikan huruf ke daftar' : `Kotak ke-${slotIdx + 1}`}
               >
                 {/* RTL order badge */}
-                <span className="absolute top-1 right-1 text-[9px] font-mono text-stone-400/80 leading-none">
+                <span className="absolute top-1 right-1.5 text-[9px] font-mono text-white/80 leading-none font-bold">
                   {slotIdx + 1}
                 </span>
 
                 {card ? (
-                  <span className={`${fontClass} text-2xl sm:text-3xl font-bold leading-none`}>
+                  <span className={`${fontClass} text-2xl sm:text-3xl font-extrabold leading-loose`}>
                     {card.letter}
                   </span>
                 ) : (
-                  <span className="text-stone-300 text-sm font-mono">_</span>
+                  <span className="text-[#0A254D]/25 text-base font-mono">_</span>
                 )}
               </div>
             ))}
           </div>
 
-          <p className="text-[11px] text-stone-400 mt-2 text-center">
+          <p className="text-[11px] text-[#0A254D]/60 mt-2.5 text-center font-medium">
             Ketuk huruf di kotak jawaban untuk mengembalikannya ke pilihan di bawah
           </p>
         </div>
@@ -542,10 +467,10 @@ export default function LetterOrderPlayer({
         {/* Feedback Message Banner */}
         {feedbackMessage && (
           <div
-            className={`w-full max-w-2xl p-3.5 rounded-2xl border text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 animate-fadeIn ${
+            className={`w-full max-w-2xl p-4 rounded-2xl border-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 animate-in fade-in zoom-in-95 ${
               isCorrect
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                : 'bg-rose-50 border-rose-200 text-rose-800'
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs'
+                : 'bg-rose-50 border-rose-300 text-rose-900 shadow-xs'
             }`}
           >
             {isCorrect ? <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" /> : <XCircle className="w-5 h-5 text-rose-600 shrink-0" />}
@@ -554,35 +479,35 @@ export default function LetterOrderPlayer({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
+        <div className="flex items-center gap-3 flex-wrap justify-center pt-1">
           {!isCorrect ? (
             <>
               <button
                 type="button"
                 onClick={handleCheckAnswer}
-                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm"
+                className="px-7 py-3 bg-[#00B4D8] hover:bg-[#0096B4] text-white font-black rounded-full shadow-[0_4px_0_#007791] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-sm"
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                 <span>Periksa Jawaban</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleHint}
-                className="px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm"
+                className="px-5 py-3 bg-[#FED034] hover:bg-[#E5B800] text-[#0A254D] border-2 border-[#0A254D]/15 font-black rounded-full shadow-[0_4px_0_#CFA300] active:translate-y-1 transition-all flex items-center gap-1.5 cursor-pointer text-sm"
                 title="Buka satu huruf yang benar"
               >
-                <Lightbulb className="w-4 h-4 text-amber-600" />
+                <Lightbulb className="w-4 h-4 text-[#0A254D]" />
                 <span>Petunjuk</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleResetToPool}
-                className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm"
+                className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-[#0A254D] font-black rounded-full border border-[#0A254D]/15 transition-all flex items-center gap-1.5 cursor-pointer text-sm active:scale-95"
                 title="Kembalikan semua huruf ke bawah"
               >
-                <Shuffle className="w-4 h-4 text-stone-500" />
+                <Shuffle className="w-4 h-4 text-[#0A254D]/70" />
                 <span>Acak Ulang</span>
               </button>
             </>
@@ -590,34 +515,34 @@ export default function LetterOrderPlayer({
             <button
               type="button"
               onClick={handleNextQuestion}
-              className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer text-sm animate-pulse"
+              className="px-9 py-3.5 bg-[#FF3B8D] hover:bg-[#E02674] text-white font-black rounded-full shadow-[0_5px_0_#C7175E] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
             >
               <span>Kata Berikutnya</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-5 h-5 stroke-[2.5]" />
             </button>
           )}
         </div>
 
         {/* Available Letters Pool */}
-        <div className="w-full max-w-2xl pt-4 border-t border-stone-100">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-3 px-1">
-            <span className="font-semibold text-stone-700">Pilihan Huruf (Klik / Ketuk untuk Menyusun):</span>
-            <span className="text-[11px] text-stone-400">Sisa {availablePool.length} huruf</span>
+        <div className="w-full max-w-2xl pt-4 border-t border-[#0A254D]/10">
+          <div className="flex items-center justify-between text-xs text-[#0A254D]/70 mb-3 px-1 font-bold">
+            <span className="text-[#0A254D]">Pilihan Huruf (Klik / Ketuk untuk Menyusun):</span>
+            <span className="text-[11px] text-[#0A254D]/50">Sisa {availablePool.length} huruf</span>
           </div>
 
           <div
             dir="rtl"
-            className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap min-h-[64px] p-2 bg-stone-50 rounded-2xl border border-stone-200"
+            className="flex items-center justify-center gap-2.5 sm:gap-3.5 flex-wrap min-h-[70px] p-3 bg-slate-50 rounded-3xl border-2 border-[#0A254D]/15"
           >
             {availablePool.length === 0 ? (
-              <span className="text-xs text-stone-400 italic py-2">Semua huruf sudah ditaruh di kotak jawaban</span>
+              <span className="text-xs text-[#0A254D]/50 italic py-2">Semua huruf sudah ditaruh di kotak jawaban</span>
             ) : (
               availablePool.map((card) => (
                 <button
                   type="button"
                   key={card.uid}
                   onClick={() => handleSelectPoolCard(card)}
-                  className={`w-14 h-16 sm:w-16 sm:h-18 bg-white hover:bg-indigo-50 hover:border-indigo-300 active:scale-95 border-2 border-stone-200 text-stone-900 rounded-2xl shadow-xs flex items-center justify-center cursor-pointer transition-all ${fontClass} text-2xl sm:text-3xl font-bold select-none`}
+                  className={`w-14 h-16 sm:w-16 sm:h-18 bg-white hover:bg-pink-50/50 hover:border-[#FF3B8D] active:translate-y-1 border-2 border-[#0A254D]/15 text-[#0A254D] rounded-2xl shadow-[0_4px_0_rgba(10,37,77,0.08)] flex items-center justify-center cursor-pointer transition-all ${fontClass} text-2xl sm:text-3xl font-extrabold select-none leading-loose`}
                   title="Klik untuk menaruh ke kotak jawaban"
                 >
                   {card.letter}

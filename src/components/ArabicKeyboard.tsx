@@ -17,33 +17,33 @@ export default function ArabicKeyboard({
   const [activeTab, setActiveTab] = useState<'huruf' | 'harakat' | 'angka'>('huruf');
 
   return (
-    <div className="fixed bottom-3 right-3 sm:right-6 z-40 max-w-xl w-[calc(100vw-1.5rem)] sm:w-[480px]">
+    <div className="fixed bottom-3 right-3 sm:right-6 z-40 max-w-xl w-[calc(100vw-1.5rem)] sm:w-[500px]">
       {/* Collapsed / Toggle Button */}
-      <div className="flex justify-end mb-1">
+      <div className="flex justify-end mb-1.5">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3 py-1.5 bg-emerald-700 text-white rounded-lg shadow-md hover:bg-emerald-800 transition-colors text-xs font-semibold cursor-pointer"
+          className="flex items-center gap-2 min-h-[44px] px-4 py-2 bg-pink-bubble hover:bg-pink-bubble/90 active:translate-y-0.5 active:shadow-none text-white rounded-full shadow-[0_3px_0_#D81B60] transition-all text-xs font-black cursor-pointer"
         >
           <Keyboard className="w-4 h-4" />
           <span>Keyboard Arab Virtual</span>
-          {isOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Keyboard Body */}
       {isOpen && (
-        <div className="bg-white border border-stone-200 rounded-xl shadow-xl p-2.5 backdrop-blur-sm select-none">
+        <div className="bg-white/98 border-2 border-stone-200 rounded-3xl shadow-2xl p-3 sm:p-4 backdrop-blur-md select-none text-navy-deep animate-in fade-in slide-in-from-bottom-2">
           {/* Tabs */}
-          <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center justify-between border-b border-stone-100 pb-2.5 mb-2.5">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => setActiveTab('huruf')}
-                className={`px-2.5 py-1 text-xs rounded-md font-medium cursor-pointer transition-colors ${
+                className={`px-3 py-1.5 text-xs rounded-full font-black cursor-pointer transition-all ${
                   activeTab === 'huruf'
-                    ? 'bg-emerald-50 text-emerald-800 font-semibold'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-cyan-ice text-cyan-bubble border border-cyan-bubble/40 shadow-xs'
+                    : 'text-stone-600 hover:text-navy-deep'
                 }`}
               >
                 Huruf
@@ -51,10 +51,10 @@ export default function ArabicKeyboard({
               <button
                 type="button"
                 onClick={() => setActiveTab('harakat')}
-                className={`px-2.5 py-1 text-xs rounded-md font-medium cursor-pointer transition-colors ${
+                className={`px-3 py-1.5 text-xs rounded-full font-black cursor-pointer transition-all ${
                   activeTab === 'harakat'
-                    ? 'bg-emerald-50 text-emerald-800 font-semibold'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-cyan-ice text-cyan-bubble border border-cyan-bubble/40 shadow-xs'
+                    : 'text-stone-600 hover:text-navy-deep'
                 }`}
               >
                 Harakat
@@ -62,22 +62,22 @@ export default function ArabicKeyboard({
               <button
                 type="button"
                 onClick={() => setActiveTab('angka')}
-                className={`px-2.5 py-1 text-xs rounded-md font-medium cursor-pointer transition-colors ${
+                className={`px-3 py-1.5 text-xs rounded-full font-black cursor-pointer transition-all ${
                   activeTab === 'angka'
-                    ? 'bg-emerald-50 text-emerald-800 font-semibold'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-cyan-ice text-cyan-bubble border border-cyan-bubble/40 shadow-xs'
+                    : 'text-stone-600 hover:text-navy-deep'
                 }`}
               >
                 Angka & Simbol
               </button>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {onBackspace && (
                 <button
                   type="button"
                   onClick={onBackspace}
-                  className="p-1.5 text-stone-600 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                  className="w-9 h-9 flex items-center justify-center text-stone-600 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors"
                   title="Hapus (Backspace)"
                 >
                   <Delete className="w-4 h-4" />
@@ -87,7 +87,7 @@ export default function ArabicKeyboard({
                 <button
                   type="button"
                   onClick={onEnter}
-                  className="p-1.5 text-stone-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-colors"
+                  className="w-9 h-9 flex items-center justify-center text-stone-600 hover:text-cyan-bubble hover:bg-cyan-ice rounded-full transition-colors"
                   title="Enter / Baris Baru"
                 >
                   <CornerDownLeft className="w-4 h-4" />
@@ -100,13 +100,13 @@ export default function ArabicKeyboard({
           {activeTab === 'huruf' && (
             <div className="flex flex-col gap-1.5" dir="rtl">
               {ARABIC_KEYBOARD_LAYOUT.letters.map((row, rowIdx) => (
-                <div key={rowIdx} className="flex justify-center gap-1">
+                <div key={rowIdx} className="flex justify-center gap-1 sm:gap-1.5">
                   {row.map((char) => (
                     <button
                       key={char}
                       type="button"
                       onClick={() => onInsertChar(char)}
-                      className="flex-1 min-w-[28px] sm:min-w-[32px] h-9 bg-stone-50 hover:bg-emerald-50 hover:text-emerald-800 active:bg-emerald-100 border border-stone-200 hover:border-emerald-300 rounded-lg text-lg font-amiri font-bold flex items-center justify-center transition-all cursor-pointer shadow-xs"
+                      className="flex-1 min-w-[28px] sm:min-w-[34px] h-10 bg-stone-50 hover:bg-yellow-bubble/20 hover:border-yellow-bubble active:scale-95 border-2 border-stone-200 rounded-xl text-xl font-amiri font-bold flex items-center justify-center transition-all cursor-pointer shadow-xs text-navy-deep"
                     >
                       {char}
                     </button>
@@ -118,16 +118,16 @@ export default function ArabicKeyboard({
 
           {/* Harakat Keys */}
           {activeTab === 'harakat' && (
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
               {ARABIC_KEYBOARD_LAYOUT.harakat.map((item) => (
                 <button
                   key={item.char}
                   type="button"
                   onClick={() => onInsertChar(item.char)}
-                  className="h-11 bg-stone-50 hover:bg-emerald-50 hover:text-emerald-800 active:bg-emerald-100 border border-stone-200 hover:border-emerald-300 rounded-lg flex flex-col items-center justify-center transition-all cursor-pointer p-1"
+                  className="h-12 bg-stone-50 hover:bg-cyan-ice hover:border-cyan-bubble active:scale-95 border-2 border-stone-200 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer p-1 text-navy-deep"
                 >
-                  <span className="text-xl font-amiri font-bold">{item.label}</span>
-                  <span className="text-[10px] text-stone-500">{item.name}</span>
+                  <span className="text-2xl font-amiri font-bold leading-none">{item.label}</span>
+                  <span className="text-[10px] text-stone-500 font-semibold mt-0.5">{item.name}</span>
                 </button>
               ))}
             </div>
@@ -136,25 +136,25 @@ export default function ArabicKeyboard({
           {/* Numbers & Punctuation */}
           {activeTab === 'angka' && (
             <div className="flex flex-col gap-2">
-              <div className="flex justify-center gap-1" dir="rtl">
+              <div className="flex justify-center gap-1 sm:gap-1.5" dir="rtl">
                 {ARABIC_KEYBOARD_LAYOUT.numbers.map((num) => (
                   <button
                     key={num}
                     type="button"
                     onClick={() => onInsertChar(num)}
-                    className="flex-1 h-9 bg-stone-50 hover:bg-emerald-50 hover:text-emerald-800 border border-stone-200 rounded-lg text-base font-amiri font-bold flex items-center justify-center cursor-pointer"
+                    className="flex-1 h-10 bg-stone-50 hover:bg-yellow-bubble/20 hover:border-yellow-bubble active:scale-95 border-2 border-stone-200 rounded-xl text-lg font-amiri font-bold flex items-center justify-center cursor-pointer text-navy-deep"
                   >
                     {num}
                   </button>
                 ))}
               </div>
-              <div className="flex flex-wrap justify-center gap-1">
+              <div className="flex flex-wrap justify-center gap-1.5">
                 {ARABIC_KEYBOARD_LAYOUT.punctuation.map((punc) => (
                   <button
                     key={punc}
                     type="button"
                     onClick={() => onInsertChar(punc)}
-                    className="w-8 h-8 bg-stone-50 hover:bg-emerald-50 hover:text-emerald-800 border border-stone-200 rounded-lg text-sm font-semibold flex items-center justify-center cursor-pointer"
+                    className="w-9 h-9 bg-stone-50 hover:bg-yellow-bubble/20 hover:border-yellow-bubble border-2 border-stone-200 rounded-xl text-sm font-bold flex items-center justify-center cursor-pointer text-navy-deep"
                   >
                     {punc}
                   </button>
@@ -164,18 +164,18 @@ export default function ArabicKeyboard({
           )}
 
           {/* Quick Space & Harakat shortcut row */}
-          <div className="mt-2 pt-2 border-t border-stone-100 flex items-center gap-1.5">
+          <div className="mt-2.5 pt-2.5 border-t border-stone-100 flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => onInsertChar(' ')}
-              className="flex-1 py-1 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg text-xs font-medium text-stone-700 cursor-pointer text-center"
+              className="flex-1 min-h-[38px] py-1.5 bg-stone-100 hover:bg-stone-200 border-2 border-stone-200 rounded-full text-xs font-bold text-navy-deep cursor-pointer text-center"
             >
               Spasi
             </button>
             <button
               type="button"
               onClick={() => onInsertChar('\u064E')}
-              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-amiri cursor-pointer"
+              className="min-h-[38px] px-3 bg-cyan-ice hover:bg-cyan-bubble hover:text-white border border-cyan-bubble/30 rounded-full text-sm font-amiri font-bold cursor-pointer transition-colors"
               title="Fathah"
             >
               ـَ
@@ -183,7 +183,7 @@ export default function ArabicKeyboard({
             <button
               type="button"
               onClick={() => onInsertChar('\u0650')}
-              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-amiri cursor-pointer"
+              className="min-h-[38px] px-3 bg-cyan-ice hover:bg-cyan-bubble hover:text-white border border-cyan-bubble/30 rounded-full text-sm font-amiri font-bold cursor-pointer transition-colors"
               title="Kasrah"
             >
               ـِ
@@ -191,7 +191,7 @@ export default function ArabicKeyboard({
             <button
               type="button"
               onClick={() => onInsertChar('\u064F')}
-              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-amiri cursor-pointer"
+              className="min-h-[38px] px-3 bg-cyan-ice hover:bg-cyan-bubble hover:text-white border border-cyan-bubble/30 rounded-full text-sm font-amiri font-bold cursor-pointer transition-colors"
               title="Dammah"
             >
               ـُ
@@ -199,7 +199,7 @@ export default function ArabicKeyboard({
             <button
               type="button"
               onClick={() => onInsertChar('\u0652')}
-              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-amiri cursor-pointer"
+              className="min-h-[38px] px-3 bg-cyan-ice hover:bg-cyan-bubble hover:text-white border border-cyan-bubble/30 rounded-full text-sm font-amiri font-bold cursor-pointer transition-colors"
               title="Sukun"
             >
               ـْ
@@ -207,7 +207,7 @@ export default function ArabicKeyboard({
             <button
               type="button"
               onClick={() => onInsertChar('\u0651')}
-              className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-amiri cursor-pointer"
+              className="min-h-[38px] px-3 bg-cyan-ice hover:bg-cyan-bubble hover:text-white border border-cyan-bubble/30 rounded-full text-sm font-amiri font-bold cursor-pointer transition-colors"
               title="Shaddah"
             >
               ـّ

@@ -16,6 +16,11 @@ import {
   Sparkles,
   CheckCircle,
 } from 'lucide-react';
+import {
+  GameStartScreen,
+  GameTopBar,
+  GameResultScreen,
+} from '../../components/game/GameShared';
 
 interface MemoryPlayerProps {
   items: MemoryCardPair[];
@@ -258,58 +263,40 @@ export default function MemoryPlayer({
   // 1. START SCREEN
   if (gameState === 'start') {
     return (
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 text-center shadow-xs max-w-xl mx-auto my-4 space-y-6">
-        <div className="w-16 h-16 rounded-3xl bg-indigo-100 text-indigo-800 flex items-center justify-center mx-auto text-2xl font-black shadow-xs">
-          🃏
-        </div>
-
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
-            Game: Memory Card Kosakata
-          </h2>
-          <p className="text-xs sm:text-sm text-stone-500 mt-2 leading-relaxed">
-            Buka dua kartu yang tertutup dan temukan pasangan kata Arab serta artinya yang cocok!
-          </p>
-        </div>
-
-        {/* Difficulty selector */}
-        <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3 text-left">
-          <label className="block text-xs font-bold text-stone-700">Pilih Jumlah Pasangan Kartu:</label>
-          <div className="grid grid-cols-4 gap-2">
-            {[4, 6, 8, 10].map((num) => (
-              <button
-                key={num}
-                type="button"
-                onClick={() => setPairCount(num)}
-                className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer text-center ${
-                  pairCount === num
-                    ? 'bg-indigo-700 text-white border-indigo-700 shadow-xs'
-                    : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
-                }`}
-              >
-                {num} Pasang
-                <span className="block text-[10px] opacity-80 font-normal">({num * 2} Kartu)</span>
-              </button>
-            ))}
-          </div>
-
-          {isTeam && (
-            <div className="pt-2 border-t border-stone-200 text-xs font-semibold text-indigo-800 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" />
-              <span>Mode Kompetisi {teamCount} Tim Aktif (Bergantian saat gagal cocok)</span>
+      <GameStartScreen
+        title="Game: Memory Card Kosakata"
+        description="Buka dua kartu yang tertutup dan temukan pasangan kata Arab serta artinya yang cocok!"
+        itemCount={items.length}
+        itemLabel="Pasang Tersedia"
+        onStart={() => startNewGame(pairCount)}
+        isTeam={isTeam}
+        teamCount={teamCount}
+        teamNames={teamNames}
+        extraInfo={
+          <div className="bg-slate-50 border border-[#0A254D]/15 rounded-2xl p-4 space-y-2 text-left">
+            <label className="block text-xs font-black text-[#0A254D] uppercase tracking-wider">
+              Pilih Jumlah Pasangan Kartu:
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {[4, 6, 8, 10].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => setPairCount(num)}
+                  className={`py-2 px-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer text-center ${
+                    pairCount === num
+                      ? 'bg-[#00B4D8] text-white border-[#00B4D8] shadow-[0_3px_0_#007791]'
+                      : 'bg-white text-[#0A254D] border-[#0A254D]/15 hover:bg-slate-100'
+                  }`}
+                >
+                  {num} Pasang
+                  <span className="block text-[10px] opacity-80 font-normal">({num * 2} Kartu)</span>
+                </button>
+              ))}
             </div>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => startNewGame(pairCount)}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-base rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
-        >
-          <Play className="w-5 h-5 fill-current" />
-          <span>Mulai Permainan</span>
-        </button>
-      </div>
+          </div>
+        }
+      />
     );
   }
 
@@ -317,56 +304,17 @@ export default function MemoryPlayer({
   if (gameState === 'finished') {
     const totalPairs = cards.length / 2;
     return (
-      <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 text-center shadow-md max-w-xl mx-auto my-4 space-y-6 animate-in fade-in zoom-in-95">
-        <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
-          <Trophy className="w-10 h-10" />
-        </div>
-
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">Selamat! Berhasil Cocok Semua!</h2>
-          <p className="text-stone-500 text-xs sm:text-sm mt-1">
-            Daya ingat dan pemahaman kosakata Anda sangat luar biasa!
-          </p>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3 p-4 bg-stone-50 border border-stone-200 rounded-2xl text-center">
-          <div>
-            <div className="text-[11px] font-bold text-stone-500 uppercase">Pasangan</div>
-            <div className="text-2xl font-black text-indigo-700 mt-1">{totalPairs}</div>
-          </div>
-          <div>
-            <div className="text-[11px] font-bold text-stone-500 uppercase">Langkah (Moves)</div>
-            <div className="text-2xl font-black text-stone-900 mt-1">{moves}</div>
-          </div>
-          <div>
-            <div className="text-[11px] font-bold text-stone-500 uppercase">Waktu</div>
-            <div className="text-2xl font-black text-emerald-700 mt-1">{secondsElapsed}s</div>
-          </div>
-        </div>
-
-        {isTeam && (
-          <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-2">
-            <h4 className="text-xs font-bold text-indigo-950 uppercase tracking-wider">Skor Tim</h4>
-            <div className="grid grid-cols-2 gap-2 text-center">
-              {teamNames.map((name, idx) => (
-                <div key={idx} className="p-2.5 bg-white rounded-xl border border-indigo-100">
-                  <span className="text-xs font-semibold text-stone-600 block">{name}</span>
-                  <span className="text-xl font-bold text-indigo-700">{teamScores[idx]} Poin</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() => startNewGame(pairCount)}
-          className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Mainkan Lagi</span>
-        </button>
-      </div>
+      <GameResultScreen
+        title="Mumtaz! Semua Kartu Terbuka!"
+        message={`Daya ingat dan pemahaman kosakata luar biasa! Selesai dalam ${moves} langkah (${secondsElapsed} detik).`}
+        score={totalPairs}
+        maxScore={totalPairs}
+        scoreLabel="Pasang Cocok"
+        onRestart={() => startNewGame(pairCount)}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+      />
     );
   }
 
@@ -385,53 +333,24 @@ export default function MemoryPlayer({
 
   return (
     <div className={`space-y-4 max-w-4xl mx-auto ${isProjectorMode ? 'p-4 sm:p-6' : ''}`}>
-      {/* Top Bar: Progress, Moves, Timer, Controls */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-3 px-4 shadow-2xs flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 text-xs font-bold">
-          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-lg">
-            Cocok: {matches} / {totalPairs}
-          </span>
-          <span className="bg-stone-100 text-stone-700 px-2.5 py-1 rounded-lg">
-            Langkah: {moves}
-          </span>
-          <span className="bg-stone-100 text-stone-700 px-2.5 py-1 rounded-lg flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" /> {secondsElapsed}s
-          </span>
-        </div>
-
-        {/* Team Turn Indicator */}
-        {isTeam && (
-          <div className="flex items-center gap-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-lg">
-            <Users className="w-3.5 h-3.5" />
-            <span>Giliran: {teamNames[currentTeam]} ({teamScores[currentTeam]} Poin)</span>
-          </div>
-        )}
-
-        {/* Sound & Fullscreen controls */}
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              const next = !soundMuted;
-              setSoundMuted(next);
-              soundManager.setMuted(next);
-            }}
-            className="p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
-            title={soundMuted ? 'Nyalakan Efek Suara' : 'Matikan Suara'}
-          >
-            {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
-            title="Layar Penuh"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
+      <GameTopBar
+        score={matches}
+        scoreLabel="Cocok"
+        roundText={`Langkah: ${moves} · ${secondsElapsed}s`}
+        soundMuted={soundMuted}
+        onToggleSound={() => {
+          const next = !soundMuted;
+          setSoundMuted(next);
+          soundManager.setMuted(next);
+        }}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        onReset={() => startNewGame(pairCount)}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+        currentTeamIdx={currentTeam}
+      />
 
       {/* Preview countdown overlay alert */}
       {gameState === 'previewing' && (
@@ -464,56 +383,56 @@ export default function MemoryPlayer({
                 <div
                   className={`w-full h-full rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center border-2 transition-all ${
                     card.isMatched
-                      ? 'bg-emerald-50/90 border-emerald-500 text-emerald-950'
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-950 shadow-[0_4px_0_#10B981]'
                       : card.cardType === 'arabic'
-                      ? 'bg-amber-50/80 border-amber-300 text-amber-950'
-                      : 'bg-indigo-50/80 border-indigo-300 text-indigo-950'
+                      ? 'bg-cyan-50/80 border-[#00B4D8] text-[#0A254D] shadow-[0_4px_0_#00B4D8]'
+                      : 'bg-pink-50/80 border-[#FF3B8D] text-[#0A254D] shadow-[0_4px_0_#FF3B8D]'
                   }`}
                 >
                   {card.cardType === 'arabic' ? (
                     <>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700/70 mb-1">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-[#00B4D8] mb-1">
                         Kata Arab
                       </span>
                       <div
                         dir="rtl"
-                        className={`text-2xl sm:text-3xl font-bold leading-relaxed ${fontClass}`}
+                        className={`text-2xl sm:text-3xl font-extrabold leading-loose ${fontClass}`}
                       >
                         {theme.showHarakat ? card.arabicText : removeHarakat(card.arabicText || '')}
                       </div>
                       {card.isMatched && (
-                        <CheckCircle className="w-4 h-4 text-emerald-600 mt-2" />
+                        <CheckCircle className="w-5 h-5 text-emerald-600 mt-2 stroke-[2.5]" />
                       )}
                     </>
                   ) : (
                     <>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700/70 mb-1">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-[#FF3B8D] mb-1">
                         Arti Kata
                       </span>
                       {imageUrl && (
                         <img
                           src={imageUrl}
                           alt="Arti visual"
-                          className="max-h-16 sm:max-h-20 rounded-lg object-contain mb-1"
+                          className="max-h-16 sm:max-h-20 rounded-xl object-contain mb-1 border border-[#0A254D]/10"
                         />
                       )}
-                      <div className="text-base sm:text-lg font-extrabold text-stone-900 leading-snug">
+                      <div className="text-base sm:text-lg font-black text-[#0A254D] leading-snug">
                         {card.meaningText}
                       </div>
                       {card.isMatched && (
-                        <CheckCircle className="w-4 h-4 text-emerald-600 mt-2" />
+                        <CheckCircle className="w-5 h-5 text-emerald-600 mt-2 stroke-[2.5]" />
                       )}
                     </>
                   )}
                 </div>
               ) : (
-                /* Card Back (Covered) */
-                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 text-white flex flex-col items-center justify-center border-2 border-indigo-600/50 shadow-inner group">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/10 flex items-center justify-center text-xl sm:text-2xl font-black text-indigo-200 group-hover:scale-110 transition-transform">
+                /* Card Back (Covered - Bubble Bash theme) */
+                <div className="w-full h-full rounded-2xl bg-[#0A254D] text-white flex flex-col items-center justify-center border-2 border-[#00B4D8] shadow-[0_5px_0_#061730] group hover:-translate-y-0.5 transition-all">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#FED034] text-[#0A254D] flex items-center justify-center text-xl sm:text-2xl font-black shadow-[0_3px_0_#E5B800] group-hover:scale-110 transition-transform font-amiri">
                     ض
                   </div>
-                  <span className="text-[9px] sm:text-[10px] text-indigo-300/80 font-semibold mt-1">
-                    Teach Arab
+                  <span className="text-[10px] text-[#00B4D8] font-black tracking-wider uppercase mt-1.5">
+                    Kartu
                   </span>
                 </div>
               )}

@@ -126,19 +126,19 @@ export default function FlashcardPlayer({
   const textToDisplay = showHarakat ? currentItem.arabic : removeHarakat(currentItem.arabic);
 
   return (
-    <div className={`flex flex-col select-none ${isProjectorMode ? 'max-w-4xl mx-auto py-4' : 'w-full'}`}>
+    <div className={`flex flex-col select-none text-navy-deep ${isProjectorMode ? 'max-w-4xl mx-auto py-4' : 'w-full'}`}>
       {/* Top Bar Controls */}
-      <div className="flex items-center justify-between gap-2 mb-3 text-xs">
-        <div className="font-semibold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-lg border border-stone-200">
-          Kartu {currentIndex + 1} dari {items.length}
+      <div className="bg-white border-2 border-stone-200 rounded-2xl p-2.5 sm:p-3 px-4 shadow-xs flex items-center justify-between gap-2.5 mb-3 text-xs">
+        <div className="font-black text-navy-deep bg-stone-100 px-3.5 py-1.5 rounded-full border border-stone-200">
+          🃏 Kartu {currentIndex + 1} dari {items.length}
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setShowHarakat(!showHarakat)}
-            className={`px-2.5 py-1.5 rounded-lg border font-medium flex items-center gap-1 cursor-pointer transition-colors ${
-              showHarakat ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-stone-600 border-stone-200'
+            className={`min-h-[40px] px-3.5 py-1.5 rounded-full border font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${
+              showHarakat ? 'bg-cyan-ice text-cyan-bubble border-cyan-bubble/40 shadow-xs' : 'bg-white text-stone-600 border-stone-200'
             }`}
             title="Tampilkan / Sembunyikan Harakat"
           >
@@ -149,8 +149,8 @@ export default function FlashcardPlayer({
           <button
             type="button"
             onClick={() => setShowLatin(!showLatin)}
-            className={`px-2.5 py-1.5 rounded-lg border font-medium flex items-center gap-1 cursor-pointer transition-colors ${
-              showLatin ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-stone-600 border-stone-200'
+            className={`min-h-[40px] px-3.5 py-1.5 rounded-full border font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${
+              showLatin ? 'bg-cyan-ice text-cyan-bubble border-cyan-bubble/40 shadow-xs' : 'bg-white text-stone-600 border-stone-200'
             }`}
             title="Tampilkan / Sembunyikan Teks Latin"
           >
@@ -161,8 +161,8 @@ export default function FlashcardPlayer({
           <button
             type="button"
             onClick={handleShuffle}
-            className="p-1.5 bg-white hover:bg-stone-100 text-stone-700 border border-stone-200 rounded-lg cursor-pointer transition-colors"
-            title="Acak Kartu"
+            className="w-10 h-10 flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-navy-deep rounded-full transition-colors cursor-pointer"
+            title="Acak Urutan Kartu"
           >
             <Shuffle className="w-4 h-4" />
           </button>
@@ -170,7 +170,7 @@ export default function FlashcardPlayer({
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="p-1.5 bg-white hover:bg-stone-100 text-stone-700 border border-stone-200 rounded-lg cursor-pointer transition-colors"
+            className="w-10 h-10 flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-navy-deep rounded-full transition-colors cursor-pointer"
             title="Layar Penuh Proyektor"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -179,9 +179,9 @@ export default function FlashcardPlayer({
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden mb-4">
+      <div className="w-full bg-stone-200 h-2.5 rounded-full overflow-hidden mb-5 shadow-inner">
         <div
-          className="bg-emerald-600 h-full transition-all duration-300"
+          className="bg-cyan-bubble h-full rounded-full transition-all duration-300"
           style={{ width: `${((currentIndex + 1) / items.length) * 100}%` }}
         />
       </div>
@@ -189,7 +189,7 @@ export default function FlashcardPlayer({
       {/* 3D Flip Card Container */}
       <div
         onClick={handleFlip}
-        className="perspective-1000 w-full h-[360px] sm:h-[420px] cursor-pointer mb-6"
+        className="perspective-1000 w-full h-[370px] sm:h-[430px] cursor-pointer mb-6"
       >
         <div
           className={`relative w-full h-full duration-500 transform-style-3d transition-transform ${
@@ -197,11 +197,13 @@ export default function FlashcardPlayer({
           }`}
         >
           {/* FRONT FACE: ARABIC */}
-          <div className="absolute inset-0 backface-hidden bg-white border-2 border-stone-200 hover:border-emerald-300 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-between text-center shadow-md transition-colors">
-            <div className="w-full flex justify-between items-center text-xs text-stone-400">
-              <span>Bahasa Arab</span>
-              <span className="text-[11px] bg-stone-100 px-2 py-0.5 rounded text-stone-600">
-                Ketuk kartu atau tekan Spasi untuk membalik
+          <div className="absolute inset-0 backface-hidden bg-white border-2 border-stone-200 hover:border-yellow-bubble rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-between text-center shadow-lg transition-colors">
+            <div className="w-full flex justify-between items-center text-xs text-stone-500 font-bold">
+              <span className="px-3 py-1 bg-yellow-bubble/20 text-navy-deep border border-yellow-bubble/50 rounded-full text-[11px] font-black">
+                BAHASA ARAB
+              </span>
+              <span className="text-[11px] bg-stone-100 px-3 py-1 rounded-full text-stone-600 font-medium hidden sm:inline">
+                Ketuk kartu atau tekan Spasi untuk membalik ↺
               </span>
             </div>
 
@@ -210,18 +212,18 @@ export default function FlashcardPlayer({
                 <img
                   src={getMediaUrl(currentImage)!}
                   alt="Ilustrasi"
-                  className="max-h-28 sm:max-h-36 max-w-full object-contain mb-4 rounded-lg shadow-2xs"
+                  className="max-h-28 sm:max-h-36 max-w-full object-contain mb-4 rounded-2xl shadow-xs border border-stone-100"
                 />
               )}
 
               <div
-                className={`arabic-text ${fontClass} ${fontSizeClass} font-bold text-emerald-800 leading-loose`}
+                className={`arabic-text ${fontClass} ${fontSizeClass} font-black text-navy-deep leading-relaxed`}
               >
                 {textToDisplay}
               </div>
 
               {showLatin && currentItem.latin && (
-                <div className="text-base sm:text-lg text-stone-600 italic font-medium mt-2">
+                <div className="text-base sm:text-lg text-stone-600 italic font-bold mt-2">
                   {currentItem.latin}
                 </div>
               )}
@@ -232,9 +234,9 @@ export default function FlashcardPlayer({
               <button
                 type="button"
                 onClick={() => speakArabic(currentItem.arabic)}
-                className="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                className="min-h-[40px] px-4 py-2 bg-cyan-ice hover:bg-cyan-bubble hover:text-white text-cyan-bubble border border-cyan-bubble/30 rounded-full text-xs font-black flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
               >
-                <Volume2 className="w-4 h-4 text-emerald-600" />
+                <Volume2 className="w-4 h-4" />
                 <span>Bacakan (TTS)</span>
               </button>
 
@@ -242,9 +244,9 @@ export default function FlashcardPlayer({
                 <button
                   type="button"
                   onClick={playRecordedAudio}
-                  className="px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="min-h-[40px] px-4 py-2 bg-stone-100 hover:bg-stone-200 text-navy-deep border border-stone-200 rounded-full text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
                 >
-                  <Volume2 className="w-4 h-4 text-emerald-600" />
+                  <Volume2 className="w-4 h-4 text-cyan-bubble" />
                   <span>Audio Guru</span>
                 </button>
               )}
@@ -252,33 +254,35 @@ export default function FlashcardPlayer({
           </div>
 
           {/* BACK FACE: MEANING & EXPLANATION */}
-          <div className="absolute inset-0 backface-hidden rotate-y-180 bg-emerald-50/80 border-2 border-emerald-300 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-between text-center shadow-md">
-            <div className="w-full flex justify-between items-center text-xs text-emerald-800 font-semibold">
-              <span>Arti & Keterangan</span>
-              <span className="text-[11px] bg-white px-2 py-0.5 rounded text-emerald-700">
+          <div className="absolute inset-0 backface-hidden rotate-y-180 bg-cyan-ice/70 border-2 border-cyan-bubble/40 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-between text-center shadow-lg">
+            <div className="w-full flex justify-between items-center text-xs font-bold">
+              <span className="px-3 py-1 bg-cyan-bubble text-white rounded-full text-[11px] font-black">
+                ARTI KATA
+              </span>
+              <span className="text-[11px] bg-white/80 px-3 py-1 rounded-full text-cyan-bubble font-semibold">
                 Ketuk untuk kembali ke teks Arab
               </span>
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center my-auto">
-              <div className="text-3xl sm:text-4xl font-extrabold text-stone-900 mb-2">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-navy-deep mb-2">
                 {currentItem.meaning}
               </div>
 
               {currentItem.notes && (
-                <div className="mt-3 p-3 bg-white/90 border border-emerald-200 rounded-xl max-w-md text-xs sm:text-sm text-stone-700 shadow-2xs">
+                <div className="mt-3 p-3.5 bg-white/95 border border-cyan-bubble/20 rounded-2xl max-w-md text-xs sm:text-sm text-stone-700 shadow-xs font-medium">
                   {currentItem.notes}
                 </div>
               )}
 
               <div
-                className={`arabic-text ${fontClass} text-2xl text-emerald-700 font-bold mt-4`}
+                className={`arabic-text ${fontClass} text-2xl text-cyan-bubble font-bold mt-4`}
               >
                 {textToDisplay}
               </div>
             </div>
 
-            <div className="text-xs text-emerald-800 font-medium">
+            <div className="text-xs text-stone-500 font-semibold">
               Gunakan tombol panah di bawah atau keyboard (← / →)
             </div>
           </div>
@@ -290,7 +294,7 @@ export default function FlashcardPlayer({
         <button
           type="button"
           onClick={handlePrev}
-          className="px-4 py-2.5 bg-white hover:bg-stone-100 text-stone-700 font-semibold border border-stone-300 rounded-xl flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer shadow-xs transition-colors"
+          className="min-h-[46px] px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-navy-deep font-bold border-2 border-stone-200 rounded-full flex items-center gap-2 text-xs sm:text-sm cursor-pointer shadow-xs transition-colors"
         >
           <ChevronLeft className="w-4 h-4" /> Sebelumnya
         </button>
@@ -298,7 +302,7 @@ export default function FlashcardPlayer({
         <button
           type="button"
           onClick={handleFlip}
-          className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer shadow-md transition-all active:scale-95"
+          className="min-h-[46px] px-7 py-2.5 bg-pink-bubble hover:bg-pink-bubble/90 active:translate-y-0.5 active:shadow-none text-white font-black rounded-full flex items-center gap-2 text-xs sm:text-sm cursor-pointer shadow-[0_3px_0_#D81B60] transition-all"
         >
           <RotateCcw className="w-4 h-4" /> Balik Kartu
         </button>
@@ -306,7 +310,7 @@ export default function FlashcardPlayer({
         <button
           type="button"
           onClick={handleNext}
-          className="px-4 py-2.5 bg-white hover:bg-stone-100 text-stone-700 font-semibold border border-stone-300 rounded-xl flex items-center gap-1.5 text-xs sm:text-sm cursor-pointer shadow-xs transition-colors"
+          className="min-h-[46px] px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-navy-deep font-bold border-2 border-stone-200 rounded-full flex items-center gap-2 text-xs sm:text-sm cursor-pointer shadow-xs transition-colors"
         >
           Selanjutnya <ChevronRight className="w-4 h-4" />
         </button>

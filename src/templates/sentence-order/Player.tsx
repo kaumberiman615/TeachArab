@@ -20,6 +20,11 @@ import {
   Sparkles,
   Trash2,
 } from 'lucide-react';
+import {
+  GameStartScreen,
+  GameTopBar,
+  GameResultScreen,
+} from '../../components/game/GameShared';
 
 interface SentenceOrderPlayerProps {
   items: SentenceOrderItem[];
@@ -265,111 +270,53 @@ export default function SentenceOrderPlayer({
   // START SCREEN
   if (gameState === 'start') {
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center max-w-xl mx-auto my-auto min-h-[460px]">
-        <div className="w-20 h-20 bg-indigo-100 text-indigo-700 rounded-3xl flex items-center justify-center mb-6 shadow-inner animate-bounce">
-          <Sparkles className="w-10 h-10" />
-        </div>
-
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 mb-2">
-          Game Susun Kalimat (تَرْتِيبُ الْجُمَلِ)
-        </h1>
-        <p className="text-stone-600 text-sm leading-relaxed mb-6 max-w-md">
-          Rangkai kata-kata bahasa Arab yang teracak menjadi kalimat sempurna berarah kanan ke kiri sesuai arti petunjuknya!
-        </p>
-
-        {isTeam && (
-          <div className="w-full bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6 text-left">
-            <div className="flex items-center gap-2 font-bold text-xs text-indigo-900 mb-2 uppercase tracking-wider">
-              <Users className="w-4 h-4 text-indigo-700" />
-              <span>Kompetisi Mode Tim ({teamCount} Tim)</span>
+      <GameStartScreen
+        title="Susun Kalimat (تَرْتِيبُ الْجُمَلِ)"
+        description="Rangkai kata-kata bahasa Arab yang teracak menjadi kalimat sempurna berarah kanan ke kiri sesuai arti petunjuknya!"
+        itemCount={items.length}
+        itemLabel="Soal Kalimat"
+        onStart={startGame}
+        isTeam={isTeam}
+        teamCount={teamCount}
+        teamNames={teamNames}
+        extraInfo={
+          <div className="bg-slate-50 border border-[#0A254D]/15 rounded-2xl p-4 text-xs text-[#0A254D] flex items-center justify-around">
+            <div>
+              <span className="text-[#0A254D]/60 block text-[11px] font-bold">Variasi Urutan</span>
+              <strong className="text-sm font-black text-[#0A254D]">Didukung (/)</strong>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {teamNames.map((name, i) => (
-                <div key={i} className="bg-white p-2 rounded-lg border border-indigo-100 font-semibold text-stone-800">
-                  {name}
-                </div>
-              ))}
+            <div className="h-6 w-px bg-[#0A254D]/15" />
+            <div>
+              <span className="text-[#0A254D]/60 block text-[11px] font-bold">Arah Jawaban</span>
+              <strong className="text-sm font-black text-[#00B4D8]">RTL (Kanan ➔ Kiri)</strong>
+            </div>
+            <div className="h-6 w-px bg-[#0A254D]/15" />
+            <div>
+              <span className="text-[#0A254D]/60 block text-[11px] font-bold">Interaksi</span>
+              <strong className="text-sm font-black text-[#FF3B8D]">Klik / Sentuh & Drag</strong>
             </div>
           </div>
-        )}
-
-        <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 w-full mb-6 text-xs text-stone-600 flex items-center justify-around">
-          <div>
-            <span className="text-stone-400 block text-[11px]">Jumlah Kalimat</span>
-            <strong className="text-sm font-bold text-stone-900">{items.length} Soal</strong>
-          </div>
-          <div className="h-6 w-px bg-stone-200" />
-          <div>
-            <span className="text-stone-400 block text-[11px]">Variasi Urutan</span>
-            <strong className="text-sm font-bold text-stone-900">Didukung (/)</strong>
-          </div>
-          <div className="h-6 w-px bg-stone-200" />
-          <div>
-            <span className="text-stone-400 block text-[11px]">Kontrol</span>
-            <strong className="text-sm font-bold text-stone-900">Klik / Sentuh & Drag</strong>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={startGame}
-          className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all text-base"
-        >
-          <Play className="w-5 h-5 fill-current" />
-          <span>Mulai Bermain</span>
-        </button>
-      </div>
+        }
+      />
     );
   }
 
   // FINISHED SCREEN
   if (gameState === 'finished') {
     const totalPossible = runtimeItems.length * 10;
-    const pct = Math.round((score / totalPossible) * 100) || 0;
 
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center max-w-lg mx-auto my-auto min-h-[460px]">
-        <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-3xl flex items-center justify-center mb-4 shadow-sm animate-bounce">
-          <Trophy className="w-10 h-10" />
-        </div>
-
-        <h2 className="text-2xl font-extrabold text-stone-900 mb-1">Permainan Selesai!</h2>
-        <p className="text-xs text-stone-500 mb-6">Mumtaz! Kamu telah menyusun seluruh kalimat dengan baik.</p>
-
-        {isTeam ? (
-          <div className="w-full bg-white border border-stone-200 rounded-2xl p-5 mb-6 shadow-xs">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-stone-400 mb-3">Papan Skor Tim</h3>
-            <div className="space-y-2">
-              {teamNames.map((name, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-3 rounded-xl bg-stone-50 border border-stone-200"
-                >
-                  <span className="font-bold text-sm text-stone-800">{name}</span>
-                  <span className="font-extrabold text-base text-indigo-700">{teamScores[idx]} Poin</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="w-full bg-indigo-50 border border-indigo-200 rounded-2xl p-6 mb-6">
-            <div className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">Skor Akhir</div>
-            <div className="text-4xl font-black text-indigo-700 mb-1">
-              {score} <span className="text-lg font-medium text-indigo-400">/ {totalPossible}</span>
-            </div>
-            <div className="text-xs font-semibold text-indigo-800">Tingkat Ketepatan: {pct}%</div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={startGame}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md cursor-pointer transition-all flex items-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Mainkan Lagi</span>
-        </button>
-      </div>
+      <GameResultScreen
+        title="Mumtaz! Susun Kalimat Selesai!"
+        message="Luar biasa! Kamu telah berhasil menyusun seluruh kalimat bahasa Arab dengan sempurna."
+        score={score}
+        maxScore={totalPossible}
+        scoreLabel="Poin"
+        onRestart={startGame}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+      />
     );
   }
 
@@ -377,62 +324,38 @@ export default function SentenceOrderPlayer({
   const canonicalWords = currentItem ? getCanonicalWords(currentItem.sentenceArabic) : [];
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto space-y-4">
-      {/* Top Header Bar */}
-      <div className="flex items-center justify-between bg-white border border-stone-200 rounded-2xl p-3 shadow-2xs">
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-xl text-xs font-bold border border-indigo-100">
-            Soal {currentIndex + 1} / {runtimeItems.length}
-          </div>
-          {isTeam && (
-            <div className="px-3 py-1 bg-amber-50 text-amber-900 rounded-xl text-xs font-bold border border-amber-200 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-amber-700" />
-              <span>Giliran: {teamNames[currentTeam]}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="px-3 py-1 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-bold border border-emerald-100">
-            Skor: {score}
-          </div>
-          <button
-            type="button"
-            onClick={() => setSoundMuted(!soundMuted)}
-            className="p-1.5 hover:bg-stone-100 rounded-lg text-stone-600 cursor-pointer"
-            title={soundMuted ? 'Nyalakan Suara' : 'Bisukan Suara'}
-          >
-            {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-emerald-600" />}
-          </button>
-          {!isProjectorMode && (
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="p-1.5 hover:bg-stone-100 rounded-lg text-stone-600 cursor-pointer"
-              title="Layar Penuh"
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
-          )}
-        </div>
-      </div>
+    <div className="flex flex-col w-full max-w-4xl mx-auto space-y-5">
+      <GameTopBar
+        score={score}
+        scoreLabel="Poin"
+        roundText={`Soal ${currentIndex + 1} / ${runtimeItems.length}`}
+        soundMuted={soundMuted}
+        onToggleSound={() => setSoundMuted(!soundMuted)}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        onReset={startGame}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+        currentTeamIdx={currentTeam}
+      />
 
       {/* Main Game Card */}
-      <div className="bg-white border border-stone-200 rounded-3xl p-5 sm:p-8 shadow-xs flex flex-col items-center text-center space-y-6">
+      <div className="bg-white border-2 border-[#0A254D]/15 rounded-3xl p-6 sm:p-8 shadow-[0_8px_0_rgba(10,37,77,0.06)] flex flex-col items-center text-center space-y-6">
         {/* Clue / Indonesian Hint */}
         <div className="flex flex-col items-center space-y-2">
-          <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">Arti Kalimat:</span>
-          <h3 className="text-lg sm:text-xl font-bold text-stone-900 max-w-xl">
-            {currentItem.translation || 'Susun kalimat bahasa Arab di bawah ini'}
+          <span className="text-xs font-black text-[#0A254D]/60 uppercase tracking-wider">Arti Kalimat:</span>
+          <h3 className="text-xl sm:text-2xl font-black text-[#0A254D] max-w-xl">
+            "{currentItem.translation || 'Susun kalimat bahasa Arab di bawah ini'}"
           </h3>
 
           <div className="flex items-center gap-2 pt-1">
             <button
               type="button"
               onClick={handleSpeak}
-              className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
+              className="px-4 py-2 bg-[#00B4D8]/10 hover:bg-[#00B4D8]/20 text-[#00B4D8] border border-[#00B4D8]/30 text-xs font-black rounded-full flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
             >
-              <Volume2 className="w-3.5 h-3.5 text-indigo-600" />
+              <Volume2 className="w-4 h-4" />
               <span>Dengarkan Kalimat</span>
             </button>
             {audioUrl && (
@@ -442,13 +365,15 @@ export default function SentenceOrderPlayer({
         </div>
 
         {/* Answer Assembly Drop Zone (RTL direction!) */}
-        <div className="w-full max-w-3xl bg-stone-50 border-2 border-dashed border-indigo-200 rounded-2xl p-4 sm:p-6">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-3 px-1">
-            <span className="font-semibold flex items-center gap-1 text-indigo-900">
+        <div className="w-full max-w-3xl bg-sky-50/50 border-2 border-dashed border-[#00B4D8]/40 rounded-3xl p-5 sm:p-7 shadow-xs">
+          <div className="flex items-center justify-between text-xs text-[#0A254D]/70 mb-3 px-1 font-bold">
+            <span className="flex items-center gap-1.5 text-[#0A254D]">
               <span>Susunan Kalimat Jawaban</span>
-              <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">RTL: Kanan ➔ Kiri</span>
+              <span className="text-[10px] bg-[#00B4D8] text-white font-black px-2 py-0.5 rounded-full shadow-xs">
+                RTL: Kanan ➔ Kiri
+              </span>
             </span>
-            <span className="text-stone-400">
+            <span className="text-[#0A254D]/60">
               {placedWords.length} dari {canonicalWords.length} kata tersusun
             </span>
           </div>
@@ -456,10 +381,10 @@ export default function SentenceOrderPlayer({
           {/* Placed Words Container */}
           <div
             dir="rtl"
-            className="flex items-center justify-start gap-2 sm:gap-3 flex-wrap min-h-[72px] p-2 bg-white rounded-xl border border-stone-200"
+            className="flex items-center justify-start gap-2.5 sm:gap-3 flex-wrap min-h-[76px] p-3 bg-white rounded-2xl border-2 border-[#0A254D]/10"
           >
             {placedWords.length === 0 ? (
-              <div className="w-full py-4 text-xs text-stone-400 italic text-center">
+              <div className="w-full py-4 text-xs text-[#0A254D]/40 italic text-center font-medium">
                 Pilih atau ketuk kata-kata di bawah untuk mulai menyusun kalimat
               </div>
             ) : (
@@ -468,25 +393,25 @@ export default function SentenceOrderPlayer({
                   type="button"
                   key={card.uid}
                   onClick={() => handleRemovePlacedCard(idx)}
-                  className={`px-4 py-2.5 rounded-xl shadow-xs border-2 cursor-pointer transition-all active:scale-95 flex items-center gap-1.5 select-none ${
+                  className={`px-4.5 py-3 rounded-2xl shadow-[0_4px_0_rgba(10,37,77,0.12)] border-2 cursor-pointer transition-all active:translate-y-1 flex items-center gap-2 select-none ${
                     isEvaluated
                       ? isCorrect
-                        ? 'bg-emerald-600 text-white border-emerald-500'
-                        : 'bg-rose-50 text-rose-800 border-rose-300'
-                      : 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500'
+                        ? 'bg-emerald-500 text-white border-emerald-600 shadow-[0_4px_0_#059669]'
+                        : 'bg-rose-50 text-rose-800 border-rose-300 shadow-[0_4px_0_#FB7185]'
+                      : 'bg-[#00B4D8] hover:bg-[#0096B4] text-white border-[#00B4D8] shadow-[0_4px_0_#007791]'
                   }`}
                   title="Klik untuk mengembalikan kata ke daftar"
                 >
-                  <span className={`${fontClass} text-xl sm:text-2xl font-bold leading-none`}>
+                  <span className={`${fontClass} text-2xl sm:text-3xl font-extrabold leading-loose`}>
                     {card.word}
                   </span>
-                  <span className="text-[10px] opacity-75 font-mono">#{idx + 1}</span>
+                  <span className="text-[10px] opacity-80 font-mono font-bold">#{idx + 1}</span>
                 </button>
               ))
             )}
           </div>
 
-          <p className="text-[11px] text-stone-400 mt-2 text-center">
+          <p className="text-[11px] text-[#0A254D]/60 mt-2.5 text-center font-medium">
             Ketuk kata di atas untuk mengembalikannya ke pilihan di bawah
           </p>
         </div>
@@ -494,10 +419,10 @@ export default function SentenceOrderPlayer({
         {/* Feedback Message Banner */}
         {feedbackMessage && (
           <div
-            className={`w-full max-w-2xl p-3.5 rounded-2xl border text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 animate-fadeIn ${
+            className={`w-full max-w-2xl p-4 rounded-2xl border-2 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 animate-in fade-in zoom-in-95 ${
               isCorrect
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                : 'bg-rose-50 border-rose-200 text-rose-800'
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs'
+                : 'bg-rose-50 border-rose-300 text-rose-900 shadow-xs'
             }`}
           >
             {isCorrect ? <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" /> : <XCircle className="w-5 h-5 text-rose-600 shrink-0" />}
@@ -506,35 +431,35 @@ export default function SentenceOrderPlayer({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
+        <div className="flex items-center gap-3 flex-wrap justify-center pt-1">
           {!isCorrect ? (
             <>
               <button
                 type="button"
                 onClick={handleCheckAnswer}
-                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm"
+                className="px-7 py-3 bg-[#00B4D8] hover:bg-[#0096B4] text-white font-black rounded-full shadow-[0_4px_0_#007791] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-sm"
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                 <span>Periksa Kalimat</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleHint}
-                className="px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm"
+                className="px-5 py-3 bg-[#FED034] hover:bg-[#E5B800] text-[#0A254D] border-2 border-[#0A254D]/15 font-black rounded-full shadow-[0_4px_0_#CFA300] active:translate-y-1 transition-all flex items-center gap-1.5 cursor-pointer text-sm"
                 title="Buka satu kata berikutnya"
               >
-                <Lightbulb className="w-4 h-4 text-amber-600" />
+                <Lightbulb className="w-4 h-4 text-[#0A254D]" />
                 <span>Petunjuk</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleResetAll}
-                className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm"
+                className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-[#0A254D] font-black rounded-full border border-[#0A254D]/15 transition-all flex items-center gap-1.5 cursor-pointer text-sm active:scale-95"
                 title="Kembalikan semua kata ke bawah"
               >
-                <RotateCcw className="w-4 h-4 text-stone-500" />
+                <RotateCcw className="w-4 h-4 text-[#0A254D]/70" />
                 <span>Hapus Semua</span>
               </button>
             </>
@@ -542,41 +467,41 @@ export default function SentenceOrderPlayer({
             <button
               type="button"
               onClick={handleNextQuestion}
-              className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer text-sm animate-pulse"
+              className="px-9 py-3.5 bg-[#FF3B8D] hover:bg-[#E02674] text-white font-black rounded-full shadow-[0_5px_0_#C7175E] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
             >
               <span>Kalimat Berikutnya</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-5 h-5 stroke-[2.5]" />
             </button>
           )}
         </div>
 
         {/* Available Words Pool */}
-        <div className="w-full max-w-3xl pt-4 border-t border-stone-100">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-3 px-1">
-            <span className="font-semibold text-stone-700">Pilihan Kata (Klik / Ketuk untuk Menyusun):</span>
+        <div className="w-full max-w-3xl pt-4 border-t border-[#0A254D]/10">
+          <div className="flex items-center justify-between text-xs text-[#0A254D]/70 mb-3 px-1 font-bold">
+            <span className="text-[#0A254D]">Pilihan Kata (Klik / Ketuk untuk Menyusun):</span>
             <button
               type="button"
               onClick={handleReshufflePool}
-              className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs text-[#00B4D8] font-bold hover:underline flex items-center gap-1 cursor-pointer"
             >
-              <Shuffle className="w-3 h-3" />
+              <Shuffle className="w-3.5 h-3.5" />
               <span>Acak Pilihan</span>
             </button>
           </div>
 
           <div
             dir="rtl"
-            className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap min-h-[64px] p-3 bg-stone-50 rounded-2xl border border-stone-200"
+            className="flex items-center justify-center gap-2.5 sm:gap-3 flex-wrap min-h-[70px] p-3.5 bg-slate-50 rounded-3xl border-2 border-[#0A254D]/15"
           >
             {availablePool.length === 0 ? (
-              <span className="text-xs text-stone-400 italic py-2">Semua kata telah dimasukkan ke kotak jawaban</span>
+              <span className="text-xs text-[#0A254D]/50 italic py-2">Semua kata telah dimasukkan ke kotak jawaban</span>
             ) : (
               availablePool.map((card) => (
                 <button
                   type="button"
                   key={card.uid}
                   onClick={() => handleSelectPoolCard(card)}
-                  className={`px-4 py-2.5 bg-white hover:bg-indigo-50 hover:border-indigo-300 active:scale-95 border-2 border-stone-200 text-stone-900 rounded-xl shadow-xs flex items-center justify-center cursor-pointer transition-all ${fontClass} text-xl sm:text-2xl font-bold select-none`}
+                  className={`px-4.5 py-3 bg-white hover:bg-pink-50/50 hover:border-[#FF3B8D] active:translate-y-1 border-2 border-[#0A254D]/15 text-[#0A254D] rounded-2xl shadow-[0_4px_0_rgba(10,37,77,0.08)] flex items-center justify-center cursor-pointer transition-all ${fontClass} text-2xl sm:text-3xl font-extrabold select-none leading-loose`}
                   title="Klik untuk menaruh ke kotak jawaban"
                 >
                   {card.word}

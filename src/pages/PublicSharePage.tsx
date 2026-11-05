@@ -55,9 +55,9 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-stone-700 text-sm font-bold">Menyiapkan materi untuk belajar...</p>
-          <p className="text-stone-400 text-xs">Memuat konten langsung dari Teach Arab</p>
+          <div className="w-12 h-12 border-4 border-cyan-bubble border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-navy-deep text-base font-black">Menyiapkan materi untuk belajar...</p>
+          <p className="text-stone-500 text-xs font-medium">Memuat langsung dari Teach Arab</p>
         </div>
       </div>
     );
@@ -66,18 +66,18 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
   if (error || !project) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center border border-stone-200 shadow-xl">
-          <div className="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-7 h-7" />
+        <div className="bg-white rounded-3xl p-8 sm:p-10 max-w-md w-full text-center border-2 border-stone-200 shadow-xl">
+          <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-rose-200">
+            <AlertCircle className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold text-stone-900 mb-2">Tautan Tidak Tersedia</h2>
-          <p className="text-stone-600 text-xs leading-relaxed mb-6">
+          <h2 className="text-2xl font-black text-navy-deep mb-2">Tautan Tidak Tersedia</h2>
+          <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
             {error || 'Materi ini mungkin telah dihapus atau ditutup aksesnya oleh pembuat.'}
           </p>
           <button
             type="button"
             onClick={() => onNavigate('/')}
-            className="w-full py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full min-h-[46px] py-3 px-5 bg-pink-bubble hover:bg-pink-bubble/90 active:translate-y-0.5 active:shadow-none text-white font-black text-sm rounded-full shadow-[0_3px_0_#D81B60] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <Home className="w-4 h-4" />
             <span>Kunjungi Beranda Teach Arab</span>
@@ -92,18 +92,18 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
   if (!templateDef) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center border border-stone-200 shadow-xl">
-          <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-7 h-7" />
+        <div className="bg-white rounded-3xl p-8 sm:p-10 max-w-md w-full text-center border-2 border-stone-200 shadow-xl">
+          <div className="w-16 h-16 bg-yellow-bubble/20 text-navy-deep rounded-3xl flex items-center justify-center mx-auto mb-4 border border-yellow-bubble">
+            <AlertCircle className="w-8 h-8 text-amber-600" />
           </div>
-          <h2 className="text-xl font-bold text-stone-900 mb-2">Template Tidak Ditemukan</h2>
-          <p className="text-stone-600 text-xs leading-relaxed mb-6">
-            Format materi ini (<code className="bg-stone-100 px-1 py-0.5 rounded font-mono">{project.templateType}</code>) tidak terdaftar dalam Teach Arab.
+          <h2 className="text-2xl font-black text-navy-deep mb-2">Template Tidak Ditemukan</h2>
+          <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
+            Format materi ini (<code className="bg-stone-100 px-1.5 py-0.5 rounded font-mono font-bold text-navy-deep">{project.templateType}</code>) tidak terdaftar dalam Teach Arab.
           </p>
           <button
             type="button"
             onClick={() => onNavigate('/')}
-            className="w-full py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full min-h-[46px] py-3 px-5 bg-pink-bubble hover:bg-pink-bubble/90 active:translate-y-0.5 active:shadow-none text-white font-black text-sm rounded-full shadow-[0_3px_0_#D81B60] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <Home className="w-4 h-4" />
             <span>Kembali ke Beranda</span>
@@ -131,21 +131,31 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
     }
   }
 
+  const isMateri = templateDef.category === 'materi';
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-100 to-stone-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-100 flex flex-col text-navy-deep">
       {/* Student App Bar */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-stone-200 px-4 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-40 shadow-2xs">
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="w-8 h-8 bg-emerald-700 text-white rounded-lg flex items-center justify-center font-bold text-sm shrink-0">
+      <header className="bg-white/95 backdrop-blur-md border-b-2 border-stone-200 px-4 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-40 shadow-xs">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-10 h-10 rounded-2xl bg-yellow-bubble border-2 border-navy-deep shadow-[0_2px_0_#0A254D] flex items-center justify-center font-black text-navy-deep font-amiri text-2xl shrink-0">
             ض
           </div>
           <div className="overflow-hidden">
-            <h1 className="text-xs sm:text-sm font-bold text-stone-900 truncate">
+            <h1 className="text-sm sm:text-base font-black text-navy-deep truncate">
               {project.title}
             </h1>
-            <div className="flex items-center gap-1.5 text-[10px] text-stone-500">
-              <span className="font-semibold text-emerald-700">{templateDef.name}</span>
-              <span>· Mode Siswa</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold">
+              <span
+                className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
+                  isMateri
+                    ? 'bg-cyan-ice text-cyan-bubble border border-cyan-bubble/30'
+                    : 'bg-pink-100 text-pink-bubble border border-pink-bubble/30'
+                }`}
+              >
+                {templateDef.name}
+              </span>
+              <span className="text-stone-500">· Mode Siswa</span>
             </div>
           </div>
         </div>
@@ -154,7 +164,7 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="p-2 sm:px-3 sm:py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="min-h-[42px] px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-navy-deep text-xs font-black rounded-full flex items-center gap-1.5 transition-colors cursor-pointer"
             title="Layar Penuh"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -175,8 +185,8 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
       </main>
 
       {/* Minimal Footer */}
-      <footer className="py-3 text-center text-[11px] text-stone-600 border-t border-stone-200/80 bg-white/50">
-        Dibuat dengan <strong className="text-stone-700">Teach Arab</strong> · Media & Game Interaktif Bahasa Arab
+      <footer className="py-3 text-center text-[11px] text-stone-500 border-t border-stone-200/80 bg-white/70">
+        Dibuat dengan <strong className="text-navy-deep">Teach Arab</strong> · Media & Game Interaktif Bahasa Arab
       </footer>
     </div>
   );

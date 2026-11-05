@@ -17,6 +17,12 @@ import {
   Play,
   VolumeX,
 } from 'lucide-react';
+import {
+  GameStartScreen,
+  GameTopBar,
+  GameFeedbackBanner,
+  GameResultScreen,
+} from '../../components/game/GameShared';
 
 interface QuizPlayerProps {
   items: QuizItem[];
@@ -234,114 +240,36 @@ export default function QuizPlayer({
   // 1. START SCREEN
   if (gameState === 'start') {
     return (
-      <div className="bg-white border border-stone-200 rounded-2xl p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-sm">
-        <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Trophy className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 mb-2">
-          Kuis Pilihan Ganda
-        </h2>
-        <p className="text-stone-600 text-sm mb-6">
-          Uji pemahaman bahasa Arab dengan {items.length} pertanyaan pilihan ganda interaktif.
-        </p>
-
-        {isTeam ? (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl max-w-md mx-auto text-xs text-left space-y-2">
-            <div className="font-bold text-emerald-900 flex items-center gap-1.5">
-              <Users className="w-4 h-4 text-emerald-700" /> Mode Kompetisi Tim ({teamCount} Tim):
-            </div>
-            <p className="text-emerald-800">
-              Setiap soal dijawab bergiliran oleh tim. Poin akan ditambahkan ke tim yang menjawab benar.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {teamNames.map((name, i) => (
-                <span
-                  key={i}
-                  className="px-2.5 py-1 bg-white border border-emerald-300 rounded-md font-semibold text-emerald-800"
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="mb-6 flex justify-center gap-4 text-xs text-stone-500">
-            <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4 text-emerald-600" />
-              {settings.timerSeconds ? `${settings.timerSeconds} Detik / Soal` : 'Tanpa Timer'}
-            </span>
-            <span>·</span>
-            <span>{pointsPerQuestion} Poin / Soal Benar</span>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={handleStartGame}
-          className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-base shadow-md cursor-pointer transition-all inline-flex items-center gap-2"
-        >
-          <Play className="w-5 h-5 fill-current" />
-          <span>Mulai Kuis Sekarang</span>
-        </button>
-      </div>
+      <GameStartScreen
+        title="Kuis Pilihan Ganda"
+        description={`Uji pemahaman bahasa Arab dengan ${items.length} pertanyaan pilihan ganda interaktif dan seru!`}
+        badge="Game Cerdas Cermat"
+        itemsCount={items.length}
+        itemsLabel="Soal"
+        timerSeconds={settings.timerSeconds}
+        pointsPerQuestion={pointsPerQuestion}
+        isTeam={isTeam}
+        teamCount={teamCount}
+        teamNames={teamNames}
+        icon={<Trophy className="w-10 h-10 text-pink-bubble" />}
+        onStart={handleStartGame}
+      />
     );
   }
 
   // 2. FINISHED / RESULT SCREEN
   if (gameState === 'finished') {
     return (
-      <div className="bg-white border border-stone-200 rounded-2xl p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-sm">
-        <div className="text-5xl mb-3">🎉</div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 mb-2">
-          Kuis Selesai!
-        </h2>
-        <p className="text-stone-600 text-sm mb-6">
-          Mumtaz! Seluruh pertanyaan telah selesai dijawab.
-        </p>
-
-        {isTeam ? (
-          <div className="space-y-3 max-w-md mx-auto mb-8">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 text-left">
-              Papan Skor Akhir Tim:
-            </h3>
-            {teamNames.map((name, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3.5 bg-stone-50 border border-stone-200 rounded-xl"
-              >
-                <div className="flex items-center gap-2 font-bold text-stone-800">
-                  <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-extrabold">
-                    {idx + 1}
-                  </span>
-                  <span>{name}</span>
-                </div>
-                <div className="text-lg font-extrabold text-emerald-700">
-                  {teamScores[idx]} Poin
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="p-6 bg-stone-50 rounded-2xl border border-stone-200 max-w-sm mx-auto mb-8">
-            <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">
-              Skor Perolehan
-            </div>
-            <div className="text-5xl font-black text-emerald-700">{score}</div>
-            <div className="text-xs text-stone-600 mt-2">
-              dari total {items.length * pointsPerQuestion} poin maksimal
-            </div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={handleStartGame}
-          className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-md cursor-pointer transition-all inline-flex items-center gap-2 active:scale-95"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Ulangi Kuis dari Awal</span>
-        </button>
-      </div>
+      <GameResultScreen
+        title="Kuis Selesai! Mumtaz!"
+        subtitle="Alhamdulillah, seluruh pertanyaan kuis berhasil dijawab."
+        score={score}
+        maxScore={items.length * pointsPerQuestion}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+        onRestart={handleStartGame}
+      />
     );
   }
 
@@ -351,90 +279,33 @@ export default function QuizPlayer({
     : removeHarakat(currentQuestion.questionArabic);
 
   const choiceLetters = ['A', 'B', 'C', 'D', 'E'];
+  const isCorrect = selectedChoice !== null && currentQuestion.choices[selectedChoice]?.isOriginalCorrect;
+  const correctChoiceIdx = currentQuestion.choices.findIndex((c) => c.isOriginalCorrect);
 
   return (
-    <div className={`flex flex-col select-none ${isProjectorMode ? 'max-w-4xl mx-auto py-2' : 'w-full'}`}>
-      {/* Header bar */}
-      <div className="flex items-center justify-between gap-2 mb-3 text-xs">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-stone-700 bg-stone-100 px-3 py-1.5 rounded-lg border border-stone-200">
-            Soal {currentIndex + 1} / {runtimeQuestions.length}
-          </span>
-          {settings.timerSeconds && settings.timerSeconds > 0 && (
-            <span
-              className={`flex items-center gap-1 font-bold px-2.5 py-1 rounded-lg border ${
-                timeLeft <= 5
-                  ? 'bg-rose-50 text-rose-700 border-rose-300 animate-pulse'
-                  : 'bg-stone-100 text-stone-700 border-stone-200'
-              }`}
-            >
-              <Clock className="w-3.5 h-3.5" />
-              <span>{timeLeft}s</span>
-            </span>
-          )}
-        </div>
-
-        {/* Team Scoreboard or Single Score */}
-        {isTeam ? (
-          <div className="flex items-center gap-1.5 overflow-x-auto">
-            {teamNames.map((tName, idx) => {
-              const isTurn = idx === currentTeamIdx;
-              return (
-                <div
-                  key={idx}
-                  className={`px-2.5 py-1 rounded-lg border text-xs font-bold transition-all flex items-center gap-1 ${
-                    isTurn
-                      ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-300 shadow-xs'
-                      : 'bg-white text-stone-600 border-stone-200'
-                  }`}
-                >
-                  <span>{tName}</span>
-                  <span className={isTurn ? 'text-emerald-100' : 'text-emerald-700'}>
-                    ({teamScores[idx]})
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-            Skor: {score}
-          </div>
-        )}
-
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setSoundMuted(!soundMuted)}
-            className="p-1.5 bg-white hover:bg-stone-100 text-stone-700 border border-stone-200 rounded-lg cursor-pointer transition-colors"
-            title={soundMuted ? 'Nyalakan Efek Suara' : 'Matikan Efek Suara'}
-          >
-            {soundMuted ? <VolumeX className="w-4 h-4 text-stone-400" /> : <Volume2 className="w-4 h-4 text-emerald-700" />}
-          </button>
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="p-1.5 bg-white hover:bg-stone-100 text-stone-700 border border-stone-200 rounded-lg cursor-pointer transition-colors"
-            title="Layar Penuh Proyektor"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden mb-4">
-        <div
-          className="bg-emerald-600 h-full transition-all duration-300"
-          style={{ width: `${((currentIndex + 1) / runtimeQuestions.length) * 100}%` }}
-        />
-      </div>
+    <div className={`flex flex-col select-none text-navy-deep ${isProjectorMode ? 'max-w-4xl mx-auto py-2' : 'w-full'}`}>
+      {/* Top Bar with Bubble Bash styling */}
+      <GameTopBar
+        progressText={`Soal ${currentIndex + 1} / ${runtimeQuestions.length}`}
+        progressPercent={((currentIndex + 1) / runtimeQuestions.length) * 100}
+        timerLimit={settings.timerSeconds || 0}
+        timeLeft={timeLeft}
+        score={score}
+        isTeam={isTeam}
+        teamNames={teamNames}
+        teamScores={teamScores}
+        currentTeamIdx={currentTeamIdx}
+        soundMuted={soundMuted}
+        onToggleSound={() => setSoundMuted(!soundMuted)}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+      />
 
       {/* Question Card */}
-      <div className="bg-white border-2 border-stone-200 rounded-2xl p-6 sm:p-8 mb-5 shadow-xs text-center">
+      <div className="bg-white border-2 border-stone-200 rounded-3xl p-6 sm:p-10 mb-5 shadow-xs text-center relative overflow-hidden">
         {isTeam && (
-          <div className="mb-3 inline-block px-3 py-1 bg-emerald-100 text-emerald-900 rounded-full text-xs font-bold">
-            Giliran Menjawab: {teamNames[currentTeamIdx]}
+          <div className="mb-4 inline-block px-4 py-1.5 bg-yellow-bubble/25 text-navy-deep border border-yellow-bubble rounded-full text-xs font-black shadow-xs">
+            🎯 Giliran Menjawab: {teamNames[currentTeamIdx]}
           </div>
         )}
 
@@ -442,32 +313,32 @@ export default function QuizPlayer({
           <img
             src={getMediaUrl(currentImage)!}
             alt="Soal"
-            className="max-h-36 sm:max-h-48 mx-auto mb-4 rounded-xl object-contain border border-stone-200"
+            className="max-h-40 sm:max-h-52 mx-auto mb-4 rounded-2xl object-contain border-2 border-stone-100 shadow-sm"
           />
         )}
 
         {currentQuestion.questionArabic && (
           <div
-            className={`arabic-text ${fontClass} text-2xl sm:text-4xl font-bold text-emerald-800 leading-loose`}
+            className={`arabic-text ${fontClass} text-3xl sm:text-4xl md:text-5xl font-black text-navy-deep leading-relaxed`}
           >
             {displayArabicQuestion}
           </div>
         )}
 
         {currentQuestion.questionIndo && (
-          <div className="text-base sm:text-xl font-semibold text-stone-800 mt-2">
+          <div className="text-base sm:text-xl font-bold text-stone-700 mt-3">
             {currentQuestion.questionIndo}
           </div>
         )}
 
-        <div className="flex justify-center items-center gap-2 mt-4">
+        <div className="flex justify-center items-center gap-2 mt-5">
           {currentQuestion.questionArabic && (
             <button
               type="button"
               onClick={() => speakArabic(currentQuestion.questionArabic)}
-              className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              className="min-h-[40px] px-4 py-2 bg-cyan-ice hover:bg-cyan-bubble hover:text-white text-cyan-bubble border border-cyan-bubble/30 rounded-full text-xs font-black flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+              <Volume2 className="w-4 h-4" />
               <span>Bacakan Pertanyaan</span>
             </button>
           )}
@@ -479,18 +350,18 @@ export default function QuizPlayer({
                 const url = getMediaUrl(currentAudio);
                 if (url) new Audio(url).play();
               }}
-              className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              className="min-h-[40px] px-4 py-2 bg-stone-100 hover:bg-stone-200 text-navy-deep border border-stone-200 rounded-full text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Audio Rekaman Guru</span>
+              <Volume2 className="w-4 h-4 text-cyan-bubble" />
+              <span>Audio Guru</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Choices Grid (2 to 5 choices) */}
+      {/* Choices Grid (2 to 5 choices) with big tactile buttons */}
       <div
-        className={`grid gap-3 mb-6 ${
+        className={`grid gap-3.5 mb-6 ${
           currentQuestion.choices.length <= 2
             ? 'grid-cols-1 sm:grid-cols-2'
             : currentQuestion.choices.length === 3
@@ -502,17 +373,17 @@ export default function QuizPlayer({
           const isSelected = selectedChoice === idx;
           const isCorrectChoice = choice.isOriginalCorrect;
           let btnStyle =
-            'border-stone-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 text-stone-800';
+            'border-stone-200 bg-white hover:border-yellow-bubble hover:bg-yellow-bubble/10 text-navy-deep hover:shadow-sm';
 
           if (hasAnswered) {
             if (isCorrectChoice) {
               btnStyle =
-                'border-emerald-500 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-300 font-bold';
+                'border-emerald-500 bg-emerald-50 text-emerald-950 ring-3 ring-emerald-300 font-black shadow-xs';
             } else if (isSelected && !isCorrectChoice) {
               btnStyle =
-                'border-rose-500 bg-rose-50 text-rose-900 ring-2 ring-rose-200 font-bold';
+                'border-rose-500 bg-rose-50 text-rose-950 ring-3 ring-rose-200 font-black shadow-xs';
             } else {
-              btnStyle = 'border-stone-200 bg-stone-50 text-stone-400 opacity-60';
+              btnStyle = 'border-stone-200 bg-stone-50 text-stone-400 opacity-50';
             }
           }
 
@@ -525,33 +396,33 @@ export default function QuizPlayer({
               type="button"
               disabled={hasAnswered}
               onClick={() => handleAnswer(idx)}
-              className={`p-4 rounded-xl border-2 text-left flex items-center gap-3 transition-all cursor-pointer shadow-2xs ${btnStyle}`}
+              className={`min-h-[64px] p-4 sm:p-5 rounded-2xl border-2 text-left flex items-center gap-3.5 transition-all cursor-pointer ${btnStyle} active:scale-98`}
             >
               <span
-                className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 border transition-colors ${
                   hasAnswered && isCorrectChoice
-                    ? 'bg-emerald-600 text-white'
+                    ? 'bg-emerald-600 text-white border-emerald-600'
                     : hasAnswered && isSelected
-                    ? 'bg-rose-600 text-white'
-                    : 'bg-stone-100 text-stone-700'
+                    ? 'bg-rose-600 text-white border-rose-600'
+                    : 'bg-stone-100 text-navy-deep border-stone-200'
                 }`}
               >
                 {choiceLetters[idx]}
               </span>
 
-              <div className="flex-1 flex items-center gap-2 overflow-hidden">
+              <div className="flex-1 flex items-center gap-3 overflow-hidden">
                 {getMediaUrl(choiceImg) && (
                   <img
                     src={getMediaUrl(choiceImg)!}
                     alt="Foto Pilihan"
-                    className="w-12 h-12 object-cover rounded border border-stone-200 shrink-0"
+                    className="w-14 h-14 object-cover rounded-xl border border-stone-200 shrink-0"
                   />
                 )}
                 <span
                   className={`${
                     isChoiceArabic
-                      ? `${fontClass} arabic-text text-xl leading-loose`
-                      : 'text-base font-medium'
+                      ? `${fontClass} arabic-text text-2xl font-bold leading-loose text-navy-deep`
+                      : 'text-base sm:text-lg font-bold'
                   }`}
                 >
                   {theme.showHarakat ? choice.text : removeHarakat(choice.text)}
@@ -559,10 +430,10 @@ export default function QuizPlayer({
               </div>
 
               {hasAnswered && isCorrectChoice && (
-                <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+                <CheckCircle className="w-6 h-6 text-emerald-600 shrink-0" />
               )}
               {hasAnswered && isSelected && !isCorrectChoice && (
-                <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                <XCircle className="w-6 h-6 text-rose-600 shrink-0" />
               )}
             </button>
           );
@@ -571,46 +442,14 @@ export default function QuizPlayer({
 
       {/* Answer feedback & Next button */}
       {hasAnswered && (
-        <div className="p-4 bg-stone-50 border border-stone-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in">
-          <div className="text-xs sm:text-sm text-stone-700">
-            {selectedChoice !== null &&
-            selectedChoice >= 0 &&
-            currentQuestion.choices[selectedChoice]?.isOriginalCorrect ? (
-              <span className="font-bold text-emerald-700 flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4" /> Jawaban Tepat! (+{pointsPerQuestion} Poin)
-              </span>
-            ) : (
-              <span className="font-bold text-rose-700 flex items-center gap-1.5">
-                <XCircle className="w-4 h-4" /> Belum Tepat.{' '}
-                {currentQuestion.choices.findIndex((c) => c.isOriginalCorrect) >= 0 && (
-                  <>
-                    Kunci jawaban: Pilihan{' '}
-                    {
-                      choiceLetters[
-                        currentQuestion.choices.findIndex((c) => c.isOriginalCorrect)
-                      ]
-                    }
-                  </>
-                )}
-              </span>
-            )}
-            {currentQuestion.explanation && (
-              <p className="mt-1 text-stone-600 text-xs">
-                <strong>Penjelasan:</strong> {currentQuestion.explanation}
-              </p>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleNextQuestion}
-            className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm cursor-pointer shadow-md transition-all shrink-0"
-          >
-            {currentIndex === runtimeQuestions.length - 1
-              ? 'Lihat Hasil Akhir →'
-              : 'Soal Berikutnya →'}
-          </button>
-        </div>
+        <GameFeedbackBanner
+          isCorrect={Boolean(isCorrect)}
+          pointsAwarded={pointsPerQuestion}
+          correctAnswerText={correctChoiceIdx >= 0 ? `Pilihan ${choiceLetters[correctChoiceIdx]}: ${currentQuestion.choices[correctChoiceIdx].text}` : undefined}
+          explanation={currentQuestion.explanation}
+          onNext={handleNextQuestion}
+          nextButtonText={currentIndex === runtimeQuestions.length - 1 ? 'Lihat Hasil Akhir →' : 'Soal Berikutnya →'}
+        />
       )}
     </div>
   );

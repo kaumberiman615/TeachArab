@@ -185,19 +185,19 @@ export default function SlidePlayer({
     <div
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className={`relative w-full rounded-3xl overflow-hidden border border-stone-200 bg-white shadow-lg flex flex-col justify-between transition-all select-none ${
+      className={`relative w-full rounded-3xl overflow-hidden border-3 border-playful-navy bg-white shadow-playful-sm flex flex-col justify-between transition-all select-none print:border-none print:shadow-none ${
         isProjectorMode ? 'min-h-[75vh] sm:min-h-[82vh]' : 'min-h-[520px]'
       }`}
     >
       {/* Top Slide Meta Bar */}
-      <div className="px-5 py-3 border-b border-stone-100 flex items-center justify-between bg-stone-50/80 backdrop-blur-xs">
+      <div className="no-print px-5 py-3 border-b-2 border-playful-navy/15 flex items-center justify-between bg-stone-50/90 backdrop-blur-xs">
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+          <span className="px-3 py-1 rounded-full text-xs font-black bg-playful-yellow text-playful-navy border-2 border-playful-navy shadow-playful-xs">
             Slide {currentIndex + 1} / {items.length}
           </span>
           {hasAudio && (
-            <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">
-              <Volume2 className="w-3 h-3" /> Audio Tersedia
+            <span className="text-xs font-bold text-playful-navy bg-playful-cyan/20 border border-playful-navy/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <Volume2 className="w-3.5 h-3.5 text-playful-cyan" /> Audio Tersedia
             </span>
           )}
         </div>
@@ -207,10 +207,10 @@ export default function SlidePlayer({
           <button
             type="button"
             onClick={handlePlayAudio}
-            className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+            className={`min-h-[44px] px-3.5 py-2 rounded-full border-2 border-playful-navy text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer shadow-playful-xs active:translate-y-0.5 ${
               isPlayingAudio
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white hover:bg-stone-100 text-stone-700 border-stone-200'
+                ? 'bg-playful-pink text-white'
+                : 'bg-white hover:bg-playful-yellow/20 text-playful-navy'
             }`}
             title="Putar Audio / Lafalkan"
           >
@@ -223,10 +223,10 @@ export default function SlidePlayer({
             <button
               type="button"
               onClick={() => setShowNotes(!showNotes)}
-              className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+              className={`min-h-[44px] px-3.5 py-2 rounded-full border-2 border-playful-navy text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer shadow-playful-xs active:translate-y-0.5 ${
                 showNotes
-                  ? 'bg-amber-100 text-amber-900 border-amber-300'
-                  : 'bg-white hover:bg-stone-100 text-stone-700 border-stone-200'
+                  ? 'bg-playful-yellow text-playful-navy'
+                  : 'bg-white hover:bg-stone-100 text-playful-navy'
               }`}
               title="Catatan Guru (Tekan 'N')"
             >
@@ -438,20 +438,20 @@ export default function SlidePlayer({
 
       {/* Teacher Notes Drawer / Box */}
       {showNotes && currentSlide?.teacherNotes && (
-        <div className="mx-6 mb-3 p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 flex items-start justify-between gap-3 animate-in fade-in slide-in-from-bottom-2">
+        <div className="no-print mx-6 mb-4 p-4 bg-amber-50 border-2 border-playful-navy rounded-2xl text-xs text-amber-950 flex items-start justify-between gap-3 shadow-playful-xs animate-in fade-in slide-in-from-bottom-2">
           <div className="space-y-1">
-            <div className="font-bold flex items-center gap-1.5 text-amber-900">
-              <FileText className="w-3.5 h-3.5 text-amber-700" />
+            <div className="font-black flex items-center gap-1.5 text-playful-navy">
+              <FileText className="w-4 h-4 text-playful-pink" />
               <span>Catatan Guru untuk Slide Ini:</span>
             </div>
-            <p className="leading-relaxed whitespace-pre-line text-stone-700">
+            <p className="leading-relaxed whitespace-pre-line text-stone-700 font-medium">
               {currentSlide.teacherNotes}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setShowNotes(false)}
-            className="p-1 text-amber-700 hover:text-amber-900 hover:bg-amber-100 rounded-lg cursor-pointer"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-600 hover:text-playful-navy hover:bg-amber-100 rounded-full cursor-pointer transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -459,15 +459,15 @@ export default function SlidePlayer({
       )}
 
       {/* Bottom Navigation Toolbar */}
-      <div className="px-6 py-4 bg-stone-50 border-t border-stone-200/80 flex items-center justify-between">
+      <div className="no-print px-6 py-4 bg-stone-50 border-t-2 border-playful-navy/15 flex items-center justify-between">
         <button
           type="button"
           onClick={handlePrev}
           disabled={currentIndex === 0}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+          className={`min-h-[44px] px-5 py-2.5 rounded-full text-xs font-black flex items-center gap-2 transition-all cursor-pointer ${
             currentIndex === 0
-              ? 'opacity-40 cursor-not-allowed text-stone-400 bg-stone-100'
-              : 'bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 shadow-2xs active:scale-95'
+              ? 'opacity-40 cursor-not-allowed text-stone-400 bg-stone-100 border-2 border-stone-200'
+              : 'bg-white hover:bg-stone-100 text-playful-navy border-2 border-playful-navy shadow-playful-xs active:translate-y-0.5'
           }`}
         >
           <ChevronLeft className="w-4 h-4" />
@@ -475,7 +475,7 @@ export default function SlidePlayer({
         </button>
 
         {/* Dots indicator */}
-        <div className="flex items-center gap-1.5 overflow-x-auto max-w-[200px] sm:max-w-xs px-2">
+        <div className="flex items-center gap-2 overflow-x-auto max-w-[200px] sm:max-w-xs px-2 py-1">
           {items.map((_, idx) => (
             <button
               key={idx}
@@ -484,10 +484,10 @@ export default function SlidePlayer({
                 setCurrentIndex(idx);
                 stopAudio();
               }}
-              className={`h-2 rounded-full transition-all cursor-pointer ${
+              className={`h-3 rounded-full transition-all cursor-pointer border border-playful-navy ${
                 idx === currentIndex
-                  ? 'w-6 bg-emerald-600'
-                  : 'w-2 bg-stone-300 hover:bg-stone-400'
+                  ? 'w-7 bg-playful-navy shadow-xs'
+                  : 'w-3 bg-playful-yellow hover:bg-playful-pink'
               }`}
               title={`Buka slide ${idx + 1}`}
             />
@@ -498,10 +498,10 @@ export default function SlidePlayer({
           type="button"
           onClick={handleNext}
           disabled={currentIndex === items.length - 1}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+          className={`min-h-[44px] px-5 py-2.5 rounded-full text-xs font-black flex items-center gap-2 transition-all cursor-pointer ${
             currentIndex === items.length - 1
-              ? 'opacity-40 cursor-not-allowed text-stone-400 bg-stone-100'
-              : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs active:scale-95'
+              ? 'opacity-40 cursor-not-allowed text-stone-400 bg-stone-100 border-2 border-stone-200'
+              : 'bg-playful-pink hover:bg-pink-600 text-white border-2 border-playful-navy shadow-playful-xs active:translate-y-0.5'
           }`}
         >
           <span>Berikutnya</span>

@@ -303,16 +303,16 @@ export default function WheelPlayer({
   return (
     <div className={`space-y-4 max-w-5xl mx-auto ${isProjectorMode ? 'p-4 sm:p-6' : ''}`}>
       {/* Top Header Controls */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-3 px-4 shadow-2xs flex items-center justify-between gap-3">
+      <div className="bg-white border-2 border-[#0A254D]/15 rounded-3xl p-3 px-5 shadow-[0_4px_0_rgba(10,37,77,0.06)] flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-stone-700 bg-stone-100 border border-stone-200 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-black text-[#0A254D] bg-[#00B4D8]/10 border border-[#00B4D8]/20 px-3 py-1.5 rounded-full">
             Sisa Entri: {activeEntries.length} / {items.length}
           </span>
 
           <button
             type="button"
             onClick={handleResetEntries}
-            className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-[#0A254D] text-xs font-black rounded-full flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
             title="Reset entri roda kembali utuh"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -322,14 +322,14 @@ export default function WheelPlayer({
 
         {/* Team Mode Turn Indicator */}
         {isTeam && (
-          <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-lg">
-            <Users className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-xs font-black text-[#0A254D] bg-[#FED034]/30 border border-[#FED034] px-4 py-1.5 rounded-full shadow-xs">
+            <Users className="w-4 h-4 text-[#0A254D]" />
             <span>Giliran: {teamNames[currentTeam]} ({teamScores[currentTeam]} Poin)</span>
           </div>
         )}
 
         {/* Audio & Fullscreen */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => {
@@ -337,16 +337,16 @@ export default function WheelPlayer({
               setSoundMuted(next);
               soundManager.setMuted(next);
             }}
-            className="p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+            className="w-10 h-10 rounded-full border border-[#0A254D]/15 flex items-center justify-center text-[#0A254D] hover:bg-slate-100 transition-colors cursor-pointer"
             title={soundMuted ? 'Nyalakan Suara' : 'Matikan Suara'}
           >
-            {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-[#00B4D8]" />}
           </button>
 
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+            className="w-10 h-10 rounded-full border border-[#0A254D]/15 flex items-center justify-center text-[#0A254D] hover:bg-slate-100 transition-colors cursor-pointer"
             title="Layar Penuh"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -357,13 +357,13 @@ export default function WheelPlayer({
       {/* Main Wheel Arena */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         {/* Left 3 cols: Canvas Wheel */}
-        <div className="lg:col-span-3 bg-white border border-stone-200 rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col items-center justify-center">
+        <div className="lg:col-span-3 bg-white border-2 border-[#0A254D]/15 rounded-3xl p-6 sm:p-8 shadow-[0_8px_0_rgba(10,37,77,0.06)] flex flex-col items-center justify-center relative overflow-hidden">
           <div className="relative mb-6">
             <canvas
               ref={canvasRef}
               width={480}
               height={480}
-              className="max-w-full aspect-square drop-shadow-md select-none"
+              className="max-w-full aspect-square drop-shadow-lg select-none"
             />
           </div>
 
@@ -371,9 +371,9 @@ export default function WheelPlayer({
             type="button"
             disabled={isSpinning || activeEntries.length === 0}
             onClick={spinWheel}
-            className="px-8 py-4 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-black text-lg sm:text-xl rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 tracking-wide"
+            className="px-10 py-4.5 bg-[#FF3B8D] hover:bg-[#E02674] disabled:opacity-50 text-white font-black text-xl rounded-full shadow-[0_6px_0_#C7175E] hover:shadow-[0_8px_0_#C7175E] active:translate-y-1.5 active:shadow-[0_2px_0_#C7175E] transition-all cursor-pointer flex items-center justify-center gap-2.5 tracking-wider uppercase"
           >
-            <Sparkles className="w-6 h-6" />
+            <Sparkles className="w-6 h-6 fill-current" />
             <span>{isSpinning ? 'Sedang Berputar...' : 'PUTAR RODA!'}</span>
           </button>
         </div>
