@@ -76,38 +76,38 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
       : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border border-stone-200 text-stone-800 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-xs animate-in fade-in">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border-2 border-stone-200 text-navy-deep max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-xs ${
                 status === 'config_missing'
-                  ? 'bg-amber-100 text-amber-700'
+                  ? 'bg-amber-100 text-amber-800 border-amber-200'
                   : status === 'error'
-                  ? 'bg-rose-100 text-rose-700'
+                  ? 'bg-rose-100 text-rose-700 border-rose-200'
                   : status === 'partial_success'
-                  ? 'bg-amber-100 text-amber-800'
+                  ? 'bg-yellow-bubble/20 text-navy-deep border-yellow-bubble/40'
                   : status === 'completed'
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-cyan-ice text-cyan-bubble border-cyan-bubble/30'
+                  : 'bg-cyan-ice text-cyan-bubble border-cyan-bubble/30'
               }`}
             >
               {status === 'config_missing' ? (
-                <AlertTriangle className="w-5 h-5" />
+                <AlertTriangle className="w-6 h-6" />
               ) : status === 'error' ? (
-                <AlertCircle className="w-5 h-5" />
+                <AlertCircle className="w-6 h-6" />
               ) : status === 'partial_success' ? (
-                <FileWarning className="w-5 h-5" />
+                <FileWarning className="w-6 h-6" />
               ) : status === 'completed' ? (
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-6 h-6" />
               ) : (
-                <Cloud className="w-5 h-5 animate-pulse" />
+                <Cloud className="w-6 h-6 animate-pulse" />
               )}
             </div>
             <div>
-              <h3 className="text-base font-bold text-stone-900 leading-tight">
+              <h3 className="text-base font-black text-navy-deep leading-tight">
                 {status === 'config_missing' && 'Konfigurasi Cloudinary Belum Diisi'}
                 {status === 'uploading' && 'Mengunggah Media ke Cloud...'}
                 {status === 'saving_firestore' && 'Menyimpan Materi ke Akun...'}
@@ -135,7 +135,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
             <button
               onClick={onClose}
               type="button"
-              className="p-1.5 text-stone-400 hover:text-stone-700 rounded-full hover:bg-stone-100 transition-colors"
+              className="w-11 h-11 flex items-center justify-center text-stone-400 hover:text-navy-deep rounded-full hover:bg-stone-100 transition-colors"
               aria-label="Tutup"
             >
               <X className="w-5 h-5" />
@@ -174,7 +174,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
                     onClose();
                     onOpenExport();
                   }}
-                  className="flex-1 py-2.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 min-h-[44px] py-2.5 px-4 bg-cyan-bubble hover:bg-cyan-bubble/90 text-white font-black text-xs rounded-full shadow-[0_3px_0_#0087A2] active:translate-y-0.5 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                   <span>Unduh Offline (HTML / ZIP)</span>
@@ -183,7 +183,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="py-2.5 px-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className="min-h-[44px] py-2.5 px-5 bg-stone-100 hover:bg-stone-200 text-navy-deep font-bold text-xs rounded-full transition-colors cursor-pointer"
               >
                 Tutup
               </button>
@@ -194,17 +194,17 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
         {/* 2. Uploading Progress View */}
         {status === 'uploading' && (
           <div className="space-y-4 my-3">
-            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl">
-              <div className="flex justify-between text-xs font-semibold text-stone-800 mb-1.5">
+            <div className="p-3 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl">
+              <div className="flex justify-between text-xs font-bold text-navy-deep mb-1.5">
                 <span className="truncate max-w-[280px]">
                   Mengunggah {current} dari {total}:{' '}
-                  <span className="text-emerald-700">{progress?.fileName || 'berkas'}</span>
+                  <span className="text-cyan-bubble">{progress?.fileName || 'berkas'}</span>
                 </span>
-                <span className="text-emerald-700 font-bold">{itemPercent}%</span>
+                <span className="text-cyan-bubble font-black">{itemPercent}%</span>
               </div>
-              <div className="w-full bg-stone-200 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-stone-200 rounded-full h-3 overflow-hidden">
                 <div
-                  className="bg-emerald-600 h-2.5 rounded-full transition-all duration-200 ease-out"
+                  className="bg-cyan-bubble h-3 rounded-full transition-all duration-200 ease-out"
                   style={{ width: `${itemPercent}%` }}
                 />
               </div>
@@ -212,13 +212,13 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
 
             {total > 1 && (
               <div>
-                <div className="flex justify-between text-[11px] text-stone-600 mb-1">
+                <div className="flex justify-between text-[11px] text-stone-600 mb-1 font-semibold">
                   <span>Progres Total ({current}/{total} berkas)</span>
-                  <span className="font-semibold">{overallPercent}%</span>
+                  <span className="font-black text-navy-deep">{overallPercent}%</span>
                 </div>
-                <div className="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-stone-100 rounded-full h-2.5 overflow-hidden">
                   <div
-                    className="bg-emerald-800 h-2 rounded-full transition-all duration-300"
+                    className="bg-pink-bubble h-2.5 rounded-full transition-all duration-300"
                     style={{ width: `${overallPercent}%` }}
                   />
                 </div>
@@ -230,8 +230,8 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
         {/* 3. Saving Firestore View */}
         {status === 'saving_firestore' && (
           <div className="py-5 text-center space-y-2.5">
-            <div className="w-9 h-9 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-semibold text-stone-700">
+            <div className="w-10 h-10 border-4 border-cyan-bubble border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs font-bold text-navy-deep">
               Menyimpan data materi dan tautan media ke database...
             </p>
             <p className="text-[11px] text-stone-600">Hampir selesai, mohon tunggu sebentar.</p>
@@ -241,11 +241,11 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
         {/* 4. Partial Success View (Some failed, some succeeded) */}
         {status === 'partial_success' && (
           <div className="my-3 space-y-3">
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950">
+            <div className="p-3 bg-yellow-bubble/20 border border-yellow-bubble/40 rounded-2xl text-xs text-navy-deep">
               <p className="font-bold mb-1">
                 Sebagian berkas berhasil disimpan ({total - failedFiles.length} dari {total} berkas).
               </p>
-              <p className="text-amber-800">
+              <p className="text-stone-700">
                 Namun terdapat {failedFiles.length} berkas yang gagal diunggah:
               </p>
             </div>
@@ -275,7 +275,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
                 <button
                   type="button"
                   onClick={onProceedAnyway}
-                  className="flex-1 py-2.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 min-h-[44px] py-2.5 px-4 bg-pink-bubble hover:bg-pink-bubble/90 text-white font-black text-xs rounded-full shadow-[0_3px_0_#D81B60] active:translate-y-0.5 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Share2 className="w-4 h-4" />
                   <span>Lanjutkan Bagikan Link</span>
@@ -284,7 +284,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
               <button
                 type="button"
                 onClick={onRetry}
-                className="py-2.5 px-4 bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="min-h-[44px] py-2.5 px-4 bg-stone-100 hover:bg-stone-200 text-navy-deep font-bold text-xs rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Coba Lagi Berkas Gagal</span>
@@ -332,7 +332,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
               <button
                 type="button"
                 onClick={onRetry}
-                className="flex-1 py-2.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 min-h-[44px] py-2.5 px-4 bg-pink-bubble hover:bg-pink-bubble/90 text-white font-black text-xs rounded-full shadow-[0_3px_0_#D81B60] active:translate-y-0.5 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Coba Lagi</span>
@@ -340,7 +340,7 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="py-2.5 px-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className="min-h-[44px] py-2.5 px-5 bg-stone-100 hover:bg-stone-200 text-navy-deep font-bold text-xs rounded-full transition-colors cursor-pointer"
               >
                 Batal
               </button>

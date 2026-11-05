@@ -19,6 +19,7 @@ import {
   BookOpen,
   Gamepad2,
   Layers,
+  FileQuestion,
 } from 'lucide-react';
 
 interface DraftsPageProps {
@@ -79,7 +80,6 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
       setImportStatus('Berhasil mengimpor draf!');
       setTimeout(() => setImportStatus(null), 3000);
       loadDrafts();
-      // Redirect to newly imported draft
       onNavigate(`/buat/${imported.templateType}?id=${imported.id}`);
     } catch (err: any) {
       alert('Gagal mengimpor file: ' + err.message);
@@ -110,11 +110,13 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       {/* Teacher Warning Banner (IndexedDB Reminder) */}
-      <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between gap-3 shadow-2xs">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            <strong>Perhatian:</strong> Draf hanya tersimpan di browser ini. Unduh agar aman (HTML atau ZIP) jika cache browser dibersihkan.
+      <div className="p-3.5 bg-[#FFF8DC] border-2 border-[#FED034] rounded-2xl text-xs text-[#0A254D] flex items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-xl bg-[#FED034] text-[#0A254D] flex items-center justify-center shrink-0 font-bold">
+            <AlertTriangle className="w-4 h-4" />
+          </div>
+          <span className="font-medium">
+            <strong>Catatan Guru:</strong> Draf tersimpan di memori browser ini. Unduh berkas HTML atau ZIP agar aman jika cache peramban dibersihkan.
           </span>
         </div>
       </div>
@@ -122,16 +124,20 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 flex items-center gap-2">
-            <FolderArchive className="w-6 h-6 text-emerald-700" />
-            <span>Draf Lokal</span>
-          </h1>
-          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">
-            Kelola seluruh materi dan game yang tersimpan di memori browser perangkat ini
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-xs">
+              <FolderArchive className="w-5 h-5" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0A254D] tracking-tight">
+              Draf Lokal
+            </h1>
+          </div>
+          <p className="text-stone-500 text-xs sm:text-sm mt-1 font-medium">
+            Kelola seluruh materi dan game yang tersimpan di memori peramban perangkat ini ({drafts.length} draf)
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <input
             ref={fileInputRef}
             type="file"
@@ -142,53 +148,53 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="px-3.5 py-2 text-xs font-semibold bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+            className="min-h-[44px] px-4 py-2.5 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-stone-200 rounded-full flex items-center gap-2 transition-all cursor-pointer shadow-xs active:translate-y-0.5"
           >
-            <Upload className="w-3.5 h-3.5 text-stone-500" />
+            <Upload className="w-4 h-4 text-stone-500" />
             <span>Impor (.json)</span>
           </button>
 
-          {/* Buat Baru Dropdown with 2 Groups (Materi and Game) */}
+          {/* Buat Baru Dropdown with 2 Groups */}
           <CreateTemplateDropdown onSelect={(type) => onNavigate(`/buat/${type}`)} />
         </div>
       </div>
 
       {importStatus && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl">
+        <div className="p-3 bg-[#E6F7F5] border-2 border-[#00B4D8]/30 text-[#00B4D8] text-xs font-black rounded-2xl">
           {importStatus}
         </div>
       )}
 
       {/* Two-Tier Filter: Category Level (Semua | Materi | Game) + Template Sub-filter */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-2xs space-y-3">
+      <div className="bg-white border-2 border-stone-100 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4">
         {/* Top Tier: Search Bar + Category Pills */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari judul draf..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-emerald-600 focus:bg-white"
+              className="w-full pl-10 pr-4 py-2.5 text-xs bg-stone-50 border-2 border-stone-200 rounded-full focus:outline-[#00B4D8] focus:bg-white text-[#0A254D] font-medium"
             />
           </div>
 
           {/* Primary Category Filter (Semua | Materi | Game) */}
-          <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-xl border border-stone-200 w-full sm:w-auto overflow-x-auto text-xs font-semibold">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-full border border-stone-200/80 w-full sm:w-auto overflow-x-auto text-xs font-black">
             <button
               type="button"
               onClick={() => {
                 setCategoryFilter('all');
                 setSelectedFilter('all');
               }}
-              className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`min-h-[38px] px-4 py-1.5 rounded-full transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 categoryFilter === 'all'
-                  ? 'bg-white text-stone-900 shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
+                  ? 'bg-white text-[#0A254D] shadow-xs'
+                  : 'text-stone-600 hover:text-[#0A254D]'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3.5 h-3.5 text-stone-500" />
               <span>Semua ({drafts.length})</span>
             </button>
 
@@ -198,10 +204,10 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
                 setCategoryFilter('materi');
                 setSelectedFilter('all');
               }}
-              className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`min-h-[38px] px-4 py-1.5 rounded-full transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 categoryFilter === 'materi'
-                  ? 'bg-emerald-700 text-white shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
+                  ? 'bg-[#00B4D8] text-white shadow-xs'
+                  : 'text-stone-600 hover:text-[#00B4D8]'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -214,10 +220,10 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
                 setCategoryFilter('game');
                 setSelectedFilter('all');
               }}
-              className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`min-h-[38px] px-4 py-1.5 rounded-full transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 categoryFilter === 'game'
-                  ? 'bg-indigo-700 text-white shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
+                  ? 'bg-[#FF3B8D] text-white shadow-xs'
+                  : 'text-stone-600 hover:text-[#FF3B8D]'
               }`}
             >
               <Gamepad2 className="w-3.5 h-3.5" />
@@ -227,21 +233,21 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
         </div>
 
         {/* Sub-filter per template */}
-        <div className="pt-2 border-t border-stone-100 flex items-center gap-1.5 overflow-x-auto text-xs">
-          <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider shrink-0 mr-1">
+        <div className="pt-3 border-t border-stone-100 flex items-center gap-2 overflow-x-auto text-xs pb-1">
+          <span className="text-[11px] font-black text-stone-400 uppercase tracking-wider shrink-0 mr-1">
             Format:
           </span>
 
           <button
             type="button"
             onClick={() => setSelectedFilter('all')}
-            className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+            className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
               selectedFilter === 'all'
-                ? 'bg-stone-900 text-white border-stone-900 font-bold'
+                ? 'bg-[#0A254D] text-white border-[#0A254D]'
                 : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
             }`}
           >
-            Semua Format
+            Semua
           </button>
 
           {(categoryFilter === 'all' || categoryFilter === 'materi') && (
@@ -249,9 +255,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'slide' ? 'all' : 'slide')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'slide'
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -260,9 +266,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'vocab-picture' ? 'all' : 'vocab-picture')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'vocab-picture'
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -271,9 +277,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'reading' ? 'all' : 'reading')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'reading'
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -282,9 +288,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'word-table' ? 'all' : 'word-table')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'word-table'
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -298,9 +304,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'flashcard' ? 'all' : 'flashcard')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'flashcard'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -309,9 +315,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'kuis' ? 'all' : 'kuis')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'kuis'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -320,9 +326,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(isMatchingTemplate(selectedFilter) ? 'all' : 'matching')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   isMatchingTemplate(selectedFilter)
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -331,9 +337,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'true-false' ? 'all' : 'true-false')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'true-false'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -342,9 +348,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'memory' ? 'all' : 'memory')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'memory'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -353,9 +359,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'wheel' ? 'all' : 'wheel')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'wheel'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -364,9 +370,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'letter-order' ? 'all' : 'letter-order')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'letter-order'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -375,9 +381,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'sentence-order' ? 'all' : 'sentence-order')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'sentence-order'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -386,9 +392,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'fill-blank' ? 'all' : 'fill-blank')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'fill-blank'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -397,9 +403,9 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
               <button
                 type="button"
                 onClick={() => setSelectedFilter(selectedFilter === 'guess' ? 'all' : 'guess')}
-                className={`px-2.5 py-1 rounded-lg border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                className={`min-h-[32px] px-3.5 py-1 rounded-full border text-xs cursor-pointer transition-all whitespace-nowrap font-bold ${
                   selectedFilter === 'guess'
-                    ? 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold'
+                    ? 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]'
                     : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -413,21 +419,21 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
       {/* Drafts List */}
       {loading ? (
         <div className="py-20 text-center space-y-3">
-          <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-stone-500 text-xs font-medium">Memuat draf dari browser...</p>
+          <div className="w-10 h-10 border-4 border-[#00B4D8] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-stone-500 text-xs font-bold">Memuat draf dari memori browser...</p>
         </div>
       ) : filteredDrafts.length === 0 ? (
-        <div className="bg-white border border-stone-200 rounded-3xl p-12 text-center space-y-4">
-          <div className="w-14 h-14 bg-stone-100 text-stone-400 rounded-2xl flex items-center justify-center mx-auto">
-            <FolderArchive className="w-7 h-7" />
+        <div className="bg-white border-2 border-stone-200 rounded-[32px] p-12 text-center space-y-4 max-w-lg mx-auto shadow-xs">
+          <div className="w-16 h-16 bg-[#FFF8DC] text-[#0A254D] rounded-3xl flex items-center justify-center mx-auto border-2 border-[#FED034]">
+            <FolderArchive className="w-8 h-8 text-[#0A254D]" />
           </div>
-          <h3 className="font-bold text-stone-800 text-base">Belum Ada Draf yang Cocok</h3>
-          <p className="text-stone-500 text-xs max-w-md mx-auto">
+          <h3 className="font-black text-[#0A254D] text-lg">Belum Ada Draf yang Cocok</h3>
+          <p className="text-stone-500 text-xs max-w-md mx-auto leading-relaxed">
             {searchQuery || selectedFilter !== 'all' || categoryFilter !== 'all'
-              ? 'Tidak ditemukan draf dengan filter tersebut. Coba ubah kata kunci atau ganti filter.'
+              ? 'Tidak ditemukan draf dengan filter tersebut. Coba ubah kata kunci atau ganti filter kategori.'
               : 'Mulai rancang materi pelajaran atau game interaktif pertama Anda sekarang.'}
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex justify-center">
             <CreateTemplateDropdown
               buttonLabel="Buat Draf Pertama"
               onSelect={(type) => onNavigate(`/buat/${type}`)}
@@ -435,7 +441,7 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDrafts.map((d) => {
             const template = getTemplateOrNull(d.templateType) || getTemplate('flashcard');
             const Icon = template.icon;
@@ -453,69 +459,75 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
             return (
               <div
                 key={d.id}
-                className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs hover:border-emerald-300 hover:shadow-sm transition-all flex flex-col justify-between"
+                className={`bg-white rounded-3xl p-5 border-t-6 ${
+                  isMateri ? 'border-t-[#00B4D8]' : 'border-t-[#FF3B8D]'
+                } border-x border-b border-stone-200/80 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group`}
               >
                 <div>
                   {/* Category and Template Badges */}
-                  <div className="flex items-center justify-between mb-2.5">
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       {/* Distinct Category Badge */}
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${
                           isMateri
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                            : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+                            ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]/30'
+                            : 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]/30'
                         }`}
                       >
                         {isMateri ? 'Materi' : 'Game'}
                       </span>
 
                       {/* Template Name Badge */}
-                      <span className="text-[11px] font-semibold text-stone-700 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded-md flex items-center gap-1">
-                        <Icon className="w-3 h-3 text-stone-600" />
+                      <span className="text-[11px] font-bold text-[#0A254D] bg-stone-100 border border-stone-200 px-2.5 py-0.5 rounded-lg flex items-center gap-1.5">
+                        <Icon className="w-3 h-3 text-stone-500" />
                         <span>{template.name}</span>
                       </span>
                     </div>
 
-                    <span className="text-[10px] text-stone-500 font-mono">
+                    <span className="text-[11px] text-stone-500 font-black">
                       {d.itemCount} item
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-stone-900 text-sm line-clamp-1 mb-1">
+                  <h3 className="font-black text-[#0A254D] text-base group-hover:text-[#00B4D8] transition-colors line-clamp-1 mb-1">
                     {d.title}
                   </h3>
 
-                  <p className="text-stone-500 text-xs line-clamp-2 min-h-[32px]">
+                  <p className="text-stone-500 text-xs line-clamp-2 min-h-[32px] leading-relaxed">
                     {d.description || 'Tidak ada deskripsi tambahan.'}
                   </p>
 
-                  <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
+                  <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-400">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3 text-stone-400" /> {updatedDate}
                     </span>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between gap-1">
-                  <div className="flex items-center gap-1">
+                {/* Actions with tactile >=44px buttons */}
+                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => onNavigate(`/main/${d.id}`)}
-                      className="px-2.5 py-1.5 bg-stone-900 hover:bg-black text-white text-xs font-semibold rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
+                      className="min-h-[44px] px-3.5 py-2 bg-[#0A254D] hover:bg-black text-white text-xs font-black rounded-full flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5 transition-all"
                       title="Buka Mode Proyektor"
                     >
-                      <Play className="w-3 h-3 fill-current" />
+                      <Play className="w-3.5 h-3.5 fill-current" />
                       <span>Main</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => onNavigate(`/buat/${d.templateType}?id=${d.id}`)}
-                      className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-lg flex items-center gap-1 cursor-pointer transition-colors border border-emerald-200"
+                      className={`min-h-[44px] px-3.5 py-2 text-xs font-black rounded-full flex items-center gap-1.5 cursor-pointer transition-all border ${
+                        isMateri
+                          ? 'bg-[#E6F7F5] hover:bg-[#00B4D8] hover:text-white text-[#00B4D8] border-[#00B4D8]/30'
+                          : 'bg-[#FFF0F6] hover:bg-[#FF3B8D] hover:text-white text-[#FF3B8D] border-[#FF3B8D]/30'
+                      }`}
                       title="Buka Editor"
                     >
-                      <Edit className="w-3 h-3" />
+                      <Edit className="w-3.5 h-3.5" />
                       <span>Edit</span>
                     </button>
                   </div>
@@ -524,18 +536,20 @@ export default function DraftsPage({ onNavigate }: DraftsPageProps) {
                     <button
                       type="button"
                       onClick={() => handleDuplicate(d.id)}
-                      className="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
+                      className="w-11 h-11 flex items-center justify-center text-stone-500 hover:text-[#0A254D] hover:bg-stone-100 rounded-full transition-colors cursor-pointer"
                       title="Duplikat draf ini"
+                      aria-label="Duplikat draf"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-4 h-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(d.id, d.title)}
-                      className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                      className="w-11 h-11 flex items-center justify-center text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors cursor-pointer"
                       title="Hapus draf"
+                      aria-label="Hapus draf"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

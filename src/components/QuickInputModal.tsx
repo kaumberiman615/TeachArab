@@ -78,43 +78,44 @@ export default function QuickInputModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-stone-200">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+      <div className="bg-white rounded-[32px] max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border-2 border-stone-100">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg">
+        <div className="px-6 py-4 border-b-2 border-stone-100 flex items-center justify-between bg-[#FAFCFC]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#E6F7F5] text-[#00B4D8] rounded-2xl flex items-center justify-center border border-[#00B4D8]/20">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-stone-900">Input Cepat (Batch Paste)</h3>
-              <p className="text-xs text-stone-500">
-                Tempel data langsung dari Excel, Word, atau WhatsApp dengan cepat
+              <h3 className="font-black text-[#0A254D] text-base">Input Cepat (Batch Paste)</h3>
+              <p className="text-xs text-stone-500 font-medium">
+                Tempel data langsung dari Excel, Word, atau buku teks dengan mudah
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center text-stone-400 hover:text-[#0A254D] hover:bg-stone-100 rounded-full transition-colors cursor-pointer"
+            aria-label="Tutup"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 stroke-[2.5]" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-5 overflow-y-auto flex-1 space-y-4">
-          <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs text-emerald-900 space-y-1">
-            <p className="font-semibold flex items-center gap-1.5">
-              <FileText className="w-4 h-4 text-emerald-700" /> Format yang Didukung:
+        <div className="p-6 overflow-y-auto flex-1 space-y-4">
+          <div className="p-3.5 bg-[#E6F7F5] border-2 border-[#00B4D8]/20 rounded-2xl text-xs text-[#0A254D] space-y-1">
+            <p className="font-black flex items-center gap-1.5 text-[#00B4D8]">
+              <FileText className="w-4 h-4" /> Format yang Didukung:
             </p>
-            <p className="text-emerald-800">
-              Satu baris untuk setiap item. Pisahkan antar kolom menggunakan garis tegak ( <code className="bg-white px-1 py-0.5 rounded border border-emerald-300 font-bold">|</code> ), Tab dari Excel, atau titik koma ( <code className="bg-white px-1 py-0.5 rounded border border-emerald-300 font-bold">;</code> ).
+            <p className="text-stone-700 leading-relaxed font-medium">
+              Satu baris untuk setiap item. Pisahkan antar kolom menggunakan garis tegak ( <code className="bg-white px-1.5 py-0.5 rounded-md border border-[#00B4D8]/30 font-black text-[#00B4D8]">|</code> ), Tab dari Excel, atau titik koma ( <code className="bg-white px-1.5 py-0.5 rounded-md border border-[#00B4D8]/30 font-black text-[#00B4D8]">;</code> ).
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label className="block text-xs font-black text-[#0A254D] mb-1.5">
               Tempel Teks Mentah:
             </label>
             <textarea
@@ -122,36 +123,36 @@ export default function QuickInputModal({
               onChange={(e) => setRawText(e.target.value)}
               placeholder={placeholder}
               rows={8}
-              className="w-full p-3 text-sm font-mono border border-stone-300 rounded-xl focus:outline-emerald-600 focus:bg-stone-50/50 resize-y"
+              className="w-full p-3.5 text-xs sm:text-sm font-mono border-2 border-stone-200 rounded-2xl focus:outline-[#00B4D8] focus:bg-stone-50/50 resize-y text-[#0A254D]"
             />
           </div>
 
           {/* Parsed Preview count */}
-          <div className="flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs">
-            <span className="text-stone-600">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-[#FAFCFC] border-2 border-stone-100 rounded-2xl text-xs">
+            <span className="text-stone-600 font-medium">
               Terdeteksi otomatis:{' '}
-              <strong className="text-emerald-700 font-bold text-sm">{parsedItems.length} item</strong>
+              <strong className="text-[#00B4D8] font-black text-sm">{parsedItems.length} butir item</strong>
             </span>
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-1.5 cursor-pointer text-stone-700">
+            <div className="flex items-center gap-3 font-bold text-xs">
+              <label className="flex items-center gap-1.5 cursor-pointer text-[#0A254D]">
                 <input
                   type="radio"
                   name="applyMode"
                   value="append"
                   checked={applyMode === 'append'}
                   onChange={() => setApplyMode('append')}
-                  className="accent-emerald-600"
+                  className="accent-[#00B4D8]"
                 />
                 <span>Tambahkan ke daftar</span>
               </label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-stone-700 ml-2">
+              <label className="flex items-center gap-1.5 cursor-pointer text-[#0A254D]">
                 <input
                   type="radio"
                   name="applyMode"
                   value="replace"
                   checked={applyMode === 'replace'}
                   onChange={() => setApplyMode('replace')}
-                  className="accent-emerald-600"
+                  className="accent-[#00B4D8]"
                 />
                 <span>Ganti semua</span>
               </label>
@@ -160,11 +161,11 @@ export default function QuickInputModal({
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3.5 border-t border-stone-200 bg-stone-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-t-2 border-stone-100 bg-[#FAFCFC] flex items-center justify-between">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer"
+            className="min-h-[44px] px-5 py-2 text-xs font-bold text-stone-600 hover:text-[#0A254D] cursor-pointer"
           >
             Batal
           </button>
@@ -172,13 +173,13 @@ export default function QuickInputModal({
             type="button"
             onClick={handleApply}
             disabled={parsedItems.length === 0}
-            className={`px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`min-h-[44px] px-6 py-2.5 rounded-full text-xs font-black flex items-center gap-2 cursor-pointer transition-all ${
               parsedItems.length > 0
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                ? 'bg-[#00B4D8] hover:bg-[#0096C7] text-white shadow-[0_3px_0_#0077B6] active:translate-y-0.5'
                 : 'bg-stone-200 text-stone-400 cursor-not-allowed'
             }`}
           >
-            <Check className="w-4 h-4" />
+            <Check className="w-4 h-4 stroke-[3]" />
             <span>Masukkan {parsedItems.length} Item</span>
           </button>
         </div>

@@ -34,7 +34,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         width: 320,
         margin: 2,
         color: {
-          dark: '#064e3b', // emerald 900
+          dark: '#0A254D', // Deep navy
           light: '#ffffff',
         },
       })
@@ -51,7 +51,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Fallback
       const input = document.createElement('input');
       input.value = publicUrl;
       document.body.appendChild(input);
@@ -82,45 +81,45 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border border-stone-200 text-stone-800 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 border-2 border-stone-100 text-stone-800 max-h-[90vh] overflow-y-auto space-y-5">
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-4 right-4 p-2 text-stone-400 hover:text-stone-700 rounded-full hover:bg-stone-100 transition-colors"
+          className="absolute top-5 right-5 w-11 h-11 flex items-center justify-center text-stone-400 hover:text-[#0A254D] rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
           aria-label="Tutup"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center">
-            <QrCode className="w-5 h-5" />
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-[#FFF0F6] text-[#FF3B8D] rounded-2xl flex items-center justify-center shadow-xs border border-[#FF3B8D]/20">
+            <QrCode className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-stone-900 leading-tight">
+            <h3 className="text-xl font-black text-[#0A254D] leading-tight">
               Bagikan Materi ke Siswa
             </h3>
-            <p className="text-xs text-stone-500 truncate max-w-xs sm:max-w-sm">
+            <p className="text-xs text-stone-500 truncate max-w-xs sm:max-w-sm font-medium">
               {title}
             </p>
           </div>
         </div>
 
         {/* Status Switch */}
-        <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50 mb-5 flex items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl border-2 border-stone-100 bg-[#FAFCFC] flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                isPublic ? 'bg-emerald-600 text-white' : 'bg-stone-300 text-stone-600'
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                isPublic ? 'bg-[#00B4D8] text-white' : 'bg-stone-200 text-stone-600'
               }`}
             >
               {isPublic ? <Globe className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
             </div>
             <div>
-              <div className="text-sm font-bold text-stone-900">
+              <div className="text-xs sm:text-sm font-black text-[#0A254D]">
                 {isPublic ? 'Link Publik Aktif' : 'Link Dinonaktifkan'}
               </div>
-              <div className="text-xs text-stone-500">
+              <div className="text-[11px] text-stone-500 font-medium">
                 {isPublic
                   ? 'Siswa dapat membuka materi via link & QR'
                   : 'Siswa tidak dapat mengakses link ini'}
@@ -132,10 +131,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             type="button"
             disabled={isUpdating}
             onClick={() => handleToggle(!isPublic)}
-            className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`min-h-[40px] px-3.5 py-1.5 text-xs font-black rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
               isPublic
-                ? 'bg-rose-100 text-rose-700 hover:bg-rose-200'
-                : 'bg-emerald-700 text-white hover:bg-emerald-800'
+                ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                : 'bg-[#00B4D8] text-white hover:bg-[#0096C7] shadow-xs'
             }`}
           >
             {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
@@ -147,7 +146,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <div className="space-y-5">
             {/* Link Box */}
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              <label className="block text-xs font-black text-[#0A254D] mb-1.5">
                 Link Langsung Siswa:
               </label>
               <div className="flex items-center gap-2">
@@ -155,16 +154,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   type="text"
                   readOnly
                   value={publicUrl}
-                  className="w-full text-xs font-mono bg-stone-100 text-stone-800 border border-stone-300 rounded-xl px-3 py-2.5 select-all focus:outline-hidden"
+                  className="w-full text-xs font-mono bg-stone-100 text-[#0A254D] border-2 border-stone-200 rounded-2xl px-3.5 py-3 select-all focus:outline-hidden font-medium"
                 />
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="px-3.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer shadow-xs"
+                  className="min-h-[44px] px-4 py-2 bg-[#FF3B8D] hover:bg-[#E62879] text-white rounded-full text-xs font-black flex items-center gap-1.5 shrink-0 transition-all cursor-pointer shadow-[0_3px_0_#C2185B] active:translate-y-0.5 active:shadow-none"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-emerald-200" />
+                      <Check className="w-4 h-4 text-white" />
                       <span>Disalin!</span>
                     </>
                   ) : (
@@ -178,8 +177,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
 
             {/* QR Code */}
-            <div className="flex flex-col sm:flex-row items-center gap-5 p-4 bg-stone-50 rounded-2xl border border-stone-200">
-              <div className="bg-white p-2 rounded-2xl shadow-xs border border-stone-200 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-5 p-4 bg-[#FAFCFC] rounded-3xl border-2 border-stone-100">
+              <div className="bg-white p-2.5 rounded-2xl shadow-xs border-2 border-stone-100 shrink-0">
                 {qrDataUrl ? (
                   <img
                     src={qrDataUrl}
@@ -195,11 +194,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
               <div className="flex flex-col justify-between text-center sm:text-left space-y-3 w-full">
                 <div>
-                  <div className="text-xs font-bold text-stone-900 mb-1">
+                  <div className="text-xs font-black text-[#0A254D] mb-1">
                     Scan Kode QR di Kelas
                   </div>
-                  <p className="text-[11px] text-stone-500 leading-relaxed">
-                    Tampilkan di proyektor atau cetak lembar tugas agar siswa dapat langsung scan dengan kamera smartphone masing-masing.
+                  <p className="text-[11px] text-stone-500 leading-relaxed font-medium">
+                    Tampilkan di proyektor atau cetak di kertas agar siswa dapat langsung scan dengan kamera ponsel masing-masing.
                   </p>
                 </div>
 
@@ -207,7 +206,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   <button
                     type="button"
                     onClick={handleDownloadQR}
-                    className="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="min-h-[40px] px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-[#0A254D] rounded-full text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer border border-stone-200"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Unduh Gambar QR</span>
@@ -217,29 +216,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     href={publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    className="min-h-[40px] px-3.5 py-1.5 bg-[#E6F7F5] hover:bg-[#00B4D8] hover:text-white text-[#00B4D8] rounded-full text-xs font-black flex items-center gap-1.5 transition-all"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    <span>Uji Coba Tampilan Siswa</span>
+                    <span>Uji Coba Siswa</span>
                   </a>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="p-6 text-center bg-stone-50 rounded-2xl border border-dashed border-stone-300">
-            <Lock className="w-8 h-8 text-stone-400 mx-auto mb-2" />
-            <p className="text-sm font-medium text-stone-700 mb-1">
+          <div className="p-6 text-center bg-stone-50 rounded-3xl border-2 border-dashed border-stone-200 space-y-2">
+            <Lock className="w-8 h-8 text-stone-400 mx-auto" />
+            <p className="text-sm font-black text-[#0A254D]">
               Link Berbagi Sedang Nonaktif
             </p>
-            <p className="text-xs text-stone-500 mb-4 max-w-xs mx-auto">
+            <p className="text-xs text-stone-500 max-w-xs mx-auto font-medium">
               Siswa tidak dapat membuka tautan ini sampai Anda menekan tombol aktifkan di atas.
             </p>
             <button
               type="button"
               disabled={isUpdating}
               onClick={() => handleToggle(true)}
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+              className="min-h-[44px] px-5 py-2.5 bg-[#00B4D8] hover:bg-[#0096C7] text-white rounded-full text-xs font-black transition-all shadow-[0_3px_0_#0077B6] active:translate-y-0.5 cursor-pointer inline-flex items-center gap-1.5"
             >
               {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>Aktifkan dan Bagikan Sekarang</span>
@@ -247,11 +246,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </div>
         )}
 
-        <div className="mt-6 pt-4 border-t border-stone-200 flex justify-end">
+        <div className="pt-3 border-t border-stone-100 flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            className="min-h-[44px] px-6 py-2 bg-stone-100 hover:bg-stone-200 text-[#0A254D] text-xs font-black rounded-full transition-colors cursor-pointer"
           >
             Selesai
           </button>

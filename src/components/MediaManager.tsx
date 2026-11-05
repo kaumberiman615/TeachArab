@@ -560,32 +560,46 @@ export default function MediaManager({
       {/* Media Upload & Recording Grid */}
       <div className={`grid grid-cols-1 ${allowAudio ? 'sm:grid-cols-2' : ''} gap-3`}>
         {/* Photo Box */}
-        <div className="p-2.5 bg-white border border-stone-200 rounded-xl shadow-2xs">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="font-semibold text-stone-700 flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5 text-emerald-600" /> Foto / Gambar
+        <div className="p-3 bg-white border-2 border-stone-100 rounded-2xl shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-bold text-[#0A254D] flex items-center gap-1.5 text-xs">
+              <ImageIcon className="w-4 h-4 text-[#00B4D8]" /> Foto / Gambar
             </span>
             {attachedImage && (
               <button
                 type="button"
                 onClick={onRemoveImage}
-                className="text-rose-600 hover:text-rose-700 flex items-center gap-0.5 cursor-pointer font-medium text-[11px]"
+                className="text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer font-bold text-[11px] p-1"
               >
-                <Trash2 className="w-3 h-3" /> Hapus
+                <Trash2 className="w-3.5 h-3.5" /> Hapus
               </button>
             )}
           </div>
 
           {attachedImage && imageObjectUrl ? (
-            <div className="flex items-center gap-2.5 p-1 bg-stone-50 rounded-lg border border-stone-100">
+            <div className="flex items-center gap-3 p-2 bg-[#FAFCFC] rounded-xl border border-stone-200">
               <img
                 src={imageObjectUrl}
                 alt="Thumbnail"
-                className="w-12 h-12 object-cover rounded-md border border-stone-200 bg-white"
+                className="w-14 h-14 object-cover rounded-xl border border-stone-200 bg-white shrink-0"
               />
               <div className="overflow-hidden flex-1 min-w-0">
-                <p className="truncate font-medium text-stone-800">{attachedImage.name}</p>
-                <p className="text-[10px] text-stone-500">{formatBytes(attachedImage.size)} · Tersimpan Lokal</p>
+                <p className="truncate font-bold text-[#0A254D] text-xs">{attachedImage.name}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  {/* Size Indicator Badge (Green / Yellow / Red) */}
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                      attachedImage.size <= 1.5 * 1024 * 1024
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        : attachedImage.size <= 4 * 1024 * 1024
+                        ? 'bg-amber-50 text-amber-900 border-amber-300'
+                        : 'bg-rose-50 text-rose-800 border-rose-300'
+                    }`}
+                  >
+                    ● {formatBytes(attachedImage.size)}
+                  </span>
+                  <span className="text-[10px] text-stone-400">Offline</span>
+                </div>
               </div>
             </div>
           ) : (
@@ -600,9 +614,9 @@ export default function MediaManager({
               <button
                 type="button"
                 onClick={() => fileInputImageRef.current?.click()}
-                className="w-full py-2 px-2 bg-stone-50 hover:bg-stone-100 border border-stone-200 border-dashed rounded-lg text-stone-600 flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                className="w-full min-h-[44px] py-2.5 px-3 bg-stone-50 hover:bg-[#E6F7F5] border-2 border-stone-200 border-dashed rounded-xl text-[#0A254D] flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs font-bold"
               >
-                <Upload className="w-3.5 h-3.5 text-stone-500" />
+                <Upload className="w-4 h-4 text-[#00B4D8]" />
                 <span>Pilih Foto (Maks 5MB)</span>
               </button>
             </div>
@@ -611,10 +625,10 @@ export default function MediaManager({
 
         {/* Audio Box */}
         {allowAudio && (
-          <div className="p-2.5 bg-white border border-stone-200 rounded-xl shadow-2xs">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="font-semibold text-stone-700 flex items-center gap-1.5">
-                <Volume2 className="w-3.5 h-3.5 text-emerald-600" /> Audio Pelafalan
+          <div className="p-3 bg-white border-2 border-stone-100 rounded-2xl shadow-xs">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold text-[#0A254D] flex items-center gap-1.5 text-xs">
+                <Volume2 className="w-4 h-4 text-[#FF3B8D]" /> Audio Pelafalan
               </span>
               {attachedAudio && (
                 <button
@@ -626,30 +640,44 @@ export default function MediaManager({
                     setIsPlaying(false);
                     onRemoveAudio();
                   }}
-                  className="text-rose-600 hover:text-rose-700 flex items-center gap-0.5 cursor-pointer font-medium text-[11px]"
+                  className="text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer font-bold text-[11px] p-1"
                 >
-                  <Trash2 className="w-3 h-3" /> Hapus
+                  <Trash2 className="w-3.5 h-3.5" /> Hapus
                 </button>
               )}
             </div>
 
             {attachedAudio && audioObjectUrl ? (
-              <div className="flex items-center justify-between gap-2 p-1.5 bg-stone-50 rounded-lg border border-stone-100">
+              <div className="flex items-center justify-between gap-2.5 p-2 bg-[#FAFCFC] rounded-xl border border-stone-200">
                 <div className="overflow-hidden flex-1 min-w-0">
-                  <p className="truncate font-medium text-stone-800">{attachedAudio.name}</p>
-                  <p className="text-[10px] text-stone-500">{formatBytes(attachedAudio.size)} · Tersimpan Lokal</p>
+                  <p className="truncate font-bold text-[#0A254D] text-xs">{attachedAudio.name}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    {/* Size Indicator Badge (Green / Yellow / Red) */}
+                    <span
+                      className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                        attachedAudio.size <= 2 * 1024 * 1024
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : attachedAudio.size <= 6 * 1024 * 1024
+                          ? 'bg-amber-50 text-amber-900 border-amber-300'
+                          : 'bg-rose-50 text-rose-800 border-rose-300'
+                      }`}
+                    >
+                      ● {formatBytes(attachedAudio.size)}
+                    </span>
+                    <span className="text-[10px] text-stone-400">Offline</span>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={togglePlayAudio}
-                  className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg flex items-center gap-1 cursor-pointer font-medium transition-colors shrink-0"
+                  className="min-h-[40px] px-3.5 py-1.5 bg-[#FFF0F6] text-[#FF3B8D] hover:bg-[#FF3B8D] hover:text-white border border-[#FF3B8D]/30 rounded-full flex items-center gap-1.5 cursor-pointer font-black text-xs transition-colors shrink-0"
                 >
-                  {isPlaying ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
+                  {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
                   <span>{isPlaying ? 'Jeda' : 'Putar'}</span>
                 </button>
               </div>
             ) : (
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 <input
                   ref={fileInputAudioRef}
                   type="file"
@@ -660,10 +688,10 @@ export default function MediaManager({
                 <button
                   type="button"
                   onClick={() => fileInputAudioRef.current?.click()}
-                  className="flex-1 py-2 px-2 bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-lg text-stone-600 flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                  className="flex-1 min-h-[44px] py-2 px-3 bg-stone-50 hover:bg-stone-100 border-2 border-stone-200 rounded-xl text-[#0A254D] font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                   title="Upload berkas audio dari komputer"
                 >
-                  <Upload className="w-3.5 h-3.5" />
+                  <Upload className="w-4 h-4 text-stone-500" />
                   <span>Upload</span>
                 </button>
 
@@ -671,18 +699,18 @@ export default function MediaManager({
                   <button
                     type="button"
                     onClick={stopRecording}
-                    className="flex-1 py-2 px-2 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg flex items-center justify-center gap-1 cursor-pointer shadow-xs animate-pulse"
+                    className="flex-1 min-h-[44px] py-2 px-3 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-xs animate-pulse"
                   >
-                    <Square className="w-3 h-3 fill-current" />
+                    <Square className="w-3.5 h-3.5 fill-current" />
                     <span>Selesai ({recordSeconds}s)</span>
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={startRecording}
-                    className="flex-1 py-2 px-2 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-lg flex items-center justify-center gap-1 cursor-pointer shadow-xs transition-colors"
+                    className="flex-1 min-h-[44px] py-2 px-3 bg-[#FF3B8D] hover:bg-[#E62879] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-[0_2px_0_#C2185B] active:translate-y-0.5 transition-all"
                   >
-                    <Mic className="w-3.5 h-3.5" />
+                    <Mic className="w-4 h-4" />
                     <span>Rekam Suara</span>
                   </button>
                 )}

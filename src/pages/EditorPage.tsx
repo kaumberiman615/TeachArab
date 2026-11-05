@@ -509,40 +509,41 @@ export default function EditorPage({
   const backRoute = isMateri ? '/materi' : '/game';
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col pb-32">
+    <div className="min-h-screen bg-[#FAFCFC] flex flex-col pb-32">
       {/* Top Action Toolbar */}
-      <div className="bg-white border-b border-stone-200 px-4 sm:px-6 py-3 sticky top-16 z-30 shadow-2xs">
+      <div className="bg-white border-b-2 border-stone-100 px-4 sm:px-6 py-3 sticky top-16 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Back & Title input */}
           <div className="flex items-center gap-3 flex-1 min-w-[260px]">
             <button
               type="button"
               onClick={() => onNavigate(backRoute)}
-              className="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer shrink-0"
+              className="w-11 h-11 flex items-center justify-center text-stone-500 hover:text-[#0A254D] hover:bg-stone-100 rounded-full transition-colors cursor-pointer shrink-0"
               title={`Kembali ke Galeri ${categoryLabel}`}
+              aria-label={`Kembali ke Galeri ${categoryLabel}`}
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
 
             <div className="flex-1 min-w-0">
               {/* Breadcrumb & Category Badge */}
-              <div className="flex items-center gap-1.5 text-[11px] text-stone-400 px-1 mb-0.5">
+              <div className="flex items-center gap-2 text-xs text-stone-400 px-1 mb-0.5">
                 <button
                   type="button"
                   onClick={() => onNavigate(backRoute)}
-                  className={`font-semibold hover:underline cursor-pointer ${
-                    isMateri ? 'text-emerald-700' : 'text-indigo-700'
+                  className={`font-black hover:underline cursor-pointer ${
+                    isMateri ? 'text-[#00B4D8]' : 'text-[#FF3B8D]'
                   }`}
                 >
                   {categoryLabel}
                 </button>
-                <span>&gt;</span>
-                <span className="font-semibold text-stone-700">{templateDef.name}</span>
+                <span>/</span>
+                <span className="font-bold text-stone-700">{templateDef.name}</span>
                 <span
-                  className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-full border uppercase ml-1 ${
+                  className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border uppercase ml-1 ${
                     isMateri
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+                      ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]/30'
+                      : 'bg-[#FFF0F6] text-[#FF3B8D] border-[#FF3B8D]/30'
                   }`}
                 >
                   {categoryLabel}
@@ -554,22 +555,22 @@ export default function EditorPage({
                 value={draft.title}
                 onChange={(e) => setDraft({ ...draft, title: e.target.value })}
                 placeholder="Judul Materi / Game..."
-                className="w-full text-base sm:text-lg font-bold text-stone-900 bg-transparent border-b border-transparent hover:border-stone-300 focus:border-emerald-600 focus:bg-stone-50 px-1 py-0.5 rounded transition-all focus:outline-hidden"
+                className="w-full text-base sm:text-lg font-black text-[#0A254D] bg-transparent border-b-2 border-transparent hover:border-stone-300 focus:border-[#00B4D8] focus:bg-stone-50 px-1 py-0.5 rounded-lg transition-all focus:outline-hidden"
               />
-              <div className="flex items-center gap-2 text-[11px] text-stone-500 px-1">
-                <span className="flex items-center gap-1">
+              <div className="flex items-center gap-2 text-[11px] text-stone-500 px-1 font-medium">
+                <span className="flex items-center gap-1.5">
                   {saveStatus === 'saved' ? (
                     <>
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Tersimpan di Browser
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Tersimpan di Browser
                     </>
                   ) : (
                     <>
-                      <Save className="w-3 h-3 text-amber-600 animate-spin" /> Menyimpan...
+                      <Save className="w-3.5 h-3.5 text-amber-600 animate-spin" /> Menyimpan...
                     </>
                   )}
                 </span>
                 {cloudSaveMessage && (
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded animate-pulse">
+                  <span className="text-[#00B4D8] font-black bg-[#E6F7F5] px-2 py-0.5 rounded-full animate-pulse">
                     · {cloudSaveMessage}
                   </span>
                 )}
@@ -578,15 +579,15 @@ export default function EditorPage({
           </div>
 
           {/* Action Toolbar */}
-          <div className="flex items-center flex-wrap gap-2">
+          <div className="flex items-center flex-wrap gap-2.5">
             {/* Mobile Tab Switcher */}
-            <div className="flex lg:hidden bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs font-semibold">
+            <div className="flex lg:hidden bg-stone-100 p-1 rounded-full border border-stone-200 text-xs font-black">
               <button
                 type="button"
                 onClick={() => setActiveMobileTab('edit')}
-                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors ${
+                className={`min-h-[40px] px-4 py-1.5 rounded-full flex items-center gap-1.5 cursor-pointer transition-all ${
                   activeMobileTab === 'edit'
-                    ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                    ? 'bg-white text-[#0A254D] shadow-xs'
                     : 'text-stone-600'
                 }`}
               >
@@ -596,9 +597,9 @@ export default function EditorPage({
               <button
                 type="button"
                 onClick={() => setActiveMobileTab('preview')}
-                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors ${
+                className={`min-h-[40px] px-4 py-1.5 rounded-full flex items-center gap-1.5 cursor-pointer transition-all ${
                   activeMobileTab === 'preview'
-                    ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                    ? 'bg-white text-[#0A254D] shadow-xs'
                     : 'text-stone-600'
                 }`}
               >
@@ -611,9 +612,9 @@ export default function EditorPage({
             <button
               type="button"
               onClick={() => setShowQuickInput(true)}
-              className="hidden sm:flex px-3 py-2 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl items-center gap-1.5 transition-colors cursor-pointer"
+              className="hidden sm:flex min-h-[44px] px-4 py-2 text-xs font-black bg-[#E6F7F5] hover:bg-[#00B4D8] text-[#00B4D8] hover:text-white border border-[#00B4D8]/30 rounded-full items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>Input Cepat</span>
             </button>
 
@@ -621,12 +622,13 @@ export default function EditorPage({
             <button
               type="button"
               onClick={() => setShowThemePanel(!showThemePanel)}
-              className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+              className={`min-h-[44px] min-w-[44px] p-2.5 rounded-full border-2 transition-all cursor-pointer flex items-center justify-center ${
                 showThemePanel
-                  ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'bg-white hover:bg-stone-100 text-stone-700 border-stone-200'
+                  ? 'bg-[#00B4D8] text-white border-[#00B4D8] shadow-xs'
+                  : 'bg-white hover:bg-stone-50 text-[#0A254D] border-stone-200'
               }`}
               title="Pengaturan Tema & Kelas"
+              aria-label="Pengaturan Tema"
             >
               <Sliders className="w-4 h-4" />
             </button>
@@ -636,13 +638,13 @@ export default function EditorPage({
               type="button"
               disabled={isSavingToCloud}
               onClick={handleSaveToCloud}
-              className="px-3 py-2 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer border border-stone-200"
+              className="min-h-[44px] px-4 py-2 text-xs font-black bg-stone-100 hover:bg-stone-200 text-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer border border-stone-200 active:translate-y-0.5"
               title="Simpan ke akun Google"
             >
               {isSavingToCloud ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#00B4D8]" />
               ) : (
-                <Cloud className="w-3.5 h-3.5 text-emerald-700" />
+                <Cloud className="w-3.5 h-3.5 text-[#00B4D8]" />
               )}
               <span className="hidden sm:inline">
                 {cloudProjectId ? 'Perbarui di Akun' : 'Simpan ke Akun'}
@@ -654,7 +656,7 @@ export default function EditorPage({
               type="button"
               disabled={isSavingToCloud}
               onClick={handleShareViaLink}
-              className="px-3.5 py-2 text-xs font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer active:scale-95"
+              className="min-h-[44px] px-4 sm:px-5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white rounded-full flex items-center gap-1.5 shadow-[0_3px_0_#C2185B] active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
               title="Bagikan tautan interaktif dan kode QR ke siswa"
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -665,7 +667,7 @@ export default function EditorPage({
             <button
               type="button"
               onClick={() => onNavigate(`/main/${draft.id}`)}
-              className="px-3.5 py-2 text-xs font-bold bg-stone-900 hover:bg-black text-white rounded-xl flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer active:scale-95"
+              className="min-h-[44px] px-4 py-2 text-xs font-black bg-[#0A254D] hover:bg-black text-white rounded-full flex items-center gap-1.5 shadow-[0_3px_0_#000] active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
               title="Mode Main Layar Penuh untuk Proyektor"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
@@ -676,7 +678,7 @@ export default function EditorPage({
             <button
               type="button"
               onClick={() => setShowExportModal(true)}
-              className="px-3.5 py-2 text-xs font-semibold bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 rounded-xl flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+              className="min-h-[44px] px-4 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-stone-200 rounded-full flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:translate-y-0.5"
               title="Unduh file HTML atau ZIP offline"
             >
               <Download className="w-4 h-4 text-stone-600" />
@@ -687,12 +689,12 @@ export default function EditorPage({
       </div>
 
       {/* Teacher Warning Notice */}
-      <div className="bg-amber-50 border-b border-amber-200/80 px-4 py-1.5 text-center text-[12px] text-amber-900 flex items-center justify-center gap-1.5">
-        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+      <div className="bg-[#FFF8DC] border-b border-[#FED034]/60 px-4 py-2 text-center text-xs text-[#0A254D] flex items-center justify-center gap-2 font-medium">
+        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
         <span>
           {cloudProjectId
-            ? 'Tersimpan di Cloud Akun Google · Draf lokal browser tetap dicadangkan secara offline.'
-            : 'Draf hanya tersimpan di browser ini. Unduh agar aman atau simpan ke akun Google.'}
+            ? 'Tersimpan di Cloud Akun Google · Draf lokal peramban tetap dicadangkan secara otomatis.'
+            : 'Draf tersimpan di peramban ini. Unduh HTML mandiri atau simpan ke akun Google agar bebas risiko terhapus.'}
         </span>
       </div>
 
