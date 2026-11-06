@@ -693,7 +693,7 @@ export default function AiAssistantModal({
               type="button"
               onClick={handleApplyToEditor}
               disabled={selectedItemIndices.size === 0}
-              className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+              className="min-h-[44px] px-6 py-2.5 bg-[#FF3B8D] hover:bg-[#e02e7b] disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs sm:text-sm rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-2 cursor-pointer transition-all active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>Masukkan {selectedItemIndices.size} Item ke Editor</span>

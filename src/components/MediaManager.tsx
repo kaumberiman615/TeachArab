@@ -445,14 +445,14 @@ export default function MediaManager({
       <div className="flex items-center justify-between font-semibold text-stone-700">
         <span className="flex items-center gap-1.5">
           <span>Lampiran Media Lokal (100% Offline)</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00B4D8]" />
         </span>
         <div className="flex items-center gap-2 text-[11px] font-normal">
           <span className="text-stone-500 hidden sm:inline">Foto maks 5MB · Audio maks 10MB</span>
           <button
             type="button"
             onClick={() => setShowDiagnostics(!showDiagnostics)}
-            className="text-emerald-700 hover:text-emerald-800 font-medium flex items-center gap-0.5 cursor-pointer bg-white px-2 py-0.5 rounded border border-stone-200"
+            className="text-[#0A254D] hover:text-[#00B4D8] font-bold flex items-center gap-0.5 cursor-pointer bg-white px-2 py-0.5 rounded-lg border border-stone-200"
             title="Tampilkan panel diagnostik media"
           >
             <Activity className="w-3 h-3" />
@@ -590,7 +590,7 @@ export default function MediaManager({
                   <span
                     className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
                       attachedImage.size <= 1.5 * 1024 * 1024
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        ? 'bg-[#E0F7FA] text-[#0A254D] border-cyan-200'
                         : attachedImage.size <= 4 * 1024 * 1024
                         ? 'bg-amber-50 text-amber-900 border-amber-300'
                         : 'bg-rose-50 text-rose-800 border-rose-300'
@@ -652,11 +652,11 @@ export default function MediaManager({
                 <div className="overflow-hidden flex-1 min-w-0">
                   <p className="truncate font-bold text-[#0A254D] text-xs">{attachedAudio.name}</p>
                   <div className="flex items-center gap-1.5 mt-1">
-                    {/* Size Indicator Badge (Green / Yellow / Red) */}
+                    {/* Size Indicator Badge */}
                     <span
                       className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
                         attachedAudio.size <= 2 * 1024 * 1024
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          ? 'bg-[#E0F7FA] text-[#0A254D] border-cyan-200'
                           : attachedAudio.size <= 6 * 1024 * 1024
                           ? 'bg-amber-50 text-amber-900 border-amber-300'
                           : 'bg-rose-50 text-rose-800 border-rose-300'
@@ -725,7 +725,7 @@ export default function MediaManager({
         <div className="mt-2 p-2.5 bg-stone-100 border border-stone-200 rounded-lg text-[11px] text-stone-700 space-y-1.5">
           <div className="flex items-center justify-between font-bold text-stone-900 border-b border-stone-200 pb-1">
             <span className="flex items-center gap-1">
-              <Activity className="w-3.5 h-3.5 text-emerald-700" />
+              <Activity className="w-3.5 h-3.5 text-[#00B4D8]" />
               <span>Diagnostik Media Teach Arab</span>
             </span>
             <span className="text-[10px] text-stone-500 font-normal">Status Penyimpanan Lokal</span>
@@ -734,10 +734,10 @@ export default function MediaManager({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
             <div className="flex items-center justify-between bg-white px-2 py-1 rounded border border-stone-200">
               <span className="text-stone-500">Status IndexedDB:</span>
-              <span className={`font-semibold flex items-center gap-1 ${isIndexedDBSupported ? 'text-emerald-700' : 'text-amber-700'}`}>
+              <span className={`font-semibold flex items-center gap-1 ${isIndexedDBSupported ? 'text-[#00B4D8]' : 'text-amber-700'}`}>
                 {isIndexedDBSupported ? (
                   <>
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Tersedia & Aktif
+                    <CheckCircle2 className="w-3 h-3 text-[#00B4D8]" /> Tersedia & Aktif
                   </>
                 ) : (
                   <>

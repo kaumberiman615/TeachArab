@@ -164,8 +164,8 @@ export default function SlidePlayer({
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-12 text-center border border-stone-200">
-        <Sparkles className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+      <div className="bg-white rounded-3xl p-12 text-center border-2 border-stone-200">
+        <Sparkles className="w-10 h-10 text-[#00B4D8] mx-auto mb-3" />
         <h3 className="text-lg font-bold text-stone-800">Slide Belum Ditambahkan</h3>
         <p className="text-xs text-stone-500 mt-1">Tambahkan slide materi baru di panel editor.</p>
       </div>
@@ -242,7 +242,7 @@ export default function SlidePlayer({
         {/* 1. BIG TITLE LAYOUT */}
         {currentSlide?.layout === 'big-title' && (
           <div className="text-center max-w-3xl mx-auto space-y-6 my-auto">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-3xl mx-auto flex items-center justify-center shadow-xs">
+            <div className="w-16 h-16 bg-[#E0F7FA] text-[#00B4D8] border-2 border-[#00B4D8] rounded-3xl mx-auto flex items-center justify-center shadow-xs">
               <Sparkles className="w-8 h-8" />
             </div>
 

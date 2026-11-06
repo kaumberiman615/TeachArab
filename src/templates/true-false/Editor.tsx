@@ -97,22 +97,22 @@ export default function TrueFalseEditor({
   return (
     <div className="space-y-6">
       {/* Settings Bar */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-4">
-        <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5 text-emerald-700" />
+      <div className="bg-white border-2 border-stone-200 rounded-3xl p-5 shadow-xs space-y-4">
+        <h3 className="text-xs font-black text-[#0A254D] uppercase tracking-wider flex items-center gap-1.5">
+          <Clock className="w-4 h-4 text-[#FF3B8D]" />
           <span>Pengaturan Game Benar atau Salah</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           {/* Timer */}
           <div>
-            <label className="block text-stone-600 font-semibold mb-1">Batas Waktu per Soal</label>
+            <label className="block text-[#0A254D] font-bold mb-1">Batas Waktu per Soal</label>
             <select
               value={settings.tfTimerSeconds || 0}
               onChange={(e) =>
                 onUpdateSettings?.({ ...settings, tfTimerSeconds: parseInt(e.target.value) || 0 })
               }
-              className="w-full p-2 bg-stone-50 border border-stone-200 rounded-lg text-xs"
+              className="w-full p-2.5 bg-stone-50 border-2 border-stone-200 rounded-xl text-xs font-bold text-[#0A254D]"
             >
               <option value={0}>Tanpa Timer</option>
               <option value={10}>10 Detik</option>
@@ -124,13 +124,13 @@ export default function TrueFalseEditor({
 
           {/* Shuffle */}
           <div>
-            <label className="block text-stone-600 font-semibold mb-1">Acak Soal</label>
+            <label className="block text-[#0A254D] font-bold mb-1">Acak Soal</label>
             <button
               type="button"
               onClick={() => onUpdateSettings?.({ ...settings, tfShuffle: !settings.tfShuffle })}
-              className={`w-full p-2 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`w-full p-2.5 rounded-xl border-2 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
                 settings.tfShuffle
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold'
+                  ? 'bg-[#E0F7FA] text-[#0A254D] border-[#0A254D]'
                   : 'bg-stone-50 text-stone-600 border-stone-200'
               }`}
             >
@@ -141,7 +141,7 @@ export default function TrueFalseEditor({
 
           {/* Points */}
           <div>
-            <label className="block text-stone-600 font-semibold mb-1">Skor per Soal</label>
+            <label className="block text-[#0A254D] font-bold mb-1">Skor per Soal</label>
             <input
               type="number"
               min={1}
@@ -153,13 +153,13 @@ export default function TrueFalseEditor({
                   tfPointsPerQuestion: parseInt(e.target.value) || 10,
                 })
               }
-              className="w-full p-2 bg-stone-50 border border-stone-200 rounded-lg text-xs"
+              className="w-full p-2.5 bg-stone-50 border-2 border-stone-200 rounded-xl text-xs font-bold text-[#0A254D]"
             />
           </div>
 
           {/* Team Mode */}
           <div>
-            <label className="block text-stone-600 font-semibold mb-1">Mode Kompetisi Tim</label>
+            <label className="block text-[#0A254D] font-bold mb-1">Mode Kompetisi Tim</label>
             <button
               type="button"
               onClick={() =>
@@ -169,9 +169,9 @@ export default function TrueFalseEditor({
                   teamCount: settings.teamCount || 2,
                 })
               }
-              className={`w-full p-2 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`w-full p-2.5 rounded-xl border-2 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
                 settings.teamMode
-                  ? 'bg-indigo-50 text-indigo-800 border-indigo-300 font-bold'
+                  ? 'bg-[#FFE4EE] text-[#0A254D] border-[#0A254D]'
                   : 'bg-stone-50 text-stone-600 border-stone-200'
               }`}
             >
@@ -183,27 +183,27 @@ export default function TrueFalseEditor({
       </div>
 
       {/* Action Header */}
-      <div className="flex items-center justify-between">
-        <div className="text-xs text-stone-500 font-medium">
-          Total: <strong className="text-stone-900">{items.length}</strong> pernyataan
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-3xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D]">
+        <div className="text-xs sm:text-sm text-[#0A254D] font-bold">
+          Total: <strong className="text-[#FF3B8D] font-black">{items.length}</strong> pernyataan
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-emerald-200 transition-colors cursor-pointer"
+            className="min-h-[44px] px-3.5 py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-4 h-4 text-[#FED034]" />
             <span>Input Cepat (Batch)</span>
           </button>
 
           <button
             type="button"
             onClick={addItem}
-            className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Pernyataan</span>
           </button>
         </div>
@@ -286,12 +286,12 @@ export default function TrueFalseEditor({
                     value={item.statementArabic}
                     onChange={(e) => updateItem(idx, { statementArabic: e.target.value })}
                     placeholder="كَتَبَ التِّلْمِيذُ الدَّرْسَ..."
-                    className={`w-full p-2.5 text-xl font-bold bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-emerald-600 focus:outline-hidden ${fontClass}`}
+                    className={`w-full px-4 py-3 text-2xl sm:text-3xl leading-[2.2] font-bold bg-white border-2 border-stone-300 rounded-2xl focus:border-[#0A254D] focus:outline-hidden ${fontClass}`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-600 mb-1">
+                  <label className="block text-xs font-bold text-[#0A254D] mb-1">
                     Terjemah / Keterangan (Indonesia)
                   </label>
                   <input
@@ -299,7 +299,7 @@ export default function TrueFalseEditor({
                     value={item.statementIndo || ''}
                     onChange={(e) => updateItem(idx, { statementIndo: e.target.value })}
                     placeholder="Murid menulis pelajaran..."
-                    className="w-full p-2 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:bg-white focus:border-emerald-600 focus:outline-hidden"
+                    className="w-full p-2.5 bg-white border-2 border-stone-300 rounded-xl text-xs sm:text-sm font-medium focus:border-[#0A254D] focus:outline-hidden text-[#0A254D]"
                   />
                 </div>
               </div>
@@ -307,17 +307,17 @@ export default function TrueFalseEditor({
               {/* Right Column: Correct Answer Selector & Explanation */}
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                  <label className="block text-xs font-black text-[#0A254D] mb-1">
                     Kunci Jawaban Yang Benar:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => updateItem(idx, { isTrue: true })}
-                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                      className={`min-h-[44px] p-2.5 rounded-2xl border-2 text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         item.isTrue
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                          : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                          ? 'bg-[#00B4D8] text-white border-[#0A254D] shadow-[0_2px_0_#0A254D]'
+                          : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
                       }`}
                     >
                       <CheckCircle2 className="w-4 h-4" />
@@ -327,10 +327,10 @@ export default function TrueFalseEditor({
                     <button
                       type="button"
                       onClick={() => updateItem(idx, { isTrue: false })}
-                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                      className={`min-h-[44px] p-2.5 rounded-2xl border-2 text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         !item.isTrue
-                          ? 'bg-rose-600 text-white border-rose-600 shadow-xs'
-                          : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                          ? 'bg-rose-500 text-white border-[#0A254D] shadow-[0_2px_0_#0A254D]'
+                          : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
                       }`}
                     >
                       <XCircle className="w-4 h-4" />
@@ -340,7 +340,7 @@ export default function TrueFalseEditor({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-600 mb-1">
+                  <label className="block text-xs font-bold text-[#0A254D] mb-1">
                     Penjelasan Jawaban (Opsional - tampil saat siswa selesai menjawab)
                   </label>
                   <textarea
@@ -348,7 +348,7 @@ export default function TrueFalseEditor({
                     value={item.explanation || ''}
                     onChange={(e) => updateItem(idx, { explanation: e.target.value })}
                     placeholder="Contoh: Salah karena ikan hidup di air, bukan di darat..."
-                    className="w-full p-2 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:bg-white focus:border-emerald-600 focus:outline-hidden resize-none"
+                    className="w-full p-2.5 bg-white border-2 border-stone-300 rounded-xl text-xs sm:text-sm focus:border-[#0A254D] focus:outline-hidden resize-none font-medium text-[#0A254D]"
                   />
                 </div>
               </div>
@@ -380,7 +380,7 @@ export default function TrueFalseEditor({
       <button
         type="button"
         onClick={addItem}
-        className="w-full py-3 border-2 border-dashed border-stone-300 hover:border-emerald-600 hover:bg-emerald-50/50 rounded-2xl text-xs font-bold text-stone-600 hover:text-emerald-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+        className="w-full min-h-[48px] py-3.5 border-2 border-dashed border-[#0A254D] hover:bg-[#FFE4EE] rounded-3xl text-xs sm:text-sm font-black text-[#0A254D] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
       >
         <Plus className="w-4 h-4" />
         <span>Tambah Pernyataan Baru</span>

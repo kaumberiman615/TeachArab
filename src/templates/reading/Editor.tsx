@@ -88,50 +88,50 @@ export default function ReadingEditor({
   return (
     <div className="space-y-4">
       {/* Top Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-stone-100 rounded-xl border border-stone-200">
-        <div className="text-xs font-semibold text-stone-700">
-          Total Kalimat Qira'ah: <span className="text-emerald-700 font-bold">{items.length} Kalimat</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-3xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D]">
+        <div className="text-xs sm:text-sm font-black text-[#0A254D]">
+          Total Kalimat Qira'ah: <span className="text-[#00B4D8] font-black">{items.length} Kalimat</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-3.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-2xl shadow-[0_2px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <Sparkles className="w-4 h-4 text-[#FED034]" />
             <span>Input Cepat (kalimat Arab | terjemah)</span>
           </button>
 
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-3 py-1.5 text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs active:scale-95"
+            className="min-h-[44px] px-4 py-2 text-xs font-black bg-[#00B4D8] hover:bg-[#0096b4] text-white rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Kalimat</span>
           </button>
         </div>
       </div>
 
       {/* Optional Full Audio Section */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-2">
+      <div className="bg-white border-2 border-stone-200 rounded-3xl p-5 shadow-xs space-y-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-            <FileAudio className="w-4 h-4 text-emerald-700" />
+          <div className="flex items-center gap-1.5 text-xs font-black text-[#0A254D]">
+            <FileAudio className="w-4 h-4 text-[#00B4D8]" />
             <span>Audio Lengkap Satu Bacaan Penuh (Opsional):</span>
           </div>
           {settings?.fullAudioId && onUpdateSettings && (
             <button
               type="button"
               onClick={() => onUpdateSettings({ ...settings, fullAudioId: undefined })}
-              className="text-[11px] text-rose-600 hover:underline cursor-pointer"
+              className="text-xs font-bold text-rose-600 hover:underline cursor-pointer"
             >
               Hapus Audio Penuh
             </button>
           )}
         </div>
-        <p className="text-[11px] text-stone-500">
+        <p className="text-xs text-stone-600 font-medium">
           Jika guru memiliki rekaman audio pembacaan teks utuh dari awal sampai akhir, rekam atau unggah di sini.
         </p>
         <MediaManager
@@ -155,13 +155,13 @@ export default function ReadingEditor({
       </div>
 
       {items.length === 0 && (
-        <div className="p-8 bg-white border border-stone-200 rounded-2xl text-center space-y-2">
-          <AlertCircle className="w-8 h-8 text-stone-400 mx-auto" />
-          <p className="text-stone-600 text-xs font-medium">Belum ada kalimat dalam teks bacaan ini.</p>
+        <div className="p-8 bg-white border-2 border-stone-200 rounded-3xl text-center space-y-3">
+          <AlertCircle className="w-10 h-10 text-stone-400 mx-auto" />
+          <p className="text-stone-700 text-xs sm:text-sm font-bold">Belum ada kalimat dalam teks bacaan ini.</p>
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 bg-[#00B4D8] hover:bg-[#0096b4] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] text-xs cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             Tambah Kalimat Pertama
           </button>
@@ -169,19 +169,19 @@ export default function ReadingEditor({
       )}
 
       {/* Sentences List */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items.map((sentence, index) => (
           <div
             key={sentence.id}
-            className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-emerald-300 transition-all space-y-3"
+            className="bg-white border-2 border-stone-200 rounded-3xl p-4 sm:p-5 shadow-xs hover:border-[#0A254D] transition-all space-y-4"
           >
             {/* Header row */}
             <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-100">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center">
+                <span className="w-7 h-7 rounded-xl bg-[#E0F7FA] text-[#0A254D] border border-cyan-200 text-xs font-black flex items-center justify-center">
                   {index + 1}
                 </span>
-                <span className="text-xs font-bold text-stone-700">Kalimat #{index + 1}</span>
+                <span className="text-xs font-bold text-[#0A254D]">Kalimat #{index + 1}</span>
               </div>
 
               {/* Actions */}
@@ -226,16 +226,16 @@ export default function ReadingEditor({
             {/* Arabic Sentence Input */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-stone-700">
+                <label className="text-xs font-black text-[#0A254D]">
                   Kalimat Arab (Lengkap Harakat):
                 </label>
                 {sentence.arabic && (
                   <button
                     type="button"
                     onClick={() => speakArabic(sentence.arabic)}
-                    className="text-[11px] text-emerald-700 hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs text-[#00B4D8] hover:text-[#0A254D] font-black flex items-center gap-1 cursor-pointer"
                   >
-                    <Volume2 className="w-3 h-3" />
+                    <Volume2 className="w-3.5 h-3.5" />
                     <span>Uji Pelafalan</span>
                   </button>
                 )}
@@ -246,13 +246,13 @@ export default function ReadingEditor({
                 value={sentence.arabic}
                 onChange={(e) => handleChangeField(index, 'arabic', e.target.value)}
                 placeholder="Tulis kalimat dalam bahasa Arab dengan harakat yang jelas..."
-                className={`w-full p-3 bg-stone-50 border border-stone-300 rounded-xl text-base font-bold text-emerald-950 focus:outline-emerald-600 focus:bg-white text-right leading-loose resize-y ${fontClass}`}
+                className={`w-full px-4 py-3 bg-white border-2 border-stone-300 rounded-2xl text-2xl sm:text-3xl font-bold text-[#0A254D] focus:border-[#0A254D] focus:outline-hidden text-right leading-[2.2] resize-y ${fontClass}`}
               />
             </div>
 
             {/* Translation Input */}
             <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
+              <label className="block text-xs font-bold text-[#0A254D] mb-1">
                 Terjemah Bahasa Indonesia:
               </label>
               <textarea
@@ -260,7 +260,7 @@ export default function ReadingEditor({
                 value={sentence.translation}
                 onChange={(e) => handleChangeField(index, 'translation', e.target.value)}
                 placeholder="Terjemahan kalimat dalam bahasa Indonesia..."
-                className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white resize-y text-stone-800"
+                className="w-full p-3 bg-white border-2 border-stone-300 rounded-xl text-xs sm:text-sm font-medium focus:border-[#0A254D] focus:outline-hidden resize-y text-[#0A254D]"
               />
             </div>
 

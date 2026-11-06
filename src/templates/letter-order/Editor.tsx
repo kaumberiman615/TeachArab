@@ -270,7 +270,7 @@ export default function LetterOrderEditor({
                     value={item.arabic}
                     onChange={(e) => updateItem(idx, { arabic: e.target.value })}
                     placeholder="كِتَابٌ"
-                    className={`w-full p-2.5 text-xl font-bold bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:outline-hidden ${fontClass}`}
+                    className={`w-full px-4 py-3 text-2xl sm:text-3xl leading-[2.2] font-bold bg-white border-2 border-stone-300 rounded-2xl focus:border-[#0A254D] focus:outline-hidden text-[#0A254D] ${fontClass}`}
                   />
 
                   {/* Letter split preview badge */}

@@ -42,7 +42,7 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
     return (
       <div className="min-h-screen bg-stone-100 flex items-center justify-center">
         <div className="text-center space-y-2">
-          <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-3 border-[#FF3B8D] border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-stone-600 text-sm font-semibold">Memuat materi untuk proyektor...</p>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
           <button
             type="button"
             onClick={() => onNavigate('/draf')}
-            className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs cursor-pointer shadow-xs"
+            className="min-h-[44px] px-6 py-2.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] text-xs cursor-pointer transition-all active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             Kembali ke Draf Saya
           </button>
@@ -83,7 +83,7 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
           <button
             type="button"
             onClick={() => onNavigate('/draf')}
-            className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs cursor-pointer shadow-xs"
+            className="min-h-[44px] px-6 py-2.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] text-xs cursor-pointer transition-all active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             Kembali ke Draf Saya
           </button>

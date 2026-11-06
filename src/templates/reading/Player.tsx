@@ -132,8 +132,8 @@ export default function ReadingPlayer({
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-12 text-center border border-stone-200">
-        <BookOpen className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+      <div className="bg-white rounded-3xl p-12 text-center border-2 border-stone-200">
+        <BookOpen className="w-10 h-10 text-[#00B4D8] mx-auto mb-3" />
         <h3 className="text-lg font-bold text-stone-800">Teks Bacaan Belum Diisi</h3>
         <p className="text-xs text-stone-500 mt-1">Tambahkan kalimat qira'ah di panel editor.</p>
       </div>
@@ -142,15 +142,15 @@ export default function ReadingPlayer({
 
   return (
     <div
-      className={`relative w-full rounded-3xl overflow-hidden border border-stone-200 bg-white shadow-lg flex flex-col justify-between ${
+      className={`relative w-full rounded-3xl overflow-hidden border-3 border-playful-navy bg-white shadow-playful-sm flex flex-col justify-between print:border-none print:shadow-none ${
         isProjectorMode ? 'min-h-[75vh]' : 'min-h-[480px]'
       }`}
     >
       {/* Top Reading Toolbar */}
-      <div className="px-5 py-3 border-b border-stone-200 bg-stone-50 flex flex-wrap items-center justify-between gap-3">
+      <div className="no-print px-5 py-3 border-b-2 border-playful-navy/15 bg-stone-50 flex flex-wrap items-center justify-between gap-3">
         {/* Left: Sentence count & Full audio */}
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+          <span className="px-3 py-1 rounded-full text-xs font-black bg-playful-yellow text-playful-navy border-2 border-playful-navy shadow-playful-xs">
             {items.length} Kalimat
           </span>
 
@@ -158,14 +158,14 @@ export default function ReadingPlayer({
             <button
               type="button"
               onClick={handlePlayFullAudio}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${
+              className={`min-h-[44px] px-4 py-2 rounded-full text-xs font-black flex items-center gap-2 cursor-pointer transition-all border-2 border-playful-navy shadow-playful-xs active:translate-y-0.5 ${
                 isPlayingAudio
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
+                  ? 'bg-playful-pink text-white'
+                  : 'bg-playful-cyan text-white hover:bg-cyan-500'
               }`}
             >
-              {isPlayingAudio ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-              <span>{isPlayingAudio ? 'Jeda Audio Penuh' : 'Putar Audio Lengkap'}</span>
+              {isPlayingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
+              <span>{isPlayingAudio ? 'Jeda Audio' : 'Putar Audio Lengkap'}</span>
             </button>
           )}
         </div>
@@ -176,10 +176,10 @@ export default function ReadingPlayer({
           <button
             type="button"
             onClick={() => setShowHarakat(!showHarakat)}
-            className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-black rounded-full border-2 border-playful-navy transition-all cursor-pointer shadow-playful-xs active:translate-y-0.5 ${
               showHarakat
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                : 'bg-stone-100 text-stone-600 border-stone-200'
+                ? 'bg-playful-yellow text-playful-navy'
+                : 'bg-white text-stone-600 hover:bg-stone-100'
             }`}
             title={showHarakat ? 'Sembunyikan Harakat' : 'Tampilkan Harakat'}
           >
@@ -190,33 +190,33 @@ export default function ReadingPlayer({
           <button
             type="button"
             onClick={toggleAllTranslations}
-            className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer flex items-center gap-1 ${
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-black rounded-full border-2 border-playful-navy transition-all cursor-pointer flex items-center gap-1.5 shadow-playful-xs active:translate-y-0.5 ${
               allTranslationsVisible
-                ? 'bg-amber-100 text-amber-900 border-amber-300'
-                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
+                ? 'bg-playful-pink text-white'
+                : 'bg-white text-playful-navy hover:bg-stone-100'
             }`}
           >
-            {allTranslationsVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            {allTranslationsVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden sm:inline">
-              {allTranslationsVisible ? 'Sembunyikan Semua Arti' : 'Tampilkan Semua Arti'}
+              {allTranslationsVisible ? 'Tutup Semua Arti' : 'Lihat Semua Arti'}
             </span>
           </button>
 
           {/* Font Size Adjusters */}
-          <div className="flex items-center bg-white border border-stone-200 rounded-lg overflow-hidden">
+          <div className="flex items-center bg-white border-2 border-playful-navy rounded-full overflow-hidden shadow-playful-xs">
             <button
               type="button"
               onClick={() => setFontSizeDelta((prev) => Math.max(-2, prev - 1))}
-              className="px-2 py-1 text-xs font-bold text-stone-600 hover:bg-stone-100 cursor-pointer"
+              className="min-h-[44px] px-3 py-2 text-xs font-black text-playful-navy hover:bg-playful-yellow/30 cursor-pointer"
               title="Perkecil Huruf"
             >
               A-
             </button>
-            <span className="px-1 text-[10px] text-stone-400">|</span>
+            <span className="text-xs font-black text-playful-navy/30">|</span>
             <button
               type="button"
               onClick={() => setFontSizeDelta((prev) => Math.min(3, prev + 1))}
-              className="px-2 py-1 text-xs font-bold text-stone-600 hover:bg-stone-100 cursor-pointer"
+              className="min-h-[44px] px-3 py-2 text-xs font-black text-playful-navy hover:bg-playful-yellow/30 cursor-pointer"
               title="Perbesar Huruf"
             >
               A+
@@ -226,7 +226,7 @@ export default function ReadingPlayer({
       </div>
 
       {/* Main Qira'ah Reading Area */}
-      <div className="flex-1 p-6 sm:p-10 overflow-y-auto space-y-4">
+      <div className="flex-1 p-6 sm:p-10 overflow-y-auto space-y-4 print:p-0 print:space-y-6">
         {items.map((sentence, idx) => {
           const isSelected = activeSentenceId === sentence.id;
           const isTranslated =
@@ -236,16 +236,16 @@ export default function ReadingPlayer({
             <div
               key={sentence.id}
               onClick={() => setActiveSentenceId(sentence.id)}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
+              className={`p-4 sm:p-6 rounded-3xl border-3 transition-all cursor-pointer print:border-stone-300 print:shadow-none ${
                 isSelected
-                  ? 'border-emerald-500 bg-emerald-50/30 ring-2 ring-emerald-100 shadow-xs'
-                  : 'border-stone-200 bg-white hover:border-emerald-200'
+                  ? 'border-playful-pink bg-pink-50/30 ring-4 ring-pink-100 shadow-playful-xs'
+                  : 'border-playful-navy bg-white hover:border-playful-cyan shadow-playful-xs'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 {/* Sentence Number & Audio Trigger */}
-                <div className="flex items-center gap-1.5 shrink-0 pt-1">
-                  <span className="w-6 h-6 rounded-lg bg-stone-100 text-stone-700 text-xs font-bold flex items-center justify-center">
+                <div className="no-print flex items-center gap-1.5 shrink-0 pt-1">
+                  <span className="w-8 h-8 rounded-full bg-playful-yellow text-playful-navy border-2 border-playful-navy text-xs font-black flex items-center justify-center shadow-2xs">
                     {idx + 1}
                   </span>
                   <button
@@ -254,16 +254,21 @@ export default function ReadingPlayer({
                       e.stopPropagation();
                       handlePlaySentenceAudio(sentence);
                     }}
-                    className="p-1.5 rounded-lg text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer"
+                    className="min-w-[44px] min-h-[44px] rounded-full text-playful-navy hover:bg-playful-yellow/30 flex items-center justify-center transition-colors cursor-pointer"
                     title="Dengarkan Pelafalan"
                   >
-                    <Volume2 className="w-4 h-4" />
+                    <Volume2 className="w-5 h-5 text-playful-pink" />
                   </button>
                 </div>
 
+                {/* Print only number */}
+                <span className="hidden print:inline-block font-bold mr-2 text-stone-700">
+                  {idx + 1}.
+                </span>
+
                 {/* Arabic Text */}
                 <div
-                  className={`flex-1 text-right font-bold text-stone-900 leading-loose ${fontClass}`}
+                  className={`flex-1 text-right font-black text-playful-navy leading-loose ${fontClass}`}
                   dir="rtl"
                   style={{ fontSize: `${currentRem}rem` }}
                 >
@@ -272,21 +277,21 @@ export default function ReadingPlayer({
               </div>
 
               {/* Translation Bar */}
-              <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs">
+              <div className="mt-3 pt-3 border-t border-stone-200 flex items-center justify-between text-xs">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleSentenceTranslation(sentence.id);
                   }}
-                  className="text-stone-500 hover:text-emerald-700 font-medium flex items-center gap-1 cursor-pointer"
+                  className="no-print text-stone-500 hover:text-playful-navy font-bold flex items-center gap-1.5 cursor-pointer py-1"
                 >
-                  {isTranslated ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  {isTranslated ? <EyeOff className="w-4 h-4 text-playful-pink" /> : <Eye className="w-4 h-4 text-playful-cyan" />}
                   <span>{isTranslated ? 'Tutup Arti' : 'Lihat Terjemah'}</span>
                 </button>
 
                 {isTranslated && (
-                  <div className="text-emerald-950 font-medium text-xs sm:text-sm italic animate-in fade-in pl-2">
+                  <div className="text-playful-navy font-bold text-xs sm:text-sm italic animate-in fade-in pl-2">
                     {sentence.translation}
                   </div>
                 )}
@@ -297,9 +302,9 @@ export default function ReadingPlayer({
       </div>
 
       {/* Footer Info */}
-      <div className="px-6 py-3 bg-stone-50 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+      <div className="no-print px-6 py-3 bg-stone-50 border-t-2 border-playful-navy/15 flex items-center justify-between text-xs text-stone-500 font-bold">
         <span>Ketuk kalimat untuk menyorot atau tekan ikon speaker untuk pelafalan</span>
-        <span>Teach Arab Qira'ah</span>
+        <span className="text-playful-navy font-black">Teach Arab Qira'ah</span>
       </div>
     </div>
   );

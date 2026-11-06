@@ -183,18 +183,18 @@ export default function MemoryEditor({
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-indigo-200 transition-colors cursor-pointer"
+            className="px-4 py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-bold rounded-2xl border-2 border-[#0A254D] text-xs flex items-center gap-2 shadow-[0_2px_0_#0A254D] cursor-pointer transition-transform active:translate-y-0.5"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-[#00B4D8]" />
             <span>Input Cepat (Batch)</span>
           </button>
 
           <button
             type="button"
             onClick={addItem}
-            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] text-xs flex items-center gap-1.5 shadow-[0_3px_0_#0A254D] cursor-pointer transition-transform active:translate-y-0.5"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
             <span>Tambah Pasangan</span>
           </button>
         </div>
@@ -277,7 +277,7 @@ export default function MemoryEditor({
                   value={item.arabic}
                   onChange={(e) => updateItem(idx, { arabic: e.target.value })}
                   placeholder="كِتَابٌ..."
-                  className={`w-full p-2.5 text-2xl font-bold bg-amber-50/50 border border-amber-200 rounded-xl focus:bg-white focus:border-amber-600 focus:outline-hidden ${fontClass}`}
+                  className={`w-full px-4 py-3 text-2xl sm:text-3xl font-extrabold bg-stone-50 border-2 border-stone-300 rounded-2xl focus:bg-white focus:border-[#0A254D] focus:outline-hidden leading-[2.2] transition-colors ${fontClass}`}
                 />
               </div>
 
@@ -322,9 +322,9 @@ export default function MemoryEditor({
       <button
         type="button"
         onClick={addItem}
-        className="w-full py-3 border-2 border-dashed border-stone-300 hover:border-indigo-600 hover:bg-indigo-50/50 rounded-2xl text-xs font-bold text-stone-600 hover:text-indigo-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+        className="w-full py-3.5 border-2 border-dashed border-[#0A254D]/30 hover:border-[#FF3B8D] hover:bg-[#FFE4EE]/30 rounded-2xl text-xs font-black text-[#0A254D] hover:text-[#FF3B8D] transition-colors cursor-pointer flex items-center justify-center gap-1.5"
       >
-        <Plus className="w-4 h-4" />
+        <Plus className="w-4 h-4 stroke-[3]" />
         <span>Tambah Pasangan Kartu Baru</span>
       </button>
     </div>

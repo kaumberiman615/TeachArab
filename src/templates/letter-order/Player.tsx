@@ -436,9 +436,9 @@ export default function LetterOrderPlayer({
                   card
                     ? isEvaluated
                       ? isCorrect
-                        ? 'bg-emerald-500 text-white shadow-[0_4px_0_#059669] border-2 border-emerald-600 scale-102'
-                        : 'bg-rose-50 text-rose-700 border-2 border-rose-400 shadow-[0_4px_0_#FB7185]'
-                      : 'bg-[#00B4D8] hover:bg-[#0096B4] text-white shadow-[0_4px_0_#007791] border-2 border-[#00B4D8] active:translate-y-1'
+                        ? 'bg-[#10B981] text-white shadow-[0_4px_0_#0A254D] border-2 border-[#0A254D] scale-102'
+                        : 'bg-rose-50 text-rose-700 border-2 border-rose-400 shadow-[0_4px_0_#0A254D]'
+                      : 'bg-[#00B4D8] hover:bg-[#0096b7] text-white shadow-[0_4px_0_#0A254D] border-2 border-[#0A254D] active:translate-y-1'
                     : 'bg-white border-2 border-dashed border-[#0A254D]/20 text-[#0A254D]/30 hover:border-[#00B4D8]'
                 }`}
                 title={card ? 'Klik/ketuk untuk mengembalikan huruf ke daftar' : `Kotak ke-${slotIdx + 1}`}
@@ -449,7 +449,7 @@ export default function LetterOrderPlayer({
                 </span>
 
                 {card ? (
-                  <span className={`${fontClass} text-2xl sm:text-3xl font-extrabold leading-loose`}>
+                  <span className={`${fontClass} text-2xl sm:text-3xl font-extrabold leading-[2.2]`}>
                     {card.letter}
                   </span>
                 ) : (
@@ -485,7 +485,7 @@ export default function LetterOrderPlayer({
               <button
                 type="button"
                 onClick={handleCheckAnswer}
-                className="px-7 py-3 bg-[#00B4D8] hover:bg-[#0096B4] text-white font-black rounded-full shadow-[0_4px_0_#007791] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-sm"
+                className="px-7 py-3.5 bg-[#00B4D8] hover:bg-[#0096b7] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-sm"
               >
                 <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                 <span>Periksa Jawaban</span>
@@ -494,7 +494,7 @@ export default function LetterOrderPlayer({
               <button
                 type="button"
                 onClick={handleHint}
-                className="px-5 py-3 bg-[#FED034] hover:bg-[#E5B800] text-[#0A254D] border-2 border-[#0A254D]/15 font-black rounded-full shadow-[0_4px_0_#CFA300] active:translate-y-1 transition-all flex items-center gap-1.5 cursor-pointer text-sm"
+                className="px-5 py-3.5 bg-[#FED034] hover:bg-[#e0b820] text-[#0A254D] border-2 border-[#0A254D] font-black rounded-2xl shadow-[0_4px_0_#0A254D] active:translate-y-1 transition-all flex items-center gap-1.5 cursor-pointer text-sm"
                 title="Buka satu huruf yang benar"
               >
                 <Lightbulb className="w-4 h-4 text-[#0A254D]" />
@@ -504,7 +504,7 @@ export default function LetterOrderPlayer({
               <button
                 type="button"
                 onClick={handleResetToPool}
-                className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-[#0A254D] font-black rounded-full border border-[#0A254D]/15 transition-all flex items-center gap-1.5 cursor-pointer text-sm active:scale-95"
+                className="px-5 py-3.5 bg-white hover:bg-stone-50 text-[#0A254D] font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] transition-all flex items-center gap-1.5 cursor-pointer text-sm active:translate-y-0.5"
                 title="Kembalikan semua huruf ke bawah"
               >
                 <Shuffle className="w-4 h-4 text-[#0A254D]/70" />
@@ -515,7 +515,7 @@ export default function LetterOrderPlayer({
             <button
               type="button"
               onClick={handleNextQuestion}
-              className="px-9 py-3.5 bg-[#FF3B8D] hover:bg-[#E02674] text-white font-black rounded-full shadow-[0_5px_0_#C7175E] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
+              className="px-9 py-3.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
             >
               <span>Kata Berikutnya</span>
               <ArrowRight className="w-5 h-5 stroke-[2.5]" />

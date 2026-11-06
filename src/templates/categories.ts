@@ -24,11 +24,11 @@ export const CATEGORIES: Record<TemplateCategory, CategoryInfo> = {
     description:
       'Perangkat ajar murni untuk menyajikan dan menyampaikan materi bahasa Arab di proyektor, layar kelas, atau gawai siswa.',
     colorClass: {
-      badge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      pillActive: 'bg-emerald-700 text-white',
-      bgAccent: 'bg-emerald-50',
-      border: 'border-emerald-200',
-      text: 'text-emerald-700',
+      badge: 'bg-[#E0F7FA] text-[#0A254D] border-2 border-[#0A254D]',
+      pillActive: 'bg-[#00B4D8] text-white border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D]',
+      bgAccent: 'bg-[#E0F7FA]',
+      border: 'border-[#0A254D]',
+      text: 'text-[#0A254D]',
     },
   },
   game: {
@@ -39,11 +39,11 @@ export const CATEGORIES: Record<TemplateCategory, CategoryInfo> = {
     description:
       'Permainan interaktif dan kuis berbasis kelas untuk melatih hafalan, pemahaman, dan kompetisi tim yang seru.',
     colorClass: {
-      badge: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-      pillActive: 'bg-indigo-700 text-white',
-      bgAccent: 'bg-indigo-50',
-      border: 'border-indigo-200',
-      text: 'text-indigo-700',
+      badge: 'bg-[#FFE4EE] text-[#0A254D] border-2 border-[#0A254D]',
+      pillActive: 'bg-[#FF3B8D] text-white border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D]',
+      bgAccent: 'bg-[#FFE4EE]',
+      border: 'border-[#0A254D]',
+      text: 'text-[#0A254D]',
     },
   },
 };

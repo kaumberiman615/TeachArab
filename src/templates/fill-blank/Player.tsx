@@ -373,7 +373,7 @@ export default function FillBlankPlayer({
                 }
               }}
               placeholder="Ketik jawaban Arab di sini..."
-              className={`w-full py-4 px-5 text-2xl sm:text-3xl font-extrabold bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-hidden transition-all text-center ${fontClass} leading-loose ${
+              className={`w-full py-4 px-5 text-2xl sm:text-3xl font-extrabold bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-hidden transition-all text-center ${fontClass} leading-[2.2] ${
                 isEvaluated
                   ? isCorrect
                     ? 'border-emerald-500 bg-emerald-50/50 text-emerald-950 shadow-[0_4px_0_#10B981]'
@@ -425,7 +425,7 @@ export default function FillBlankPlayer({
               <button
                 type="button"
                 onClick={handleCheckAnswer}
-                className="px-8 py-3.5 bg-[#00B4D8] hover:bg-[#0096B4] text-white font-black rounded-full shadow-[0_4px_0_#007791] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-sm"
+                className="px-8 py-3.5 bg-[#00B4D8] hover:bg-[#0096b7] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-sm"
               >
                 <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                 <span>Periksa Jawaban</span>
@@ -434,7 +434,7 @@ export default function FillBlankPlayer({
               <button
                 type="button"
                 onClick={handleHint}
-                className="px-5 py-3.5 bg-[#FED034] hover:bg-[#E5B800] text-[#0A254D] border-2 border-[#0A254D]/15 font-black rounded-full shadow-[0_4px_0_#CFA300] active:translate-y-1 transition-all flex items-center gap-1.5 cursor-pointer text-sm"
+                className="px-5 py-3.5 bg-[#FED034] hover:bg-[#e0b820] text-[#0A254D] border-2 border-[#0A254D] font-black rounded-2xl shadow-[0_4px_0_#0A254D] active:translate-y-1 transition-all flex items-center gap-1.5 cursor-pointer text-sm"
                 title="Buka huruf pertama"
               >
                 <Lightbulb className="w-4 h-4 text-[#0A254D]" />
@@ -445,7 +445,7 @@ export default function FillBlankPlayer({
             <button
               type="button"
               onClick={handleNextQuestion}
-              className="px-9 py-3.5 bg-[#FF3B8D] hover:bg-[#E02674] text-white font-black rounded-full shadow-[0_5px_0_#C7175E] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
+              className="px-9 py-3.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_5px_0_#0A254D] active:translate-y-1 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
             >
               <span>Soal Berikutnya</span>
               <ArrowRight className="w-5 h-5 stroke-[2.5]" />

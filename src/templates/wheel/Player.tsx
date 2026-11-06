@@ -384,7 +384,7 @@ export default function WheelPlayer({
           <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-stone-100">
               <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                <History className="w-4 h-4 text-emerald-700" />
+                <History className="w-4 h-4 text-[#0A254D]" />
                 <span>Riwayat Terpilih</span>
               </span>
               <span className="text-[10px] text-stone-400 font-mono">{history.length} kali</span>
@@ -446,13 +446,13 @@ export default function WheelPlayer({
       {/* POPUP RESULT MODAL */}
       {showResultModal && selectedEntry && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white border border-stone-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl space-y-6 animate-in zoom-in-95">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto text-2xl font-black shadow-xs">
+          <div className="bg-white border-3 border-[#0A254D] rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center shadow-[0_8px_0_#0A254D] space-y-6 animate-in zoom-in-95">
+            <div className="w-16 h-16 rounded-2xl bg-[#FED034] border-2 border-[#0A254D] text-[#0A254D] flex items-center justify-center mx-auto text-2xl font-black shadow-[0_3px_0_#0A254D]">
               🎯
             </div>
 
             <div>
-              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+              <span className="text-xs font-black text-[#0A254D] uppercase tracking-wider bg-[#FFE4EE] border border-[#FF3B8D] px-3.5 py-1 rounded-full">
                 Hasil Terpilih!
               </span>
 
@@ -488,7 +488,7 @@ export default function WheelPlayer({
 
             {/* Team Award Score Options */}
             {isTeam && (
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs space-y-2">
+              <div className="p-3 bg-stone-50 border-2 border-stone-200 rounded-2xl text-xs space-y-2">
                 <span className="font-semibold text-stone-700 block">
                   Beri Poin untuk <strong>{teamNames[currentTeam]}</strong>:
                 </span>
@@ -496,14 +496,14 @@ export default function WheelPlayer({
                   <button
                     type="button"
                     onClick={() => awardTeamScore(10)}
-                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg cursor-pointer transition-colors"
+                    className="px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-xl border-2 border-[#0A254D] cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
                   >
                     +10 Poin (Benar)
                   </button>
                   <button
                     type="button"
                     onClick={() => awardTeamScore(0)}
-                    className="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold rounded-lg cursor-pointer transition-colors"
+                    className="px-4 py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-bold rounded-xl border-2 border-[#0A254D] cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
                   >
                     0 Poin (Lewati)
                   </button>

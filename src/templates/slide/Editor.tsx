@@ -105,40 +105,40 @@ export default function SlideEditor({
   return (
     <div className="space-y-4">
       {/* Top Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-stone-100 rounded-xl border border-stone-200">
-        <div className="text-xs font-semibold text-stone-700">
-          Jumlah Slide: <span className="text-emerald-700 font-bold">{items.length} Slide</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-3xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D]">
+        <div className="text-xs sm:text-sm font-black text-[#0A254D]">
+          Jumlah Slide: <span className="text-[#00B4D8] font-black">{items.length} Slide</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-3.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-2xl shadow-[0_2px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <Sparkles className="w-4 h-4 text-[#FED034]" />
             <span>Input Cepat (judul | isi)</span>
           </button>
 
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-3 py-1.5 text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs active:scale-95"
+            className="min-h-[44px] px-4 py-2 text-xs font-black bg-[#00B4D8] hover:bg-[#0096b4] text-white rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Slide</span>
           </button>
         </div>
       </div>
 
       {items.length === 0 && (
-        <div className="p-8 bg-white border border-stone-200 rounded-2xl text-center space-y-2">
-          <AlertCircle className="w-8 h-8 text-stone-400 mx-auto" />
-          <p className="text-stone-600 text-xs font-medium">Belum ada slide materi.</p>
+        <div className="p-8 bg-white border-2 border-stone-200 rounded-3xl text-center space-y-3">
+          <AlertCircle className="w-10 h-10 text-stone-400 mx-auto" />
+          <p className="text-stone-700 text-xs sm:text-sm font-bold">Belum ada slide materi.</p>
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 bg-[#00B4D8] hover:bg-[#0096b4] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] text-xs cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             Tambah Slide Pertama
           </button>
@@ -146,15 +146,15 @@ export default function SlideEditor({
       )}
 
       {/* Slide Items List */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items.map((slide, index) => {
           const isExpanded = expandedIndex === index;
 
           return (
             <div
               key={slide.id}
-              className={`bg-white border rounded-2xl p-4 transition-all shadow-xs ${
-                isExpanded ? 'border-emerald-500 ring-2 ring-emerald-50' : 'border-stone-200 hover:border-emerald-300'
+              className={`bg-white border-2 rounded-3xl p-4 sm:p-5 transition-all shadow-xs ${
+                isExpanded ? 'border-[#0A254D] ring-2 ring-cyan-100 shadow-md' : 'border-stone-200 hover:border-[#0A254D]'
               }`}
             >
               {/* Header row */}
@@ -163,14 +163,14 @@ export default function SlideEditor({
                   className="flex items-center gap-2 flex-1 cursor-pointer select-none"
                   onClick={() => setExpandedIndex(isExpanded ? -1 : index)}
                 >
-                  <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0">
+                  <span className="w-7 h-7 rounded-xl bg-[#E0F7FA] text-[#0A254D] border border-cyan-200 text-xs font-black flex items-center justify-center shrink-0">
                     {index + 1}
                   </span>
                   <div className="overflow-hidden">
-                    <h4 className="text-xs font-bold text-stone-900 truncate">
+                    <h4 className="text-xs sm:text-sm font-black text-[#0A254D] truncate">
                       {slide.title || 'Slide Tanpa Judul'}
                     </h4>
-                    <span className="text-[10px] text-stone-500 capitalize">
+                    <span className="text-xs text-stone-500 capitalize font-medium">
                       Tata Letak: {layouts.find((l) => l.id === slide.layout)?.label || 'Teks Saja'}
                     </span>
                   </div>
@@ -227,8 +227,8 @@ export default function SlideEditor({
                 <div className="pt-4 space-y-4">
                   {/* Layout Selector */}
                   <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1.5 flex items-center gap-1.5">
-                      <Layout className="w-3.5 h-3.5 text-emerald-600" />
+                    <label className="block text-xs font-black text-[#0A254D] mb-1.5 flex items-center gap-1.5">
+                      <Layout className="w-4 h-4 text-[#00B4D8]" />
                       <span>Pilihan Tata Letak Slide:</span>
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -237,14 +237,14 @@ export default function SlideEditor({
                           key={l.id}
                           type="button"
                           onClick={() => handleChangeField(index, 'layout', l.id)}
-                          className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                          className={`p-2.5 rounded-2xl border-2 text-left cursor-pointer transition-all ${
                             slide.layout === l.id
-                              ? 'border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold shadow-2xs'
+                              ? 'border-[#0A254D] bg-[#E0F7FA] text-[#0A254D] font-black shadow-xs'
                               : 'border-stone-200 bg-stone-50 hover:bg-white text-stone-700'
                           }`}
                         >
-                          <div className="text-xs">{l.label}</div>
-                          <div className="text-[10px] text-stone-500 font-normal leading-tight mt-0.5">
+                          <div className="text-xs font-bold">{l.label}</div>
+                          <div className="text-[10px] text-stone-500 font-medium leading-tight mt-0.5">
                             {l.desc}
                           </div>
                         </button>
@@ -254,7 +254,7 @@ export default function SlideEditor({
 
                   {/* Slide Title */}
                   <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
+                    <label className="block text-xs font-black text-[#0A254D] mb-1">
                       Judul Slide (Teks Arab atau Indonesia):
                     </label>
                     <input
@@ -263,13 +263,13 @@ export default function SlideEditor({
                       value={slide.title}
                       onChange={(e) => handleChangeField(index, 'title', e.target.value)}
                       placeholder="Contoh: مَرْحَبًا بِكُمْ / Mengenal Kosakata"
-                      className={`w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-emerald-600 focus:bg-white ${fontClass}`}
+                      className={`w-full p-3 bg-white border-2 border-stone-300 rounded-xl text-lg font-bold text-[#0A254D] focus:border-[#0A254D] focus:outline-hidden ${fontClass}`}
                     />
                   </div>
 
                   {/* Slide Content */}
                   <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
+                    <label className="block text-xs font-black text-[#0A254D] mb-1">
                       Isi Materi / Penjelasan (Mendukung Teks Arab & Indonesia Multiline):
                     </label>
                     <textarea
@@ -278,13 +278,13 @@ export default function SlideEditor({
                       value={slide.content}
                       onChange={(e) => handleChangeField(index, 'content', e.target.value)}
                       placeholder="Tuliskan materi pelajaran, poin-poin penjelasan, atau teks Arab..."
-                      className={`w-full p-3 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white leading-relaxed resize-y ${fontClass}`}
+                      className={`w-full px-4 py-3 bg-white border-2 border-stone-300 rounded-2xl text-2xl sm:text-3xl font-bold text-[#0A254D] focus:border-[#0A254D] focus:outline-hidden leading-[2.2] resize-y ${fontClass}`}
                     />
                   </div>
 
                   {/* Media (Image & Audio Recording/Upload) */}
-                  <div className="p-3 bg-stone-50/80 border border-stone-200 rounded-xl space-y-3">
-                    <div className="text-xs font-semibold text-stone-800">
+                  <div className="p-4 bg-[#FAFCFC] border-2 border-stone-100 rounded-2xl space-y-3">
+                    <div className="text-xs font-black text-[#0A254D]">
                       Media Pendukung (Gambar & Audio Pelafalan):
                     </div>
                     <MediaManager
@@ -306,9 +306,9 @@ export default function SlideEditor({
                   </div>
 
                   {/* Optional Video / YouTube */}
-                  <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl space-y-2">
-                    <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
-                      <Video className="w-3.5 h-3.5 text-stone-600" />
+                  <div className="p-4 bg-[#FAFCFC] border-2 border-stone-100 rounded-2xl space-y-2">
+                    <label className="text-xs font-black text-[#0A254D] flex items-center gap-1.5">
+                      <Video className="w-4 h-4 text-[#00B4D8]" />
                       <span>Link Video YouTube (Opsional):</span>
                     </label>
                     <input
@@ -316,17 +316,17 @@ export default function SlideEditor({
                       value={slide.youtubeUrl || ''}
                       onChange={(e) => handleChangeField(index, 'youtubeUrl', e.target.value)}
                       placeholder="https://www.youtube.com/watch?v=... atau https://youtu.be/..."
-                      className="w-full p-2 bg-white border border-stone-300 rounded-lg text-xs focus:outline-emerald-600"
+                      className="w-full p-2.5 bg-white border-2 border-stone-300 rounded-xl text-xs sm:text-sm focus:border-[#0A254D] focus:outline-hidden text-[#0A254D] font-medium"
                     />
-                    <p className="text-[11px] text-stone-500">
+                    <p className="text-xs text-stone-500 font-medium">
                       Video YouTube akan tersemat rapi langsung di dalam slide kelas proyektor.
                     </p>
                   </div>
 
                   {/* Teacher Notes */}
                   <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center gap-1">
-                      <FileText className="w-3.5 h-3.5 text-amber-700" />
+                    <label className="block text-xs font-black text-[#0A254D] mb-1 flex items-center gap-1">
+                      <FileText className="w-4 h-4 text-amber-500" />
                       <span>Catatan Guru (Hanya tampil saat tombol catatan ditekan / rahasia):</span>
                     </label>
                     <textarea
@@ -334,7 +334,7 @@ export default function SlideEditor({
                       value={slide.teacherNotes || ''}
                       onChange={(e) => handleChangeField(index, 'teacherNotes', e.target.value)}
                       placeholder="Contoh: Ajak murid melafalkan bersama-sama 3 kali, lalu tunjuk siswa acak..."
-                      className="w-full p-2.5 bg-amber-50/40 border border-amber-200 rounded-xl text-xs focus:outline-emerald-600 focus:bg-white resize-y text-stone-800"
+                      className="w-full p-3 bg-amber-50/50 border-2 border-amber-200 rounded-xl text-xs sm:text-sm font-medium focus:border-[#0A254D] focus:outline-hidden resize-y text-stone-800"
                     />
                   </div>
                 </div>

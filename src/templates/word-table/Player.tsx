@@ -82,8 +82,8 @@ export default function WordTablePlayer({
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-12 text-center border border-stone-200">
-        <Table className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+      <div className="bg-white rounded-3xl p-12 text-center border-2 border-stone-200">
+        <Table className="w-10 h-10 text-[#00B4D8] mx-auto mb-3" />
         <h3 className="text-lg font-bold text-stone-800">Tabel Masih Kosong</h3>
         <p className="text-xs text-stone-500 mt-1">Tambahkan baris kata di panel editor.</p>
       </div>
@@ -126,11 +126,11 @@ export default function WordTablePlayer({
       `}</style>
 
       {/* Toolbar (Excluded from Print) */}
-      <div className="no-print bg-white border border-stone-200 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
+      <div className="no-print bg-white border-3 border-playful-navy rounded-3xl p-4 shadow-playful-xs flex flex-wrap items-center justify-between gap-3">
         {/* Left: Memorization Controls */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold text-stone-700 flex items-center gap-1.5 mr-1">
-            <EyeOff className="w-4 h-4 text-emerald-700" />
+          <span className="text-xs font-black text-playful-navy flex items-center gap-1.5 mr-1">
+            <EyeOff className="w-4 h-4 text-playful-pink" />
             <span>Sembunyikan Kolom Hafalan:</span>
           </span>
 
@@ -141,10 +141,10 @@ export default function WordTablePlayer({
                 key={col.id}
                 type="button"
                 onClick={() => toggleHideColumn(col.id)}
-                className={`px-2.5 py-1 text-xs rounded-lg border font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[44px] px-3.5 py-2 text-xs rounded-full border-2 border-playful-navy font-black transition-all cursor-pointer shadow-playful-xs active:translate-y-0.5 ${
                   isHidden
-                    ? 'bg-amber-100 text-amber-900 border-amber-300'
-                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
+                    ? 'bg-playful-yellow text-playful-navy'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700'
                 }`}
                 title="Klik untuk sembunyikan/tampilkan kolom ini saat latihan menghafal"
               >
@@ -158,10 +158,10 @@ export default function WordTablePlayer({
             <button
               type="button"
               onClick={handleResetMemorization}
-              className="px-2.5 py-1 text-xs font-semibold text-stone-600 hover:text-stone-900 bg-stone-100 rounded-lg flex items-center gap-1 cursor-pointer"
+              className="min-h-[44px] px-3.5 py-2 text-xs font-black text-playful-navy hover:bg-stone-100 bg-stone-100 rounded-full border-2 border-playful-navy shadow-playful-xs flex items-center gap-1.5 cursor-pointer active:translate-y-0.5"
               title="Tutup kembali semua sel yang sudah dibuka"
             >
-              <RotateCcw className="w-3 h-3" />
+              <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset Jawaban</span>
             </button>
           )}
@@ -172,10 +172,10 @@ export default function WordTablePlayer({
           <button
             type="button"
             onClick={() => setShowHarakat(!showHarakat)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-colors cursor-pointer ${
+            className={`min-h-[44px] px-4 py-2 text-xs font-black rounded-full border-2 border-playful-navy transition-all cursor-pointer shadow-playful-xs active:translate-y-0.5 ${
               showHarakat
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                : 'bg-stone-100 text-stone-600 border-stone-200'
+                ? 'bg-playful-yellow text-playful-navy'
+                : 'bg-white text-stone-600 hover:bg-stone-100'
             }`}
           >
             {showHarakat ? 'Harakat: Aktif' : 'Harakat: Mati'}
@@ -184,7 +184,7 @@ export default function WordTablePlayer({
           <button
             type="button"
             onClick={handlePrint}
-            className="px-3.5 py-1.5 bg-stone-900 hover:bg-black text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs active:scale-95"
+            className="min-h-[44px] px-5 py-2 bg-playful-pink hover:bg-pink-600 text-white text-xs font-black rounded-full border-2 border-playful-navy flex items-center gap-2 transition-all cursor-pointer shadow-playful-xs active:translate-y-0.5"
             title="Cetak lembar tabel bersih untuk dibagikan ke siswa"
           >
             <Printer className="w-4 h-4" />
@@ -196,36 +196,36 @@ export default function WordTablePlayer({
       {/* Main Table Container */}
       <div
         id="printable-word-table"
-        className="bg-white rounded-3xl border border-stone-200 shadow-md overflow-hidden"
+        className="bg-white rounded-3xl border-3 border-playful-navy shadow-playful-sm overflow-hidden print:border-none print:shadow-none"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-emerald-700 text-white border-b border-emerald-800">
-                <th className="py-3.5 px-4 text-xs font-extrabold w-12 text-center">No</th>
+              <tr className="bg-playful-navy text-white border-b-2 border-playful-navy">
+                <th className="py-3.5 px-4 text-xs font-black w-12 text-center">No</th>
                 {columns.map((col) => (
                   <th
                     key={col.id}
-                    className={`py-3.5 px-4 text-xs font-bold tracking-wide ${
+                    className={`py-3.5 px-4 text-xs font-black tracking-wide ${
                       col.isArabic ? 'text-right' : 'text-left'
                     }`}
                   >
                     {col.name}
                   </th>
                 ))}
-                <th className="no-print py-3.5 px-4 text-xs font-bold w-16 text-center">Audio</th>
+                <th className="no-print py-3.5 px-4 text-xs font-black w-16 text-center">Audio</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 text-stone-800">
+            <tbody className="divide-y divide-stone-200 text-stone-800">
               {items.map((row, rowIdx) => (
                 <tr
                   key={row.id}
                   className={`transition-colors ${
-                    rowIdx % 2 === 0 ? 'bg-white' : 'bg-stone-50/60'
-                  } hover:bg-emerald-50/30`}
+                    rowIdx % 2 === 0 ? 'bg-white' : 'bg-stone-50/70'
+                  } hover:bg-playful-yellow/10`}
                 >
                   {/* Row Number */}
-                  <td className="py-3 px-4 text-xs font-bold text-stone-500 text-center">
+                  <td className="py-3 px-4 text-xs font-black text-stone-500 text-center">
                     {rowIdx + 1}
                   </td>
 
@@ -244,12 +244,12 @@ export default function WordTablePlayer({
                           if (isColHidden) toggleRevealCell(cellKey);
                         }}
                         className={`py-3 px-4 text-sm ${
-                          col.isArabic ? `text-right text-base font-bold ${fontClass}` : ''
+                          col.isArabic ? `text-right text-base font-black ${fontClass}` : 'font-medium'
                         } ${shouldMask ? 'cursor-pointer select-none bg-amber-50/70 hover:bg-amber-100/70' : ''}`}
                         dir={col.isArabic ? 'rtl' : 'ltr'}
                       >
                         {shouldMask ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-amber-800 font-semibold italic bg-amber-100/90 px-2 py-0.5 rounded-md shadow-2xs">
+                          <span className="inline-flex items-center gap-1 text-xs text-playful-navy font-black bg-playful-yellow/80 border border-playful-navy/30 px-2.5 py-1 rounded-full shadow-2xs">
                             <span>❓ Klik buka</span>
                           </span>
                         ) : (
@@ -274,7 +274,7 @@ export default function WordTablePlayer({
                           if (firstVal) speakArabic(firstVal);
                         }
                       }}
-                      className="p-1.5 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center"
+                      className="min-w-[40px] min-h-[40px] text-playful-navy hover:text-playful-pink hover:bg-playful-yellow/20 rounded-full transition-colors cursor-pointer inline-flex items-center justify-center"
                       title="Dengarkan Pelafalan"
                     >
                       <Volume2 className="w-4 h-4" />

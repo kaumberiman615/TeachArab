@@ -22,7 +22,9 @@ export interface GameStartScreenProps {
   description: string;
   badge?: string;
   itemsCount?: number;
+  itemCount?: number; // alias
   itemsLabel?: string;
+  itemLabel?: string; // alias
   timerSeconds?: number;
   pointsPerQuestion?: number;
   isTeam?: boolean;
@@ -38,7 +40,9 @@ export const GameStartScreen: React.FC<GameStartScreenProps> = ({
   description,
   badge = 'Game Interaktif',
   itemsCount,
+  itemCount,
   itemsLabel = 'Soal',
+  itemLabel,
   timerSeconds,
   pointsPerQuestion,
   isTeam = false,
@@ -48,6 +52,8 @@ export const GameStartScreen: React.FC<GameStartScreenProps> = ({
   onStart,
   extraInfo,
 }) => {
+  const actualCount = itemsCount !== undefined ? itemsCount : itemCount;
+  const actualLabel = itemLabel || itemsLabel || 'Soal';
   return (
     <div className="bg-white border-2 border-stone-200 rounded-3xl p-6 sm:p-10 md:p-12 text-center max-w-2xl mx-auto shadow-xl relative overflow-hidden my-4">
       {/* Playful background decorative bubbles */}
@@ -79,9 +85,9 @@ export const GameStartScreen: React.FC<GameStartScreenProps> = ({
 
       {/* Rules / Configuration Chips */}
       <div className="flex flex-wrap items-center justify-center gap-2.5 mb-7">
-        {itemsCount !== undefined && itemsCount > 0 && (
+        {actualCount !== undefined && actualCount > 0 && (
           <div className="px-3.5 py-1.5 rounded-full bg-stone-100 text-navy-deep font-bold text-xs border border-stone-200">
-            📝 {itemsCount} {itemsLabel}
+            📝 {actualCount} {actualLabel}
           </div>
         )}
         {timerSeconds !== undefined && timerSeconds > 0 ? (
@@ -147,11 +153,14 @@ export const GameStartScreen: React.FC<GameStartScreenProps> = ({
    2. GAME TOP BAR
    ========================================================================= */
 export interface GameTopBarProps {
-  progressText: string;
+  progressText?: string;
+  roundText?: string; // alias
   progressPercent?: number;
   timeLeft?: number;
+  timerSeconds?: number; // alias
   timerLimit?: number;
   score?: number;
+  scoreLabel?: string; // alias
   isTeam?: boolean;
   teamNames?: string[];
   teamScores?: number[];
@@ -161,15 +170,19 @@ export interface GameTopBarProps {
   isFullscreen?: boolean;
   onToggleFullscreen?: () => void;
   onExit?: () => void;
+  onReset?: () => void; // alias
   extraControls?: React.ReactNode;
 }
 
 export const GameTopBar: React.FC<GameTopBarProps> = ({
   progressText,
+  roundText,
   progressPercent,
   timeLeft,
+  timerSeconds,
   timerLimit = 0,
   score,
+  scoreLabel,
   isTeam = false,
   teamNames = [],
   teamScores = [],
@@ -179,17 +192,22 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
   isFullscreen = false,
   onToggleFullscreen,
   onExit,
+  onReset,
   extraControls,
 }) => {
+  const displayProgress = progressText || roundText || '';
+  const displayTime = timeLeft !== undefined ? timeLeft : timerSeconds;
+  const handleExit = onExit || onReset;
+
   return (
     <div className="space-y-2 mb-4">
       <div className="bg-white border-2 border-stone-200 rounded-2xl p-2.5 sm:p-3 px-4 shadow-xs flex flex-wrap items-center justify-between gap-2.5 text-xs">
         {/* Left: Progress chip & Timer */}
         <div className="flex items-center gap-2">
-          {onExit && (
+          {handleExit && (
             <button
               type="button"
-              onClick={onExit}
+              onClick={handleExit}
               className="w-9 h-9 flex items-center justify-center text-stone-500 hover:text-navy-deep rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
               title="Keluar / Kembali"
             >
@@ -197,20 +215,22 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
             </button>
           )}
 
-          <span className="font-black text-navy-deep bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200">
-            {progressText}
-          </span>
+          {displayProgress && (
+            <span className="font-black text-navy-deep bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200">
+              {displayProgress}
+            </span>
+          )}
 
-          {timerLimit > 0 && timeLeft !== undefined && (
+          {(timerLimit > 0 || timerSeconds !== undefined) && displayTime !== undefined && (
             <span
               className={`flex items-center gap-1.5 font-black px-3 py-1.5 rounded-full border transition-all ${
-                timeLeft <= 5
+                displayTime <= 5
                   ? 'bg-rose-100 text-rose-700 border-rose-300 animate-pulse'
                   : 'bg-cyan-ice text-cyan-bubble border-cyan-bubble/30'
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
-              <span>{timeLeft}s</span>
+              <span>{displayTime}s</span>
             </span>
           )}
         </div>
@@ -224,7 +244,7 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
                 { bg: 'bg-pink-50', text: 'text-pink-bubble', border: 'border-pink-bubble/40', active: 'bg-pink-bubble text-white border-pink-bubble shadow-[0_2px_0_#D81B60]' },
                 { bg: 'bg-cyan-50', text: 'text-cyan-bubble', border: 'border-cyan-bubble/40', active: 'bg-cyan-bubble text-white border-cyan-bubble shadow-[0_2px_0_#0087A2]' },
                 { bg: 'bg-yellow-50', text: 'text-amber-700', border: 'border-yellow-bubble', active: 'bg-yellow-bubble text-navy-deep border-yellow-bubble shadow-[0_2px_0_#E6B800]' },
-                { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-300', active: 'bg-emerald-600 text-white border-emerald-600 shadow-[0_2px_0_#047857]' },
+                { bg: 'bg-indigo-50', text: 'text-[#0A254D]', border: 'border-indigo-300', active: 'bg-[#0A254D] text-white border-[#0A254D] shadow-[0_2px_0_#061730]' },
               ][idx % 4];
 
               return (
@@ -293,21 +313,32 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
    ========================================================================= */
 export interface GameFeedbackBannerProps {
   isCorrect: boolean;
+  title?: string; // alias
+  message?: string; // alias
   pointsAwarded?: number;
   correctAnswerText?: string;
   explanation?: string;
-  onNext: () => void;
+  onNext?: () => void;
+  onAction?: () => void; // alias
   nextButtonText?: string;
+  actionLabel?: string; // alias
 }
 
 export const GameFeedbackBanner: React.FC<GameFeedbackBannerProps> = ({
   isCorrect,
+  title,
+  message,
   pointsAwarded,
   correctAnswerText,
   explanation,
   onNext,
-  nextButtonText = 'Soal Berikutnya →',
+  onAction,
+  nextButtonText,
+  actionLabel,
 }) => {
+  const handleNext = onNext || onAction || (() => {});
+  const buttonText = nextButtonText || actionLabel || 'Soal Berikutnya →';
+
   return (
     <div
       className={`p-4 sm:p-5 rounded-3xl border-2 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in zoom-in-95 shadow-md ${
@@ -321,7 +352,7 @@ export const GameFeedbackBanner: React.FC<GameFeedbackBannerProps> = ({
           {isCorrect ? (
             <>
               <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
-              <span>Mumtaz! Jawaban Tepat!</span>
+              <span>{title || 'Mumtaz! Jawaban Tepat!'}</span>
               {pointsAwarded !== undefined && (
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900">
                   +{pointsAwarded} Poin
@@ -331,10 +362,12 @@ export const GameFeedbackBanner: React.FC<GameFeedbackBannerProps> = ({
           ) : (
             <>
               <XCircle className="w-6 h-6 text-rose-600 shrink-0" />
-              <span>Belum Tepat! Tetap Semangat!</span>
+              <span>{title || 'Belum Tepat! Tetap Semangat!'}</span>
             </>
           )}
         </div>
+
+        {message && <p className="text-xs font-semibold text-stone-600 mt-1">{message}</p>}
 
         {!isCorrect && correctAnswerText && (
           <p className="text-xs sm:text-sm font-bold text-rose-900 mt-1">
@@ -351,10 +384,10 @@ export const GameFeedbackBanner: React.FC<GameFeedbackBannerProps> = ({
 
       <button
         type="button"
-        onClick={onNext}
+        onClick={handleNext}
         className="w-full sm:w-auto min-h-[46px] px-8 py-3 bg-pink-bubble hover:bg-pink-bubble/90 active:translate-y-0.5 active:shadow-none text-white font-black text-sm rounded-full shadow-[0_3px_0_#D81B60] transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
       >
-        <span>{nextButtonText}</span>
+        <span>{buttonText}</span>
         <ArrowRight className="w-4 h-4" />
       </button>
     </div>
@@ -367,8 +400,10 @@ export const GameFeedbackBanner: React.FC<GameFeedbackBannerProps> = ({
 export interface GameResultScreenProps {
   title?: string;
   subtitle?: string;
+  message?: string; // alias
   score?: number;
   maxScore?: number;
+  scoreLabel?: string; // alias
   attempts?: number;
   secondsElapsed?: number;
   isTeam?: boolean;
@@ -380,9 +415,11 @@ export interface GameResultScreenProps {
 
 export const GameResultScreen: React.FC<GameResultScreenProps> = ({
   title = 'Permainan Selesai!',
-  subtitle = 'Alhamdulillah, seluruh soal berhasil kamu selesaikan!',
+  subtitle,
+  message,
   score,
   maxScore,
+  scoreLabel,
   attempts,
   secondsElapsed,
   isTeam = false,
@@ -391,6 +428,7 @@ export const GameResultScreen: React.FC<GameResultScreenProps> = ({
   onRestart,
   onBack,
 }) => {
+  const displaySubtitle = subtitle || message || 'Alhamdulillah, seluruh soal berhasil kamu selesaikan!';
   return (
     <div className="bg-white border-2 border-stone-200 rounded-3xl p-6 sm:p-10 md:p-12 text-center max-w-xl mx-auto shadow-2xl space-y-6 animate-in fade-in zoom-in-95 my-4 relative overflow-hidden">
       {/* Playful background accents */}
@@ -410,7 +448,7 @@ export const GameResultScreen: React.FC<GameResultScreenProps> = ({
           {title}
         </h2>
         <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-md mx-auto">
-          {subtitle}
+          {displaySubtitle}
         </p>
       </div>
 

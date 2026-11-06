@@ -104,8 +104,8 @@ export default function VocabPicturePlayer({
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-12 text-center border border-stone-200">
-        <Sparkles className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+      <div className="bg-white rounded-3xl p-12 text-center border-2 border-stone-200">
+        <Sparkles className="w-10 h-10 text-[#00B4D8] mx-auto mb-3" />
         <h3 className="text-lg font-bold text-stone-800">Kosakata Belum Ditambahkan</h3>
         <p className="text-xs text-stone-500 mt-1">Tambahkan kosakata bergambar baru di panel editor.</p>
       </div>

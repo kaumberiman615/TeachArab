@@ -286,7 +286,7 @@ export default function TrueFalsePlayer({
             <button
               type="button"
               onClick={() => handleChoose(true)}
-              className="py-5 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl font-black text-xl shadow-[0_6px_0_#059669] hover:shadow-[0_8px_0_#059669] active:translate-y-1.5 active:shadow-[0_2px_0_#059669] transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5"
+              className="py-5 px-6 bg-[#00B4D8] hover:bg-[#0096b7] text-white rounded-3xl font-black text-xl border-3 border-[#0A254D] shadow-[0_6px_0_#0A254D] active:translate-y-1.5 active:shadow-[0_2px_0_#0A254D] transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5"
             >
               <CheckCircle2 className="w-9 h-9 stroke-[2.5]" />
               <span className="tracking-wide">BENAR</span>
@@ -296,7 +296,7 @@ export default function TrueFalsePlayer({
             <button
               type="button"
               onClick={() => handleChoose(false)}
-              className="py-5 px-6 bg-[#FF3B8D] hover:bg-[#E02674] text-white rounded-3xl font-black text-xl shadow-[0_6px_0_#C7175E] hover:shadow-[0_8px_0_#C7175E] active:translate-y-1.5 active:shadow-[0_2px_0_#C7175E] transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5"
+              className="py-5 px-6 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white rounded-3xl font-black text-xl border-3 border-[#0A254D] shadow-[0_6px_0_#0A254D] active:translate-y-1.5 active:shadow-[0_2px_0_#0A254D] transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5"
             >
               <XCircle className="w-9 h-9 stroke-[2.5]" />
               <span className="tracking-wide">SALAH</span>

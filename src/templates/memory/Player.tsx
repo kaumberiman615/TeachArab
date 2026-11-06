@@ -383,7 +383,7 @@ export default function MemoryPlayer({
                 <div
                   className={`w-full h-full rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center border-2 transition-all ${
                     card.isMatched
-                      ? 'bg-emerald-50 border-emerald-500 text-emerald-950 shadow-[0_4px_0_#10B981]'
+                      ? 'bg-emerald-50 border-2 border-[#10B981] text-[#065F46] shadow-[0_4px_0_#10B981]'
                       : card.cardType === 'arabic'
                       ? 'bg-cyan-50/80 border-[#00B4D8] text-[#0A254D] shadow-[0_4px_0_#00B4D8]'
                       : 'bg-pink-50/80 border-[#FF3B8D] text-[#0A254D] shadow-[0_4px_0_#FF3B8D]'
@@ -396,7 +396,7 @@ export default function MemoryPlayer({
                       </span>
                       <div
                         dir="rtl"
-                        className={`text-2xl sm:text-3xl font-extrabold leading-loose ${fontClass}`}
+                        className={`text-2xl sm:text-3xl font-extrabold leading-[2.2] ${fontClass}`}
                       >
                         {theme.showHarakat ? card.arabicText : removeHarakat(card.arabicText || '')}
                       </div>

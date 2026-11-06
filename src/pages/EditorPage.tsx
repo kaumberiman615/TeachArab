@@ -69,14 +69,14 @@ export default function EditorPage({
             <button
               type="button"
               onClick={() => onNavigate('/')}
-              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs cursor-pointer shadow-xs transition-colors"
+              className="w-full py-2.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] text-xs cursor-pointer shadow-[0_3px_0_#0A254D] transition-transform active:translate-y-0.5"
             >
               Lihat Galeri Template
             </button>
             <button
               type="button"
               onClick={() => onNavigate('/draf')}
-              className="w-full py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl text-xs cursor-pointer transition-colors"
+              className="w-full py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-bold rounded-2xl border-2 border-[#0A254D] text-xs cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
             >
               Buka Draf Saya
             </button>
@@ -561,7 +561,7 @@ export default function EditorPage({
                 <span className="flex items-center gap-1.5">
                   {saveStatus === 'saved' ? (
                     <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Tersimpan di Browser
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00B4D8]" /> Tersimpan di Browser
                     </>
                   ) : (
                     <>
@@ -612,9 +612,9 @@ export default function EditorPage({
             <button
               type="button"
               onClick={() => setShowQuickInput(true)}
-              className="hidden sm:flex min-h-[44px] px-4 py-2 text-xs font-black bg-[#E6F7F5] hover:bg-[#00B4D8] text-[#00B4D8] hover:text-white border border-[#00B4D8]/30 rounded-full items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5"
+              className="hidden sm:flex min-h-[44px] px-4.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D] rounded-full items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-[#FF3B8D]" />
               <span>Input Cepat</span>
             </button>
 
@@ -716,7 +716,7 @@ export default function EditorPage({
               value={draft.description}
               onChange={(e) => setDraft({ ...draft, description: e.target.value })}
               placeholder="Contoh: Bab 3 - Kosakata Perlengkapan Sekolah Kelas 7..."
-              className="w-full text-xs text-stone-700 bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 focus:outline-emerald-600 focus:bg-white"
+              className="w-full text-xs text-stone-700 bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 focus:outline-[#00B4D8] focus:bg-white"
             />
           </div>
 
@@ -759,7 +759,7 @@ export default function EditorPage({
           <div className="sticky top-32 space-y-3">
             <div className="flex items-center justify-between text-xs font-bold text-stone-600 px-1">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#00B4D8] animate-pulse" />
                 Pratinjau Langsung Siswa
               </span>
               <span className="text-[11px] text-stone-500 font-normal">

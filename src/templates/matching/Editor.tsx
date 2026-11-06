@@ -72,38 +72,38 @@ export default function MatchingEditor({
   return (
     <div className="space-y-4">
       {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-stone-100 rounded-xl border border-stone-200">
-        <div className="text-xs font-semibold text-stone-700">
-          Total Pasangan Kata: <span className="text-emerald-700 font-bold">{items.length} Pasang</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-3xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D]">
+        <div className="text-xs sm:text-sm font-black text-[#0A254D]">
+          Total Pasangan Kata: <span className="text-[#FF3B8D] font-black">{items.length} Pasang</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-3.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-2xl shadow-[0_2px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Input Cepat (kata Arab | arti)</span>
+            <Sparkles className="w-4 h-4 text-[#FED034]" />
+            <span>Input Cepat (Tempel Banyak)</span>
           </button>
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs active:scale-95"
+            className="min-h-[44px] px-4 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#e02e7b] text-white rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Pasangan</span>
           </button>
         </div>
       </div>
 
       {items.length === 0 && (
-        <div className="p-8 bg-white border border-stone-200 rounded-xl text-center space-y-2">
-          <AlertCircle className="w-8 h-8 text-stone-400 mx-auto" />
-          <p className="text-stone-600 text-xs font-medium">Belum ada pasangan kata yang ditambahkan.</p>
+        <div className="p-8 bg-white border-2 border-stone-200 rounded-3xl text-center space-y-3">
+          <AlertCircle className="w-10 h-10 text-stone-400 mx-auto" />
+          <p className="text-stone-700 text-xs sm:text-sm font-bold">Belum ada pasangan kata yang ditambahkan.</p>
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-4 py-2 bg-emerald-700 text-white font-bold rounded-lg text-xs"
+            className="min-h-[44px] px-5 py-2.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] text-xs cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             Tambah Pasangan Pertama
           </button>
@@ -111,11 +111,11 @@ export default function MatchingEditor({
       )}
 
       {/* Pairs list */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="bg-white border border-stone-200 rounded-xl p-4 shadow-xs relative transition-all hover:border-emerald-300"
+            className="bg-white border-2 border-stone-200 rounded-3xl p-4 sm:p-5 shadow-xs relative transition-all hover:border-[#0A254D]"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-100 text-xs text-stone-500">
@@ -142,7 +142,7 @@ export default function MatchingEditor({
                 <button
                   type="button"
                   onClick={() => handleDuplicateItem(index)}
-                  className="p-1 hover:text-emerald-700 cursor-pointer"
+                  className="p-1.5 hover:text-[#0A254D] cursor-pointer"
                   title="Duplikat Pasangan"
                 >
                   <Copy className="w-4 h-4" />
@@ -150,7 +150,7 @@ export default function MatchingEditor({
                 <button
                   type="button"
                   onClick={() => handleDeleteItem(index)}
-                  className="p-1 hover:text-rose-600 cursor-pointer"
+                  className="p-1.5 hover:text-rose-600 cursor-pointer"
                   title="Hapus Pasangan"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -161,16 +161,16 @@ export default function MatchingEditor({
             {/* Split layout: Kiri (Kata Arab) & Kanan (Arti / Gambar) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Sisi Kiri: Kata Arab */}
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-lg space-y-2.5">
+              <div className="p-4 bg-[#FAFCFC] border-2 border-stone-100 rounded-2xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                  <span className="text-xs font-black text-[#0A254D] flex items-center gap-1">
                     <span>Sisi Kiri: Kata Arab</span>
                   </span>
-                  <div className="flex items-center gap-1 text-[11px]">
+                  <div className="flex items-center gap-1.5 text-xs">
                     <button
                       type="button"
                       onClick={() => handleChangeField(index, 'arabic', removeHarakat(item.arabic))}
-                      className="text-stone-500 hover:text-stone-800 cursor-pointer underline"
+                      className="text-stone-500 hover:text-[#0A254D] cursor-pointer underline font-medium"
                       title="Hapus Harakat"
                     >
                       Hapus Baris
@@ -179,9 +179,9 @@ export default function MatchingEditor({
                     <button
                       type="button"
                       onClick={() => speakArabic(item.arabic)}
-                      className="text-emerald-700 hover:text-emerald-800 flex items-center gap-0.5 cursor-pointer font-medium"
+                      className="text-[#00B4D8] hover:text-[#0A254D] flex items-center gap-1 cursor-pointer font-black"
                     >
-                      <Volume2 className="w-3 h-3" /> Bacakan
+                      <Volume2 className="w-3.5 h-3.5" /> Bacakan
                     </button>
                   </div>
                 </div>
@@ -193,12 +193,12 @@ export default function MatchingEditor({
                     value={item.arabic}
                     onChange={(e) => handleChangeField(index, 'arabic', e.target.value)}
                     placeholder="مثال: بَابٌ"
-                    className={`w-full px-3 py-2 text-xl ${fontClass} border border-stone-300 rounded-lg focus:outline-emerald-600 bg-white text-right leading-loose`}
+                    className={`w-full px-4 py-3 text-2xl sm:text-3xl leading-[2.2] ${fontClass} border-2 border-stone-300 rounded-2xl focus:border-[#0A254D] focus:outline-hidden bg-white text-right`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-medium text-stone-600 mb-0.5">
+                  <label className="block text-xs font-bold text-[#0A254D] mb-1">
                     Transliterasi Latin (Opsional):
                   </label>
                   <input
@@ -206,19 +206,19 @@ export default function MatchingEditor({
                     value={item.latin || ''}
                     onChange={(e) => handleChangeField(index, 'latin', e.target.value)}
                     placeholder="Contoh: baabun"
-                    className="w-full px-2.5 py-1.5 text-xs border border-stone-300 rounded-lg focus:outline-emerald-600 bg-white"
+                    className="w-full px-3.5 py-2 text-xs sm:text-sm border-2 border-stone-300 rounded-xl focus:border-[#0A254D] focus:outline-hidden bg-white font-medium"
                   />
                 </div>
               </div>
 
               {/* Sisi Kanan: Arti Teks atau Gambar */}
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-lg space-y-2.5">
-                <span className="text-xs font-bold text-stone-800 block">
+              <div className="p-4 bg-[#FAFCFC] border-2 border-stone-100 rounded-2xl space-y-3">
+                <span className="text-xs font-black text-[#0A254D] block">
                   Sisi Kanan: Arti Kata atau Gambar
                 </span>
 
                 <div>
-                  <label className="block text-[11px] font-medium text-stone-600 mb-0.5">
+                  <label className="block text-xs font-bold text-[#0A254D] mb-1">
                     Arti Kata (Teks):
                   </label>
                   <input
@@ -226,7 +226,7 @@ export default function MatchingEditor({
                     value={item.meaning}
                     onChange={(e) => handleChangeField(index, 'meaning', e.target.value)}
                     placeholder="Contoh: Pintu"
-                    className="w-full px-2.5 py-2 text-sm font-semibold border border-stone-300 rounded-lg focus:outline-emerald-600 bg-white"
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold border-2 border-stone-300 rounded-xl focus:border-[#0A254D] focus:outline-hidden bg-white text-[#0A254D]"
                   />
                 </div>
 

@@ -11,7 +11,7 @@ interface CreateTemplateDropdownProps {
 export default function CreateTemplateDropdown({
   onSelect,
   buttonLabel = 'Buat Baru',
-  buttonClassName = 'px-4 py-2 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer active:scale-95',
+  buttonClassName = 'min-h-[44px] px-4 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#e02e7b] text-white rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]',
 }: CreateTemplateDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,17 +48,17 @@ export default function CreateTemplateDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 sm:w-80 max-h-[80vh] overflow-y-auto bg-white border border-stone-200 rounded-2xl shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 divide-y divide-stone-100">
+        <div className="absolute right-0 mt-2 w-72 sm:w-80 max-h-[80vh] overflow-y-auto bg-white border-2 border-[#0A254D] rounded-3xl shadow-[0_8px_0_#0A254D] p-3 z-50 text-left animate-in fade-in zoom-in-95 divide-y divide-stone-100">
           {/* GROUP 1: MATERI */}
           <div className="pb-2">
             <div className="px-3 pt-2 pb-1.5 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
-                <span className="text-[11px] font-extrabold text-emerald-900 uppercase tracking-wider">
+                <BookOpen className="w-3.5 h-3.5 text-[#00B4D8]" />
+                <span className="text-[11px] font-black text-[#0A254D] uppercase tracking-wider">
                   Materi
                 </span>
               </div>
-              <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+              <span className="text-[10px] bg-[#E0F7FA] text-[#0A254D] border border-[#00B4D8] px-2.5 py-0.5 rounded-full font-black">
                 {materiTemplates.length} Format
               </span>
             </div>
@@ -71,16 +71,16 @@ export default function CreateTemplateDropdown({
                     key={t.id}
                     type="button"
                     onClick={() => handleChoose(t.id)}
-                    className="w-full px-3 py-2 rounded-xl hover:bg-emerald-50 text-left flex items-start gap-2.5 cursor-pointer transition-colors group"
+                    className="w-full px-3 py-2 rounded-2xl hover:bg-[#E0F7FA] text-left flex items-start gap-2.5 cursor-pointer transition-colors group"
                   >
-                    <div className="p-1.5 bg-emerald-100 text-emerald-800 rounded-lg group-hover:bg-emerald-700 group-hover:text-white transition-colors shrink-0 mt-0.5">
+                    <div className="p-1.5 bg-[#E0F7FA] text-[#0A254D] border border-cyan-200 rounded-xl group-hover:bg-[#00B4D8] group-hover:text-white transition-colors shrink-0 mt-0.5">
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-emerald-900">
+                      <div className="text-xs font-black text-[#0A254D] group-hover:text-[#00B4D8]">
                         {t.name}
                       </div>
-                      <div className="text-[11px] text-stone-500 truncate">{t.badge}</div>
+                      <div className="text-[11px] text-stone-500 truncate font-medium">{t.badge}</div>
                     </div>
                   </button>
                 );
@@ -92,12 +92,12 @@ export default function CreateTemplateDropdown({
           <div className="pt-2">
             <div className="px-3 pt-1 pb-1.5 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Gamepad2 className="w-3.5 h-3.5 text-indigo-700" />
-                <span className="text-[11px] font-extrabold text-indigo-950 uppercase tracking-wider">
+                <Gamepad2 className="w-3.5 h-3.5 text-[#FF3B8D]" />
+                <span className="text-[11px] font-black text-[#0A254D] uppercase tracking-wider">
                   Game
                 </span>
               </div>
-              <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full font-bold">
+              <span className="text-[10px] bg-[#FFE4EE] text-[#0A254D] border border-[#FF3B8D] px-2.5 py-0.5 rounded-full font-black">
                 {gameTemplates.length} Permainan
               </span>
             </div>
@@ -110,16 +110,16 @@ export default function CreateTemplateDropdown({
                     key={t.id}
                     type="button"
                     onClick={() => handleChoose(t.id)}
-                    className="w-full px-3 py-2 rounded-xl hover:bg-indigo-50 text-left flex items-start gap-2.5 cursor-pointer transition-colors group"
+                    className="w-full px-3 py-2 rounded-2xl hover:bg-[#FFE4EE] text-left flex items-start gap-2.5 cursor-pointer transition-colors group"
                   >
-                    <div className="p-1.5 bg-indigo-100 text-indigo-800 rounded-lg group-hover:bg-indigo-700 group-hover:text-white transition-colors shrink-0 mt-0.5">
+                    <div className="p-1.5 bg-[#FFE4EE] text-[#0A254D] border border-pink-200 rounded-xl group-hover:bg-[#FF3B8D] group-hover:text-white transition-colors shrink-0 mt-0.5">
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-indigo-950">
+                      <div className="text-xs font-black text-[#0A254D] group-hover:text-[#FF3B8D]">
                         {t.name}
                       </div>
-                      <div className="text-[11px] text-stone-500 truncate">{t.badge}</div>
+                      <div className="text-[11px] text-stone-500 truncate font-medium">{t.badge}</div>
                     </div>
                   </button>
                 );

@@ -261,25 +261,25 @@ export default function SentenceOrderEditor({
                     value={item.sentenceArabic}
                     onChange={(e) => updateItem(idx, { sentenceArabic: e.target.value })}
                     placeholder="ذَهَبَ أَحْمَدُ إِلَى الْمَدْرَسَةِ / إِلَى الْمَدْرَسَةِ ذَهَبَ أَحْمَدُ"
-                    className={`w-full p-2.5 text-xl font-bold bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:outline-hidden ${fontClass}`}
+                    className={`w-full px-4 py-3 text-2xl sm:text-3xl leading-[2.2] font-bold bg-white border-2 border-stone-300 rounded-2xl focus:border-[#0A254D] focus:outline-hidden text-[#0A254D] ${fontClass}`}
                   />
 
                   {/* Word breakdown preview */}
                   {words.length > 0 && (
                     <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] text-stone-400 font-semibold">Pecahan Kata ({words.length} kata):</span>
-                      <div dir="rtl" className="flex items-center gap-1 flex-wrap">
+                      <span className="text-xs text-stone-500 font-bold">Pecahan Kata ({words.length} kata):</span>
+                      <div dir="rtl" className="flex items-center gap-1.5 flex-wrap">
                         {words.map((word, wIdx) => (
                           <span
                             key={wIdx}
-                            className={`px-2.5 py-1 bg-indigo-50 text-indigo-800 border border-indigo-200 rounded-lg text-xs font-bold ${fontClass}`}
+                            className={`px-3 py-1 bg-[#FFE4EE] text-[#0A254D] border border-pink-200 rounded-xl text-sm font-bold ${fontClass}`}
                           >
                             {word}
                           </span>
                         ))}
                       </div>
                       {variants.length > 1 && (
-                        <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200 font-medium">
+                        <span className="text-xs bg-[#E0F7FA] text-[#0A254D] px-2.5 py-0.5 rounded-full border border-cyan-200 font-bold">
                           {variants.length} variasi urutan sah
                         </span>
                       )}

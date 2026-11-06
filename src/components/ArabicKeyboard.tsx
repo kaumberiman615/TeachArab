@@ -17,17 +17,22 @@ export default function ArabicKeyboard({
   const [activeTab, setActiveTab] = useState<'huruf' | 'harakat' | 'angka'>('huruf');
 
   return (
-    <div className="fixed bottom-3 right-3 sm:right-6 z-40 max-w-xl w-[calc(100vw-1.5rem)] sm:w-[500px]">
+    <div className={`fixed bottom-3 right-3 sm:right-6 z-40 select-none ${isOpen ? 'max-w-xl w-[calc(100vw-1.5rem)] sm:w-[500px]' : 'w-auto'}`}>
       {/* Collapsed / Toggle Button */}
       <div className="flex justify-end mb-1.5">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 min-h-[44px] px-4 py-2 bg-pink-bubble hover:bg-pink-bubble/90 active:translate-y-0.5 active:shadow-none text-white rounded-full shadow-[0_3px_0_#D81B60] transition-all text-xs font-black cursor-pointer"
+          className="flex items-center gap-2 min-h-[44px] px-4 py-2 bg-[#0A254D] hover:bg-[#1E3A8A] active:translate-y-0.5 text-white border-2 border-[#FED034] rounded-full shadow-[0_3px_0_rgba(10,37,77,0.3)] transition-all text-xs font-black cursor-pointer"
+          title="Buka / Tutup Keyboard Arab Virtual"
+          aria-expanded={isOpen}
         >
-          <Keyboard className="w-4 h-4" />
-          <span>Keyboard Arab Virtual</span>
-          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          <Keyboard className="w-4 h-4 text-[#FED034]" />
+          <span className="text-white">Keyboard Arab</span>
+          <span className="px-2 py-0.5 rounded-full bg-[#FED034] text-[#0A254D] text-[10px] font-black">
+            {isOpen ? 'Tutup' : 'Buka'}
+          </span>
+          {isOpen ? <ChevronDown className="w-4 h-4 text-[#FED034]" /> : <ChevronUp className="w-4 h-4 text-[#FED034]" />}
         </button>
       </div>
 

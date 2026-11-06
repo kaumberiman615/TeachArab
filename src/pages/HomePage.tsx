@@ -129,7 +129,7 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
               <span>Layar Penuh Proyektor</span>
             </div>
             <div className="bg-white/80 backdrop-blur-xs px-3.5 py-1.5 rounded-full shadow-xs flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="w-2 h-2 rounded-full bg-[#00B4D8]" />
               <span>Unduh File HTML Mandiri & ZIP</span>
             </div>
           </div>
@@ -476,7 +476,7 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
               <span>Audio & Rekam Suara Guru</span>
             </div>
             <div className="bg-white/10 px-4 py-1.5 rounded-full flex items-center gap-2 border border-white/10">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-[#00B4D8]" />
               <span>Bisa Diputar Tanpa Internet</span>
             </div>
           </div>

@@ -138,9 +138,9 @@ export default function FillBlankEditor({
                   fbIgnoreHarakat: settings.fbIgnoreHarakat === false ? true : false,
                 })
               }
-              className={`w-full p-2 rounded-lg border text-xs font-semibold flex items-center justify-between cursor-pointer ${
+              className={`w-full p-2.5 rounded-xl border-2 text-xs font-black flex items-center justify-between cursor-pointer transition-all ${
                 settings.fbIgnoreHarakat !== false
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  ? 'bg-[#E0F7FA] text-[#0A254D] border-[#0A254D]'
                   : 'bg-rose-50 text-rose-800 border-rose-300'
               }`}
             >
@@ -151,7 +151,7 @@ export default function FillBlankEditor({
 
           {/* Alif-Hamzah Normalization */}
           <div>
-            <label className="block text-stone-600 font-semibold mb-1">Samakan Alif & Hamzah (أ إ آ ٱ)</label>
+            <label className="block text-[#0A254D] font-bold mb-1">Samakan Alif & Hamzah (أ إ آ ٱ)</label>
             <button
               type="button"
               onClick={() =>
@@ -160,9 +160,9 @@ export default function FillBlankEditor({
                   fbNormalizeAlif: settings.fbNormalizeAlif === false ? true : false,
                 })
               }
-              className={`w-full p-2 rounded-lg border text-xs font-semibold flex items-center justify-between cursor-pointer ${
+              className={`w-full p-2.5 rounded-xl border-2 text-xs font-black flex items-center justify-between cursor-pointer transition-all ${
                 settings.fbNormalizeAlif !== false
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  ? 'bg-[#E0F7FA] text-[#0A254D] border-[#0A254D]'
                   : 'bg-stone-50 text-stone-600 border-stone-200'
               }`}
             >
@@ -173,7 +173,7 @@ export default function FillBlankEditor({
 
           {/* Ta Marbutah & Ya */}
           <div>
-            <label className="block text-stone-600 font-semibold mb-1">Samakan ة/ه & ى/ي</label>
+            <label className="block text-[#0A254D] font-bold mb-1">Samakan ة/ه & ى/ي</label>
             <button
               type="button"
               onClick={() => {
@@ -184,9 +184,9 @@ export default function FillBlankEditor({
                   fbNormalizeYa: !active,
                 });
               }}
-              className={`w-full p-2 rounded-lg border text-xs font-semibold flex items-center justify-between cursor-pointer ${
+              className={`w-full p-2.5 rounded-xl border-2 text-xs font-black flex items-center justify-between cursor-pointer transition-all ${
                 settings.fbNormalizeTaMarbutah !== false
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  ? 'bg-[#E0F7FA] text-[#0A254D] border-[#0A254D]'
                   : 'bg-stone-50 text-stone-600 border-stone-200'
               }`}
             >
@@ -256,27 +256,27 @@ export default function FillBlankEditor({
       </div>
 
       {/* Action Header */}
-      <div className="flex items-center justify-between">
-        <div className="text-xs text-stone-500 font-medium">
-          Total: <strong className="text-stone-900">{items.length}</strong> kalimat rumpang
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-3xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D]">
+        <div className="text-xs sm:text-sm text-[#0A254D] font-bold">
+          Total: <strong className="text-[#FF3B8D] font-black">{items.length}</strong> kalimat rumpang
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-indigo-200 transition-colors cursor-pointer"
+            className="min-h-[44px] px-3.5 py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-4 h-4 text-[#FED034]" />
             <span>Input Cepat (Batch)</span>
           </button>
 
           <button
             type="button"
             onClick={addItem}
-            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Soal</span>
           </button>
         </div>
@@ -287,15 +287,15 @@ export default function FillBlankEditor({
         {items.map((item, idx) => (
           <div
             key={item.id}
-            className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4 hover:border-stone-300 transition-all"
+            className="bg-white border-2 border-stone-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4 hover:border-[#0A254D] transition-all"
           >
             {/* Header row */}
             <div className="flex items-center justify-between pb-3 border-b border-stone-100">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-800 font-bold text-xs flex items-center justify-center">
+                <span className="w-7 h-7 rounded-xl bg-[#FFE4EE] text-[#0A254D] border border-pink-200 font-black text-xs flex items-center justify-center">
                   {idx + 1}
                 </span>
-                <span className="text-xs font-bold text-stone-700">Soal #{idx + 1}</span>
+                <span className="text-xs font-bold text-[#0A254D]">Soal #{idx + 1}</span>
               </div>
 
               <div className="flex items-center gap-1">
@@ -339,8 +339,8 @@ export default function FillBlankEditor({
             {/* Question Text with ___ helper */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                  <FileQuestion className="w-3.5 h-3.5 text-indigo-600" />
+                <label className="text-xs font-black text-[#0A254D] flex items-center gap-1.5">
+                  <FileQuestion className="w-4 h-4 text-[#FF3B8D]" />
                   <span>Kalimat Soal (Gunakan <code>___</code> untuk bagian rumpang) <span className="text-rose-500">*</span></span>
                 </label>
 
@@ -348,7 +348,7 @@ export default function FillBlankEditor({
                   <button
                     type="button"
                     onClick={() => insertBlank(idx)}
-                    className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-[11px] border border-indigo-200 cursor-pointer flex items-center gap-1"
+                    className="px-3 py-1.5 bg-[#FFE4EE] hover:bg-[#ffcfdf] text-[#0A254D] font-black rounded-xl text-xs border border-pink-200 cursor-pointer flex items-center gap-1"
                     title="Sisipkan tanda kosong ___ di akhir teks"
                   >
                     <span>+ Sisipkan ___</span>
@@ -356,7 +356,7 @@ export default function FillBlankEditor({
                   <button
                     type="button"
                     onClick={() => updateItem(idx, { question: removeHarakat(item.question) })}
-                    className="text-[10px] text-stone-400 hover:text-stone-700 underline cursor-pointer"
+                    className="text-xs text-stone-500 hover:text-[#0A254D] underline cursor-pointer font-medium"
                   >
                     Hapus Harakat
                   </button>
@@ -369,37 +369,37 @@ export default function FillBlankEditor({
                 value={item.question}
                 onChange={(e) => updateItem(idx, { question: e.target.value })}
                 placeholder="يَذْهَبُ الطَّالِبُ إِلَى ___ صَبَاحًا"
-                className={`w-full p-3 text-xl font-bold bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:outline-hidden ${fontClass}`}
+                className={`w-full px-4 py-3 text-2xl sm:text-3xl leading-[2.2] font-bold bg-white border-2 border-stone-300 rounded-2xl focus:border-[#0A254D] focus:outline-hidden text-[#0A254D] ${fontClass}`}
               />
             </div>
 
             {/* Acceptable Correct Answers (Multiple tags supported) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-stone-800">
+                <label className="text-xs font-black text-[#0A254D]">
                   Kunci Jawaban Benar Yang Diterima <span className="text-rose-500">*</span>
                 </label>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-medium">
                   Guru bisa memasukkan beberapa alternatif (misal: dengan/tanpa harakat)
                 </span>
               </div>
 
               {/* Answers Tags List */}
-              <div className="flex flex-wrap items-center gap-2 p-2 bg-stone-50 border border-stone-200 rounded-xl min-h-[46px]">
+              <div className="flex flex-wrap items-center gap-2 p-2.5 bg-[#FAFCFC] border-2 border-stone-100 rounded-2xl min-h-[46px]">
                 {item.answers.map((ans, aIdx) => (
                   <span
                     key={aIdx}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-bold border ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-base font-bold border-2 ${
                       aIdx === 0
-                        ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
-                        : 'bg-white text-stone-800 border-stone-300'
+                        ? 'bg-[#FFE4EE] text-[#0A254D] border-[#FF3B8D]'
+                        : 'bg-white text-[#0A254D] border-stone-300'
                     }`}
                   >
                     <span dir="rtl" className={fontClass}>
                       {ans}
                     </span>
                     {aIdx === 0 && (
-                      <span className="text-[9px] uppercase px-1 py-0.5 bg-emerald-200/60 rounded text-emerald-800">
+                      <span className="text-[10px] font-black uppercase px-1.5 py-0.5 bg-[#FF3B8D] rounded text-white">
                         Utama
                       </span>
                     )}

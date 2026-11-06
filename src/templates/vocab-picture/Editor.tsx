@@ -83,40 +83,40 @@ export default function VocabPictureEditor({
   return (
     <div className="space-y-4">
       {/* Top Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-stone-100 rounded-xl border border-stone-200">
-        <div className="text-xs font-semibold text-stone-700">
-          Total Kosakata: <span className="text-emerald-700 font-bold">{items.length} Item</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-3xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D]">
+        <div className="text-xs sm:text-sm font-black text-[#0A254D]">
+          Total Kosakata: <span className="text-[#00B4D8] font-black">{items.length} Item</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-3.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-2xl shadow-[0_2px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <Sparkles className="w-4 h-4 text-[#FED034]" />
             <span>Input Cepat (kata Arab | latin | arti)</span>
           </button>
 
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-3 py-1.5 text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs active:scale-95"
+            className="min-h-[44px] px-4 py-2 text-xs font-black bg-[#00B4D8] hover:bg-[#0096b4] text-white rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Kosakata</span>
           </button>
         </div>
       </div>
 
       {items.length === 0 && (
-        <div className="p-8 bg-white border border-stone-200 rounded-2xl text-center space-y-2">
-          <AlertCircle className="w-8 h-8 text-stone-400 mx-auto" />
-          <p className="text-stone-600 text-xs font-medium">Belum ada kosakata bergambar.</p>
+        <div className="p-8 bg-white border-2 border-stone-200 rounded-3xl text-center space-y-3">
+          <AlertCircle className="w-10 h-10 text-stone-400 mx-auto" />
+          <p className="text-stone-700 text-xs sm:text-sm font-bold">Belum ada kosakata bergambar.</p>
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 bg-[#00B4D8] hover:bg-[#0096b4] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] text-xs cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             Tambah Item Pertama
           </button>
@@ -128,15 +128,15 @@ export default function VocabPictureEditor({
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-emerald-300 transition-all space-y-4"
+            className="bg-white border-2 border-stone-200 rounded-3xl p-4 sm:p-5 shadow-xs hover:border-[#0A254D] transition-all space-y-4"
           >
             {/* Header row */}
             <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-100">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center">
+                <span className="w-7 h-7 rounded-xl bg-[#E0F7FA] text-[#0A254D] border border-cyan-200 text-xs font-black flex items-center justify-center">
                   {index + 1}
                 </span>
-                <span className="text-xs font-bold text-stone-700">
+                <span className="text-xs font-bold text-[#0A254D]">
                   {item.meaning ? `Kartu: ${item.meaning}` : `Kosakata #${index + 1}`}
                 </span>
               </div>
@@ -183,9 +183,9 @@ export default function VocabPictureEditor({
             {/* Inputs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
               {/* Media Section: Image & Audio */}
-              <div className="md:col-span-5 bg-stone-50 p-3 rounded-2xl border border-stone-200 space-y-2">
-                <div className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5 text-emerald-700" />
+              <div className="md:col-span-5 bg-[#FAFCFC] p-4 rounded-2xl border-2 border-stone-100 space-y-2">
+                <div className="text-xs font-black text-[#0A254D] flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-[#00B4D8]" />
                   <span>Gambar & Rekaman Audio:</span>
                 </div>
                 <MediaManager
@@ -211,16 +211,16 @@ export default function VocabPictureEditor({
                 {/* Kata Arab */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-semibold text-stone-700">
+                    <label className="text-xs font-black text-[#0A254D]">
                       Kata Arab (dengan Harakat):
                     </label>
                     {item.arabic && (
                       <button
                         type="button"
                         onClick={() => speakArabic(item.arabic)}
-                        className="text-[11px] text-emerald-700 hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-xs text-[#00B4D8] hover:text-[#0A254D] font-black flex items-center gap-1 cursor-pointer"
                       >
-                        <Volume2 className="w-3 h-3" />
+                        <Volume2 className="w-3.5 h-3.5" />
                         <span>Coba Bunyi</span>
                       </button>
                     )}
@@ -231,14 +231,14 @@ export default function VocabPictureEditor({
                     value={item.arabic}
                     onChange={(e) => handleChangeField(index, 'arabic', e.target.value)}
                     placeholder="Contoh: أَسَدٌ / سَيَّارَةٌ"
-                    className={`w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-lg font-bold text-emerald-950 focus:outline-emerald-600 focus:bg-white text-right ${fontClass}`}
+                    className={`w-full px-4 py-3 text-2xl sm:text-3xl leading-[2.2] bg-white border-2 border-stone-300 rounded-2xl font-bold text-[#0A254D] focus:border-[#0A254D] focus:outline-hidden text-right ${fontClass}`}
                   />
                 </div>
 
                 {/* Latin & Arti */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
+                    <label className="block text-xs font-bold text-[#0A254D] mb-1">
                       Transliterasi Latin:
                     </label>
                     <input
@@ -246,12 +246,12 @@ export default function VocabPictureEditor({
                       value={item.latin || ''}
                       onChange={(e) => handleChangeField(index, 'latin', e.target.value)}
                       placeholder="Contoh: Asadun"
-                      className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white"
+                      className="w-full p-2.5 bg-white border-2 border-stone-300 rounded-xl text-xs sm:text-sm font-medium focus:border-[#0A254D] focus:outline-hidden text-[#0A254D]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
+                    <label className="block text-xs font-bold text-[#0A254D] mb-1">
                       Arti Kata (Indonesia):
                     </label>
                     <input
@@ -259,7 +259,7 @@ export default function VocabPictureEditor({
                       value={item.meaning}
                       onChange={(e) => handleChangeField(index, 'meaning', e.target.value)}
                       placeholder="Contoh: Singa"
-                      className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm font-semibold text-stone-900 focus:outline-emerald-600 focus:bg-white"
+                      className="w-full p-2.5 bg-white border-2 border-stone-300 rounded-xl text-xs sm:text-sm font-bold text-[#0A254D] focus:border-[#0A254D] focus:outline-hidden"
                     />
                   </div>
                 </div>

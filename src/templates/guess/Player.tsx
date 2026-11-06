@@ -431,14 +431,14 @@ export default function GuessPlayer({
                 normalizeArabicText(currentItem.answer, { ignoreHarakat: true });
 
               let btnStyle =
-                'bg-white hover:bg-sky-50/50 hover:border-[#00B4D8] border-[#0A254D]/15 text-[#0A254D] shadow-[0_4px_0_rgba(10,37,77,0.08)] active:translate-y-1';
+                'bg-white hover:bg-sky-50/50 hover:border-[#00B4D8] border-2 border-[#0A254D]/20 text-[#0A254D] shadow-[0_4px_0_#0A254D] active:translate-y-1';
               if (isEvaluated) {
                 if (isAnswer) {
-                  btnStyle = 'bg-emerald-500 text-white border-emerald-600 font-black shadow-[0_4px_0_#059669]';
+                  btnStyle = 'bg-[#10B981] text-white border-2 border-[#0A254D] font-black shadow-[0_4px_0_#0A254D]';
                 } else if (isSelected && !isCorrect) {
-                  btnStyle = 'bg-rose-500 text-white border-rose-600 font-black shadow-[0_4px_0_#BE123C]';
+                  btnStyle = 'bg-rose-500 text-white border-2 border-[#0A254D] font-black shadow-[0_4px_0_#0A254D]';
                 } else {
-                  btnStyle = 'bg-slate-100 text-[#0A254D]/30 border-[#0A254D]/10 opacity-60';
+                  btnStyle = 'bg-slate-100 text-[#0A254D]/30 border-2 border-[#0A254D]/10 opacity-60';
                 }
               }
 
@@ -448,7 +448,7 @@ export default function GuessPlayer({
                   type="button"
                   disabled={isEvaluated}
                   onClick={() => handleSelectChoice(choice)}
-                  className={`p-4.5 rounded-2xl border-2 text-2xl sm:text-3xl transition-all cursor-pointer flex items-center justify-center font-extrabold leading-loose ${fontClass} ${btnStyle}`}
+                  className={`p-4.5 rounded-2xl border-2 text-2xl sm:text-3xl transition-all cursor-pointer flex items-center justify-center font-extrabold leading-[2.2] ${fontClass} ${btnStyle}`}
                 >
                   <span dir="rtl">{choice}</span>
                 </button>
@@ -473,7 +473,7 @@ export default function GuessPlayer({
                   }
                 }}
                 placeholder="Ketik nama benda / kata Arab di sini..."
-                className={`w-full py-4 px-5 text-2xl sm:text-3xl font-extrabold bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-hidden transition-all text-center leading-loose ${fontClass} ${
+                className={`w-full py-4 px-5 text-2xl sm:text-3xl font-extrabold bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-hidden transition-all text-center leading-[2.2] ${fontClass} ${
                   isEvaluated
                     ? isCorrect
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-950 shadow-[0_4px_0_#10B981]'
@@ -499,7 +499,7 @@ export default function GuessPlayer({
               <button
                 type="button"
                 onClick={handleCheckTextAnswer}
-                className="w-full py-3.5 bg-[#00B4D8] hover:bg-[#0096B4] text-white font-black rounded-full shadow-[0_4px_0_#007791] active:translate-y-1 transition-all cursor-pointer text-sm flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-[#00B4D8] hover:bg-[#0096b7] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D] active:translate-y-1 transition-all cursor-pointer text-sm flex items-center justify-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                 <span>Kirim Jawaban</span>
@@ -534,7 +534,7 @@ export default function GuessPlayer({
             <button
               type="button"
               onClick={handleNextQuestion}
-              className="mt-2 px-7 py-3 bg-[#FF3B8D] hover:bg-[#E02674] text-white font-black rounded-full shadow-[0_4px_0_#C7175E] active:translate-y-1 cursor-pointer flex items-center gap-2 text-sm animate-bounce"
+              className="mt-2 px-7 py-3.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] shadow-[0_4px_0_#0A254D] active:translate-y-1 cursor-pointer flex items-center gap-2 text-sm animate-bounce"
             >
               <span>Lanjut ke Tebakan Berikutnya</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />

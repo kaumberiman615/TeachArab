@@ -181,26 +181,26 @@ export default function QuizEditor({
   return (
     <div className="space-y-4">
       {/* Action Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-stone-100 rounded-xl border border-stone-200">
-        <div className="text-xs font-semibold text-stone-700">
-          Total Soal Kuis:{' '}
-          <span className="text-emerald-700 font-bold">{normalizedItems.length} Soal</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white rounded-2xl border-2 border-stone-200 shadow-2xs">
+        <div className="text-xs font-black text-[#0A254D] flex items-center gap-2">
+          <span>Total Soal Kuis:</span>
+          <span className="px-3 py-1 rounded-full bg-[#FED034]/30 text-[#0A254D] border border-[#FED034] font-black">{normalizedItems.length} Soal</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onOpenQuickInput}
-            className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-4 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_2px_0_#0A254D] active:translate-y-0.5"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <Sparkles className="w-4 h-4 text-[#FF3B8D]" />
             <span>Input Cepat (Tempel Soal)</span>
           </button>
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Tambah Soal</span>
           </button>
         </div>
@@ -211,7 +211,7 @@ export default function QuizEditor({
         {normalizedItems.map((item, index) => (
           <div
             key={item.id}
-            className="bg-white border border-stone-200 rounded-xl p-4 shadow-xs relative transition-all hover:border-emerald-300"
+            className="bg-white border-2 border-stone-200 rounded-3xl p-5 shadow-xs relative transition-all hover:border-[#00B4D8]"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-100 text-xs text-stone-500">
@@ -238,7 +238,7 @@ export default function QuizEditor({
                 <button
                   type="button"
                   onClick={() => handleDuplicateItem(index)}
-                  className="p-1 hover:text-emerald-700 cursor-pointer"
+                  className="p-1 hover:text-[#0A254D] cursor-pointer"
                   title="Duplikat Soal"
                 >
                   <Copy className="w-4 h-4" />
@@ -277,9 +277,9 @@ export default function QuizEditor({
                       <button
                         type="button"
                         onClick={() => speakArabic(item.questionArabic)}
-                        className="text-emerald-700 hover:text-emerald-800 flex items-center gap-0.5 cursor-pointer font-medium"
+                        className="text-[#00B4D8] hover:text-[#0096C7] flex items-center gap-1 cursor-pointer font-bold"
                       >
-                        <Volume2 className="w-3 h-3" /> Bacakan
+                        <Volume2 className="w-3.5 h-3.5" /> Bacakan
                       </button>
                     )}
                   </div>
@@ -290,7 +290,7 @@ export default function QuizEditor({
                   value={item.questionArabic}
                   onChange={(e) => handleChangeField(index, 'questionArabic', e.target.value)}
                   placeholder="مثال: مَا اسْمُ هَذَا؟"
-                  className={`w-full px-3 py-2 text-lg ${fontClass} border border-stone-300 rounded-lg focus:outline-emerald-600 bg-stone-50 focus:bg-white text-right leading-loose`}
+                  className={`w-full px-4 py-3 text-2xl sm:text-3xl ${fontClass} border-2 border-stone-300 rounded-2xl focus:border-[#0A254D] focus:bg-white bg-stone-50 text-right leading-[2.2] transition-all`}
                 />
               </div>
 
@@ -303,7 +303,7 @@ export default function QuizEditor({
                   value={item.questionIndo || ''}
                   onChange={(e) => handleChangeField(index, 'questionIndo', e.target.value)}
                   placeholder="Contoh: Pilih arti kata yang tepat di bawah ini:"
-                  className="w-full px-3 py-2 text-sm border border-stone-300 rounded-lg focus:outline-emerald-600 bg-stone-50 focus:bg-white"
+                  className="w-full px-3 py-2.5 text-sm border-2 border-stone-200 rounded-xl focus:border-[#00B4D8] focus:outline-hidden bg-stone-50 focus:bg-white"
                 />
               </div>
             </div>
@@ -314,7 +314,7 @@ export default function QuizEditor({
                 <label className="text-xs font-semibold text-stone-700">
                   Pilihan Jawaban (2 sampai 5 pilihan. Klik lingkaran untuk menandai jawaban benar):
                 </label>
-                <span className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                <span className="text-xs font-black text-[#0A254D] bg-[#FED034]/40 px-3 py-0.5 rounded-full border border-[#FED034]">
                   Kunci: {choiceLabels[item.correctIndex] || 'A'}
                 </span>
               </div>
@@ -327,9 +327,9 @@ export default function QuizEditor({
                   return (
                     <div
                       key={choiceIdx}
-                      className={`p-2 rounded-lg border transition-all ${
+                      className={`p-2.5 rounded-2xl border-2 transition-all ${
                         isCorrect
-                          ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-200'
+                          ? 'border-[#0A254D] bg-[#FED034]/20 shadow-xs'
                           : 'border-stone-200 bg-stone-50/70'
                       }`}
                     >
@@ -338,10 +338,10 @@ export default function QuizEditor({
                         <button
                           type="button"
                           onClick={() => handleChangeField(index, 'correctIndex', choiceIdx)}
-                          className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer transition-colors ${
+                          className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 cursor-pointer transition-all ${
                             isCorrect
-                              ? 'bg-emerald-600 text-white shadow-xs'
-                              : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
+                              ? 'bg-[#0A254D] text-white shadow-xs'
+                              : 'bg-stone-200 text-stone-700 hover:bg-stone-300'
                           }`}
                           title="Klik untuk jadikan jawaban benar"
                         >
@@ -356,14 +356,14 @@ export default function QuizEditor({
                             handleChoiceTextChange(index, choiceIdx, e.target.value)
                           }
                           placeholder={`Pilihan ${choiceLabels[choiceIdx]}`}
-                          className="flex-1 px-2.5 py-1.5 text-sm bg-white border border-stone-200 rounded focus:outline-emerald-600"
+                          className="flex-1 px-3 py-2 text-sm bg-white border border-stone-300 rounded-xl focus:border-[#00B4D8] focus:outline-hidden"
                         />
 
                         {/* Image upload button for choice */}
                         <label
-                          className={`p-1.5 border rounded cursor-pointer transition-colors ${
+                          className={`p-2 border rounded-xl cursor-pointer transition-colors ${
                             choice.mediaImageId
-                              ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                              ? 'bg-[#E6F7F5] text-[#00B4D8] border-[#00B4D8]'
                               : 'bg-white text-stone-500 hover:text-stone-800 border-stone-200'
                           }`}
                           title="Lampirkan Gambar untuk Pilihan Ini"
@@ -385,7 +385,7 @@ export default function QuizEditor({
                           <button
                             type="button"
                             onClick={() => handleRemoveChoice(index, choiceIdx)}
-                            className="p-1.5 text-stone-400 hover:text-rose-600 rounded cursor-pointer"
+                            className="p-1.5 text-stone-400 hover:text-rose-600 rounded-full cursor-pointer"
                             title="Hapus Pilihan Ini"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -393,19 +393,19 @@ export default function QuizEditor({
                         )}
 
                         {isCorrect && (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <CheckCircle2 className="w-5 h-5 text-[#00B4D8] shrink-0" />
                         )}
                       </div>
 
                       {/* Attached Image preview for choice */}
                       {choiceImg && (
-                        <div className="mt-2 ml-9 flex items-center gap-2 p-1.5 bg-white border border-stone-200 rounded-md inline-flex">
+                        <div className="mt-2 ml-10 flex items-center gap-2 p-1.5 bg-white border border-stone-200 rounded-xl inline-flex">
                           <img
                             src={URL.createObjectURL(choiceImg.blob)}
                             alt="Gambar Pilihan"
-                            className="w-10 h-10 object-cover rounded"
+                            className="w-10 h-10 object-cover rounded-lg"
                           />
-                          <span className="text-[10px] text-stone-600 max-w-[120px] truncate">
+                          <span className="text-[10px] font-bold text-stone-600 max-w-[120px] truncate">
                             {choiceImg.name}
                           </span>
                           <button
@@ -428,9 +428,9 @@ export default function QuizEditor({
                 <button
                   type="button"
                   onClick={() => handleAddChoice(index)}
-                  className="mt-2 text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
+                  className="mt-2.5 text-xs font-black text-[#00B4D8] hover:text-[#0096C7] flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   <span>Tambah Pilihan {choiceLabels[item.choices.length]}</span>
                 </button>
               )}
@@ -446,7 +446,7 @@ export default function QuizEditor({
                 value={item.explanation || ''}
                 onChange={(e) => handleChangeField(index, 'explanation', e.target.value)}
                 placeholder="Contoh: Jawaban benar adalah A karena kitaabun bermakna buku."
-                className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-lg focus:outline-emerald-600 bg-stone-50 focus:bg-white"
+                className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl focus:border-[#00B4D8] focus:outline-hidden bg-stone-50 focus:bg-white"
               />
             </div>
 
@@ -474,9 +474,10 @@ export default function QuizEditor({
       <button
         type="button"
         onClick={handleAddItem}
-        className="w-full py-3 bg-stone-100 hover:bg-stone-200 border-2 border-stone-300 border-dashed rounded-xl text-stone-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+        className="w-full min-h-[48px] py-3 bg-white hover:bg-stone-50 border-2 border-[#0A254D] border-dashed rounded-2xl text-[#0A254D] text-xs font-black flex items-center justify-center gap-2 shadow-[0_2px_0_#0A254D] active:translate-y-0.5 transition-all cursor-pointer"
       >
-        <Plus className="w-4 h-4" /> Tambah Soal Kuis Baru
+        <Plus className="w-4 h-4 text-[#FF3B8D]" />
+        <span>Tambah Soal Kuis Baru</span>
       </button>
     </div>
   );
