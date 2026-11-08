@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../services/authContext';
 import { LoginExplanationModal } from './LoginExplanationModal';
 import { getAllMateriTemplates, getAllGameTemplates } from '../templates/registry';
+import Logo from './Logo';
 
 interface HeaderProps {
   currentPath: string;
@@ -67,24 +68,13 @@ export default function Header({ currentPath, onNavigate }: HeaderProps) {
             <button
               type="button"
               onClick={() => handleNavClick('/')}
-              className="flex items-center gap-3 text-left cursor-pointer group shrink-0"
+              className="flex items-center text-left cursor-pointer group shrink-0 transition-transform active:scale-98"
             >
-              <div className="relative w-10 h-10 bg-gradient-to-tr from-[#00B4D8] to-[#FED034] p-0.5 rounded-2xl shadow-xs group-hover:scale-105 transition-transform duration-200">
-                <div className="w-full h-full bg-[#0A254D] text-[#FED034] rounded-[14px] flex items-center justify-center font-black text-xl font-amiri shadow-inner">
-                  ض
-                </div>
-                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#FF3B8D] rounded-full border-2 border-white animate-pulse" />
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-lg sm:text-xl font-black tracking-tight text-[#0A254D] whitespace-nowrap leading-tight">
-                    Teach<span className="text-[#FF3B8D]">Arab</span>
-                  </span>
-                </div>
-                <span className="text-[11px] text-stone-500 font-bold tracking-tight hidden sm:inline">
-                  Materi & Game Interaktif
-                </span>
-              </div>
+              <Logo
+                variant="full"
+                size="md"
+                iconClassName="group-hover:scale-105 transition-transform duration-200"
+              />
             </button>
           </div>
 

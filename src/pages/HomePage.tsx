@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { getAllMateriTemplates, getAllGameTemplates } from '../templates/registry';
 import { TemplateType } from '../types';
+import { LogoIcon } from '../components/Logo';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -60,9 +61,8 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
         <div className="max-w-5xl mx-auto relative z-10 text-center space-y-6">
           {/* Playful Kicker Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-[#0A254D] text-xs font-black tracking-wider uppercase shadow-[0_2px_0_rgba(10,37,77,0.15)]">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FF3B8D] animate-ping" />
-            <Sparkles className="w-3.5 h-3.5 text-[#00B4D8]" />
-            <span>Media & Game Pembelajaran Bahasa Arab</span>
+            <LogoIcon size={18} className="shrink-0" />
+            <span>Teach Arab · Media & Game Interaktif</span>
           </div>
 
           {/* Chunky Playful Title */}
@@ -414,7 +414,8 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
 
           {/* Section Title */}
           <div className="text-center max-w-xl mx-auto mb-12 space-y-3 relative z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-[#FED034] text-xs font-black uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-[#FED034] text-xs font-black uppercase tracking-wider border border-white/10">
+              <LogoIcon size={16} className="shrink-0" />
               <span>Alur Praktis Guru</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black tracking-tight">

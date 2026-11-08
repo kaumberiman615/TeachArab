@@ -173,11 +173,11 @@ export default function WheelPlayer({
     ctx.stroke();
 
     // Center text/icon
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 15px sans-serif';
+    ctx.fillStyle = '#FED034';
+    ctx.font = 'bold 16px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('ض', centerX, centerY);
+    ctx.fillText('★', centerX, centerY);
 
     // Indicator needle (arrow at top: 12 o'clock, pointing down)
     ctx.save();

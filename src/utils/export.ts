@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import { Draft, MediaItem } from '../types';
 import { blobToBase64 } from './media';
 import { sanitizeText } from './arabic';
+import { getLogoSvgString } from '../components/Logo';
 
 /**
  * Trigger browser file download
@@ -658,8 +659,8 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
 <body>
   <header>
     <div class="brand">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
-      <span>Teach Arab</span>
+      ${getLogoSvgString(32)}
+      <span>Teach<span style="color: #FF3B8D;">Arab</span></span>
       <span class="badge">Mode Offline</span>
     </div>
     <div style="display: flex; gap: 0.5rem;">
@@ -3254,6 +3255,10 @@ export async function generateOfflineHTML(draft: Draft): Promise<string> {
 
     })();
   </script>
+  <footer style="text-align: center; padding: 1.75rem 1rem; color: #64748B; font-size: 0.75rem; border-top: 1px solid #E2E8F0; margin-top: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+    ${getLogoSvgString(20)}
+    <span>Dibuat dengan <strong style="color: #0A254D;">Teach Arab</strong> · Materi & Game Interaktif Bahasa Arab</span>
+  </footer>
 </body>
 </html>`;
 }

@@ -3,6 +3,7 @@ import { Draft } from '../types';
 import { getDraft } from '../services/storage';
 import { getTemplateOrNull } from '../templates/registry';
 import ExportModal from '../components/ExportModal';
+import { LogoIcon } from '../components/Logo';
 import {
   ArrowLeft,
   Maximize2,
@@ -40,10 +41,10 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
-        <div className="text-center space-y-2">
-          <div className="w-8 h-8 border-3 border-[#FF3B8D] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-stone-600 text-sm font-semibold">Memuat materi untuk proyektor...</p>
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <LogoIcon size={56} className="animate-pulse mx-auto shadow-xs" />
+          <p className="text-[#0A254D] text-sm font-black">Memuat materi untuk proyektor kelas...</p>
         </div>
       </div>
     );

@@ -21,6 +21,7 @@ import {
   GameTopBar,
   GameResultScreen,
 } from '../../components/game/GameShared';
+import { LogoIcon } from '../../components/Logo';
 
 interface MemoryPlayerProps {
   items: MemoryCardPair[];
@@ -426,13 +427,11 @@ export default function MemoryPlayer({
                   )}
                 </div>
               ) : (
-                /* Card Back (Covered - Bubble Bash theme) */
-                <div className="w-full h-full rounded-2xl bg-[#0A254D] text-white flex flex-col items-center justify-center border-2 border-[#00B4D8] shadow-[0_5px_0_#061730] group hover:-translate-y-0.5 transition-all">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#FED034] text-[#0A254D] flex items-center justify-center text-xl sm:text-2xl font-black shadow-[0_3px_0_#E5B800] group-hover:scale-110 transition-transform font-amiri">
-                    ض
-                  </div>
-                  <span className="text-[10px] text-[#00B4D8] font-black tracking-wider uppercase mt-1.5">
-                    Kartu
+                /* Card Back (Covered - Bubble Bash Teach Arab logo) */
+                <div className="w-full h-full rounded-2xl bg-[#0A254D] text-white flex flex-col items-center justify-center border-2 border-[#00B4D8] shadow-[0_5px_0_#061730] group hover:-translate-y-0.5 transition-all p-2">
+                  <LogoIcon size={38} className="group-hover:scale-110 transition-transform shadow-xs" />
+                  <span className="text-[10px] text-[#00B4D8] font-black tracking-wider uppercase mt-1">
+                    Teach Arab
                   </span>
                 </div>
               )}

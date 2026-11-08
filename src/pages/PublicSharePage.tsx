@@ -3,6 +3,7 @@ import { getPublicProjectByShareId } from '../services/cloudProjects';
 import { CloudProject, TemplateType } from '../types';
 import { getTemplateOrNull } from '../templates/registry';
 import { AlertCircle, Maximize2, Minimize2, Sparkles, Home } from 'lucide-react';
+import Logo, { LogoIcon } from '../components/Logo';
 
 interface PublicSharePageProps {
   shareId: string;
@@ -55,9 +56,9 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 border-4 border-cyan-bubble border-t-transparent rounded-full animate-spin mx-auto" />
+          <LogoIcon size={56} className="animate-pulse mx-auto" />
           <p className="text-navy-deep text-base font-black">Menyiapkan materi untuk belajar...</p>
-          <p className="text-stone-500 text-xs font-medium">Memuat langsung dari Teach Arab</p>
+          <p className="text-stone-500 text-xs font-bold">Teach<span className="text-[#FF3B8D]">Arab</span> · Pembelajaran Interaktif</p>
         </div>
       </div>
     );
@@ -138,9 +139,7 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
       {/* Student App Bar */}
       <header className="bg-white/95 backdrop-blur-md border-b-2 border-stone-200 px-4 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="w-10 h-10 rounded-2xl bg-yellow-bubble border-2 border-navy-deep shadow-[0_2px_0_#0A254D] flex items-center justify-center font-black text-navy-deep font-amiri text-2xl shrink-0">
-            ض
-          </div>
+          <LogoIcon size={38} className="shadow-xs shrink-0" />
           <div className="overflow-hidden">
             <h1 className="text-sm sm:text-base font-black text-navy-deep truncate">
               {project.title}
@@ -184,9 +183,12 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
         />
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="py-3 text-center text-[11px] text-stone-500 border-t border-stone-200/80 bg-white/70">
-        Dibuat dengan <strong className="text-navy-deep">Teach Arab</strong> · Media & Game Interaktif Bahasa Arab
+      {/* Minimal Footer with Teach Arab Branding */}
+      <footer className="py-3 px-4 flex flex-wrap items-center justify-center gap-2 text-[11px] text-stone-500 border-t border-stone-200/80 bg-white/70">
+        <span>Dibuat dengan</span>
+        <Logo variant="full" size="xs" showTagline={false} />
+        <span className="text-stone-300">·</span>
+        <span>Materi & Game Interaktif Bahasa Arab</span>
       </footer>
     </div>
   );

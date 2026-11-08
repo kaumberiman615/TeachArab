@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Background Squircle: Navy (#0A254D) -->
+  <rect x="4" y="4" width="92" height="92" rx="24" fill="#0A254D"/>
+  <rect x="4" y="4" width="92" height="92" rx="24" fill="none" stroke="#00B4D8" stroke-width="1.5" stroke-opacity="0.25"/>
+
+  <!-- Speech Bubble: Primary Pink (#FF3B8D) with Navy outline -->
+  <path d="M 50 18 C 71 18, 85 29, 85 44 C 85 59, 71 70, 52 70 C 47 70, 42 69, 37.5 66.8 C 28.5 74, 20.5 76, 19 76 C 18 76, 17.5 75, 18.2 74 C 21 69.5 22 65.5 21.2 62.5 C 16 57.5 13 51 13 44 C 13 29, 27 18, 50 18 Z"
+        fill="#FF3B8D" stroke="#0A254D" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Open Book: Pure White (#FFFFFF) with Navy outline -->
+  <!-- Left Page -->
+  <path d="M 50 33 C 41.5 30.5 34.5 31.5 29.5 33.5 C 28.5 33.9 27.5 34.8 27.5 36.2 L 27.5 54.5 C 27.5 55.8 28.8 56.8 30 56.5 C 35.5 54.5 42.5 54 50 57 Z"
+        fill="#FFFFFF" stroke="#0A254D" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Right Page -->
+  <path d="M 50 33 C 58.5 30.5 65.5 31.5 70.5 33.5 C 71.5 33.9 72.5 34.8 72.5 36.2 L 72.5 54.5 C 72.5 55.8 71.2 56.8 70 56.5 C 64.5 54.5 57.5 54 50 57 Z"
+        fill="#FFFFFF" stroke="#0A254D" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Center spine line -->
+  <path d="M 50 33 L 50 57" stroke="#FF3B8D" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Stylized Arabic text / page lines -->
+  <path d="M 33 40 C 37 39, 42 39, 45.5 40.5" stroke="#FF3B8D" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 33 45 C 37 44, 42 44, 45.5 45.5" stroke="#FF3B8D" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 33 50 C 37 49, 42 49, 45.5 50.5" stroke="#FF3B8D" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+
+  <path d="M 54.5 40.5 C 58 39, 63 39, 67 40" stroke="#FF3B8D" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 54.5 45.5 C 58 44, 63 44, 67 45" stroke="#FF3B8D" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 54.5 50.5 C 58 49, 63 49, 67 50" stroke="#FF3B8D" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Cheerful Sparkle Star at Top-Right: Yellow (#FED034) -->
+  <path d="M 80 8 C 80 14, 84 18, 90 18 C 84 18, 80 22, 80 28 C 80 22, 76 18, 70 18 C 76 18, 80 14, 80 8 Z"
+        fill="#FED034" stroke="#0A254D" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Companion small bubble / dot -->
+  <circle cx="67" cy="10" r="2.5" fill="#FED034" stroke="#0A254D" stroke-width="1"/>
+</svg>

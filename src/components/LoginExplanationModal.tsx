@@ -1,5 +1,6 @@
 import React from 'react';
 import { Cloud, CheckCircle2, ShieldCheck, X } from 'lucide-react';
+import { LogoIcon } from './Logo';
 
 interface LoginExplanationModalProps {
   isOpen: boolean;
@@ -28,8 +29,13 @@ export const LoginExplanationModal: React.FC<LoginExplanationModalProps> = ({
           <X className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        <div className="w-14 h-14 bg-[#E6F7F5] text-[#00B4D8] rounded-3xl flex items-center justify-center shadow-xs border-2 border-white">
-          <Cloud className="w-7 h-7" />
+        <div className="flex flex-col items-center gap-2">
+          <LogoIcon size={56} className="shadow-md" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-stone-100 text-[#0A254D] text-xs font-black">
+            <span>Teach</span><span className="text-[#FF3B8D]">Arab</span>
+            <span className="text-stone-300">·</span>
+            <span className="text-stone-600 font-bold">Cloud Guru</span>
+          </div>
         </div>
 
         <div>

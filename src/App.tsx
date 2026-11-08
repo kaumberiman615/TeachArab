@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
+import Logo from './components/Logo';
 import HomePage from './pages/HomePage';
 import EditorPage from './pages/EditorPage';
 import ProjectorPage from './pages/ProjectorPage';
@@ -125,10 +126,7 @@ export default function App() {
           <footer className="bg-white border-t-2 border-stone-100 py-8 px-4 sm:px-6 text-center text-xs text-stone-600">
             <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg bg-[#0A254D] text-[#FED034] font-black font-amiri flex items-center justify-center text-sm">
-                  ض
-                </div>
-                <span className="font-black text-[#0A254D] text-sm">Teach<span className="text-[#FF3B8D]">Arab</span></span>
+                <Logo variant="full" size="sm" showTagline={false} />
                 <span className="text-stone-300" aria-hidden="true">·</span>
                 <span className="font-medium text-stone-500">Materi & Game Bahasa Arab Interaktif</span>
               </div>

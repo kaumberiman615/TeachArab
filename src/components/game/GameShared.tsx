@@ -13,6 +13,7 @@ import {
   ArrowRight,
   ArrowLeft,
 } from 'lucide-react';
+import { LogoIcon } from '../Logo';
 
 /* =========================================================================
    1. GAME START SCREEN
@@ -60,15 +61,9 @@ export const GameStartScreen: React.FC<GameStartScreenProps> = ({
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-bubble/20 rounded-full blur-xl pointer-events-none" />
       <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-ice rounded-full blur-xl pointer-events-none" />
 
-      {/* Floating Star/Icon Badge */}
-      <div className="relative mx-auto mb-5 w-20 h-20 rounded-3xl bg-yellow-bubble/25 border-2 border-yellow-bubble/50 flex items-center justify-center text-navy-deep shadow-sm">
-        {icon ? (
-          icon
-        ) : (
-          <svg className="w-10 h-10 text-pink-bubble" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        )}
+      {/* Floating Logo/Icon Badge */}
+      <div className="relative mx-auto mb-5 w-20 h-20 rounded-3xl bg-yellow-bubble/20 border-2 border-yellow-bubble/50 flex items-center justify-center text-navy-deep shadow-sm">
+        {icon ? icon : <LogoIcon size={52} className="shadow-xs" />}
       </div>
 
       <span className="inline-block px-3.5 py-1 rounded-full text-xs font-black tracking-wide bg-pink-100 text-pink-bubble mb-3 uppercase">
