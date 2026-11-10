@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TemplateType, FlashcardItem } from '../types';
+import { TemplateType, FlashcardItem, QuizItem, TrueFalseItem, FillBlankItem } from '../types';
 import { generateAiContent, fetchAiStatus } from '../services/aiService';
 import { sanitizeForFirestore } from '../services/cloudProjects';
 import {
@@ -47,10 +47,10 @@ export function getAvailableTasksForTemplate(templateType: TemplateType): TaskOp
         },
         {
           id: 'vocab_from_topic',
-          label: 'Kosakata dari Tema (Pilihan Ganda)',
+          label: 'Kosakata dari Tema (Soal Arti Kata)',
           mode: 'topic',
           placeholder: 'Contoh: Nama Hari, Profesi, Ruang Tamu, Warna...',
-          description: 'Membuat soal kuis kosakata bahasa Arab berdasarkan tema.',
+          description: 'Membuat soal kuis pilihan ganda arti kata bahasa Arab berdasarkan tema.',
         },
       ];
 
@@ -144,6 +144,25 @@ const QUICK_TOPIC_PRESETS = [
   'Hewan Peliharaan',
 ];
 
+const FALLBACK_DISTRACTORS = [
+  'Buku',
+  'Pena',
+  'Meja',
+  'Pintu',
+  'Rumah',
+  'Guru',
+  'Murid',
+  'Sekolah',
+  'Mobil',
+  'Pasar',
+  'Masjid',
+  'Kantor',
+  'Jendela',
+  'Pohon',
+  'Air',
+  'Makanan',
+];
+
 /**
  * Sanitasi string sederhana (hilangkan tag HTML berbahaya)
  */
@@ -153,6 +172,36 @@ function sanitizeCleanString(val: any, maxLen = 500): string {
     .replace(/<[^>]*>/g, '') // Buang tag HTML
     .trim()
     .slice(0, maxLen);
+}
+
+function getTemplateMeta(templateType: TemplateType): { name: string; itemLabel: string; subtitle: string } {
+  switch (templateType) {
+    case 'kuis':
+      return {
+        name: 'Kuis Pilihan Ganda',
+        itemLabel: 'Soal',
+        subtitle: 'Buat draf pertanyaan kuis 4 opsi berharakat otomatis',
+      };
+    case 'true-false':
+      return {
+        name: 'Benar / Salah',
+        itemLabel: 'Pernyataan',
+        subtitle: 'Buat draf pernyataan benar atau salah berharakat otomatis',
+      };
+    case 'fill-blank':
+      return {
+        name: 'Isian Singkat',
+        itemLabel: 'Kalimat',
+        subtitle: 'Buat draf kalimat rumpang berharakat dan kunci jawaban otomatis',
+      };
+    case 'flashcard':
+    default:
+      return {
+        name: 'Flashcard',
+        itemLabel: 'Kartu',
+        subtitle: 'Buat draf materi & kartu kosakata bahasa Arab berharakat otomatis',
+      };
+  }
 }
 
 export default function AiAssistantModal({
@@ -178,6 +227,8 @@ export default function AiAssistantModal({
 
   // Quota & AI Status
   const [quotaInfo, setQuotaInfo] = useState<{ remainingHourly: number; remainingDaily: number } | null>(null);
+
+  const meta = getTemplateMeta(templateType);
 
   useEffect(() => {
     if (tasks.length > 0) {
@@ -241,17 +292,128 @@ export default function AiAssistantModal({
         return;
       }
 
-      // Sanitasi item pratinjau sebelum dirender
-      const sanitizedPreview = items.map((item) => ({
-        arabic: sanitizeCleanString(item.arabic || item.question || item.statement || ''),
-        latin: sanitizeCleanString(item.latin || ''),
-        meaning: sanitizeCleanString(item.meaning || item.translation || item.answer || ''),
-        notes: item.explanation ? sanitizeCleanString(item.explanation) : undefined,
-      }));
+      // Normalisasi item pratinjau sesuai template dan task
+      let normalizedPreview: any[] = [];
 
-      setPreviewItems(sanitizedPreview);
+      if (templateType === 'kuis') {
+        if (selectedTask.id === 'vocab_from_topic') {
+          // Petakan kosakata ke soal arti kata 4 pilihan
+          const allMeanings = items.map((it) => sanitizeCleanString(it.meaning)).filter(Boolean);
+
+          normalizedPreview = items.map((item, idx) => {
+            const arabic = sanitizeCleanString(item.arabic || '');
+            const latin = sanitizeCleanString(item.latin || '');
+            const correctMeaning = sanitizeCleanString(item.meaning || '');
+
+            // Kumpulkan 3 pengecoh dari arti kata lain dalam batch atau fallback
+            const otherMeanings = allMeanings.filter((m) => m !== correctMeaning);
+            const distractorPool = [...otherMeanings, ...FALLBACK_DISTRACTORS.filter((f) => f !== correctMeaning)];
+            const chosenDistractors: string[] = [];
+            for (const d of distractorPool) {
+              if (chosenDistractors.length >= 3) break;
+              if (!chosenDistractors.includes(d) && d !== correctMeaning) {
+                chosenDistractors.push(d);
+              }
+            }
+
+            // Tentukan posisi acak jawaban benar (0..3)
+            const correctIndex = Math.floor(Math.random() * 4);
+            const choices: string[] = [];
+            let distractorIdx = 0;
+            for (let c = 0; c < 4; c++) {
+              if (c === correctIndex) {
+                choices.push(correctMeaning);
+              } else {
+                choices.push(chosenDistractors[distractorIdx] || `Pilihan ${c + 1}`);
+                distractorIdx++;
+              }
+            }
+
+            return {
+              type: 'kuis',
+              questionArabic: `مَا مَعْنَى كَلِمَةِ «${arabic}»؟`,
+              questionIndo: `Apa arti kata «${arabic}»?`,
+              choices,
+              correctIndex,
+              explanation: `كَلِمَةُ «${arabic}» تَعْنِي «${correctMeaning}».${latin ? ` (${latin})` : ''}`,
+            };
+          });
+        } else {
+          // mcq_from_text
+          normalizedPreview = items.map((item) => {
+            const rawChoices = Array.isArray(item.options)
+              ? item.options
+              : Array.isArray(item.choices)
+              ? item.choices
+              : [];
+            const choices = rawChoices
+              .map((c: any) => sanitizeCleanString(typeof c === 'string' ? c : c?.text || ''))
+              .filter(Boolean)
+              .slice(0, 4);
+
+            while (choices.length < 4) {
+              choices.push(`Pilihan ${choices.length + 1}`);
+            }
+
+            let correctIndex = typeof item.correctIndex === 'number' ? item.correctIndex : 0;
+            if (correctIndex < 0 || correctIndex >= choices.length) correctIndex = 0;
+
+            return {
+              type: 'kuis',
+              questionArabic: sanitizeCleanString(item.question || item.questionArabic || ''),
+              questionIndo: sanitizeCleanString(item.questionIndo || ''),
+              choices,
+              correctIndex,
+              explanation: sanitizeCleanString(item.explanation || ''),
+            };
+          });
+        }
+      } else if (templateType === 'true-false') {
+        normalizedPreview = items.map((item) => ({
+          type: 'true-false',
+          statementArabic: sanitizeCleanString(item.statement || item.statementArabic || ''),
+          statementIndo: sanitizeCleanString(item.statementIndo || ''),
+          isTrue: typeof item.answer === 'boolean' ? item.answer : typeof item.isTrue === 'boolean' ? item.isTrue : true,
+          explanation: sanitizeCleanString(item.explanation || ''),
+        }));
+      } else if (templateType === 'fill-blank') {
+        normalizedPreview = items.map((item) => {
+          let question = sanitizeCleanString(item.question || '');
+          if (question && !question.includes('___')) {
+            question = question.trim() + ' ___';
+          }
+          const primaryAns = sanitizeCleanString(
+            item.answer || (Array.isArray(item.answers) ? item.answers[0] : '')
+          );
+          const rawAlts = Array.isArray(item.alternatives)
+            ? item.alternatives
+            : Array.isArray(item.answers)
+            ? item.answers.slice(1)
+            : [];
+          const alternatives = rawAlts.map((a: any) => sanitizeCleanString(a)).filter(Boolean);
+
+          return {
+            type: 'fill-blank',
+            question,
+            answer: primaryAns,
+            alternatives,
+            explanation: sanitizeCleanString(item.explanation || ''),
+          };
+        });
+      } else {
+        // flashcard
+        normalizedPreview = items.map((item) => ({
+          type: 'flashcard',
+          arabic: sanitizeCleanString(item.arabic || item.question || item.statement || ''),
+          latin: sanitizeCleanString(item.latin || ''),
+          meaning: sanitizeCleanString(item.meaning || item.translation || item.answer || ''),
+          notes: item.notes || item.explanation ? sanitizeCleanString(item.notes || item.explanation) : undefined,
+        }));
+      }
+
+      setPreviewItems(normalizedPreview);
       // Centang semua item secara default
-      setSelectedItemIndices(new Set(sanitizedPreview.map((_, i) => i)));
+      setSelectedItemIndices(new Set(normalizedPreview.map((_, i) => i)));
 
       if (response.remainingHourly !== undefined && response.remainingDaily !== undefined) {
         setQuotaInfo({
@@ -286,44 +448,100 @@ export default function AiAssistantModal({
     }
   };
 
-  const updatePreviewItem = (index: number, field: string, value: string) => {
+  const updatePreviewField = (index: number, field: string, value: any) => {
     const next = [...previewItems];
-    next[index] = { ...next[index], [field]: sanitizeCleanString(value) };
+    next[index] = { ...next[index], [field]: value };
+    setPreviewItems(next);
+  };
+
+  const updateChoice = (itemIndex: number, choiceIndex: number, text: string) => {
+    const next = [...previewItems];
+    const choices = [...(next[itemIndex].choices || [])];
+    choices[choiceIndex] = sanitizeCleanString(text);
+    next[itemIndex] = { ...next[itemIndex], choices };
     setPreviewItems(next);
   };
 
   /**
    * Masukkan item terpilih ke editor
-   * Ketentuan 3: Selalu menambahkan ke akhir daftar, tidak boleh menimpa isi yang ada.
-   * Ketentuan 6: Sanitasi sebelum disimpan dan lolos sanitizeForFirestore.
+   * Ketentuan: Selalu menambahkan ke akhir daftar, tidak boleh menimpa isi yang ada.
+   * Ketentuan: Sanitasi sebelum disimpan dan lolos sanitizeForFirestore.
    */
   const handleApplyToEditor = () => {
     const selected = previewItems.filter((_, i) => selectedItemIndices.has(i));
     if (selected.length === 0) {
-      alert('Pilih minimal 1 item untuk dimasukkan ke editor.');
+      alert(`Pilih minimal 1 ${meta.itemLabel.toLowerCase()} untuk dimasukkan ke editor.`);
       return;
     }
 
     const now = Date.now();
-    const flashcardsToInsert: FlashcardItem[] = selected.map((item, idx) => {
-      const card: FlashcardItem = {
-        id: `fc_${now}_${idx}_${Math.random().toString(36).substring(2, 9)}`,
-        arabic: sanitizeCleanString(item.arabic || ''),
-        latin: sanitizeCleanString(item.latin || ''),
-        meaning: sanitizeCleanString(item.meaning || ''),
-        notes: item.notes && item.notes.trim() ? sanitizeCleanString(item.notes.trim()) : '',
-      };
-      return sanitizeForFirestore(card);
-    });
 
-    onApplyItems(flashcardsToInsert);
+    if (templateType === 'kuis') {
+      const quizItemsToInsert: QuizItem[] = selected.map((item, idx) => {
+        const itemChoices = Array.isArray(item.choices) ? item.choices : [];
+        const quiz: QuizItem = {
+          id: `quiz_${now}_${idx}_${Math.random().toString(36).substring(2, 9)}`,
+          questionArabic: sanitizeCleanString(item.questionArabic || ''),
+          questionIndo: sanitizeCleanString(item.questionIndo || ''),
+          choices: itemChoices.map((c: any) => ({
+            text: sanitizeCleanString(typeof c === 'string' ? c : c?.text || ''),
+          })),
+          correctIndex: typeof item.correctIndex === 'number' ? item.correctIndex : 0,
+          explanation: item.explanation ? sanitizeCleanString(item.explanation) : '',
+        };
+        return sanitizeForFirestore(quiz);
+      });
+      onApplyItems(quizItemsToInsert);
+    } else if (templateType === 'true-false') {
+      const tfItemsToInsert: TrueFalseItem[] = selected.map((item, idx) => {
+        const tf: TrueFalseItem = {
+          id: `tf_${now}_${idx}_${Math.random().toString(36).substring(2, 9)}`,
+          statementArabic: sanitizeCleanString(item.statementArabic || ''),
+          statementIndo: sanitizeCleanString(item.statementIndo || ''),
+          isTrue: Boolean(item.isTrue),
+          explanation: item.explanation ? sanitizeCleanString(item.explanation) : '',
+        };
+        return sanitizeForFirestore(tf);
+      });
+      onApplyItems(tfItemsToInsert);
+    } else if (templateType === 'fill-blank') {
+      const fbItemsToInsert: FillBlankItem[] = selected.map((item, idx) => {
+        const alts = Array.isArray(item.alternatives) ? item.alternatives : [];
+        const allAnswers = [item.answer, ...alts]
+          .map((a: string) => sanitizeCleanString(a))
+          .filter(Boolean);
+
+        const fb: FillBlankItem = {
+          id: `fb_${now}_${idx}_${Math.random().toString(36).substring(2, 9)}`,
+          question: sanitizeCleanString(item.question || ''),
+          answers: allAnswers.length > 0 ? allAnswers : [''],
+          explanation: item.explanation ? sanitizeCleanString(item.explanation) : '',
+          strictHarakat: false,
+        };
+        return sanitizeForFirestore(fb);
+      });
+      onApplyItems(fbItemsToInsert);
+    } else {
+      // flashcard
+      const flashcardsToInsert: FlashcardItem[] = selected.map((item, idx) => {
+        const card: FlashcardItem = {
+          id: `fc_${now}_${idx}_${Math.random().toString(36).substring(2, 9)}`,
+          arabic: sanitizeCleanString(item.arabic || ''),
+          latin: sanitizeCleanString(item.latin || ''),
+          meaning: sanitizeCleanString(item.meaning || ''),
+          notes: item.notes && item.notes.trim() ? sanitizeCleanString(item.notes.trim()) : '',
+        };
+        return sanitizeForFirestore(card);
+      });
+      onApplyItems(flashcardsToInsert);
+    }
+
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0A254D]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-2 border-[#0A254D] my-auto animate-in fade-in zoom-in-95">
-        
         {/* Header Bar */}
         <div className="px-5 sm:px-6 py-4 border-b-2 border-stone-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
@@ -334,12 +552,10 @@ export default function AiAssistantModal({
               <div className="flex items-center gap-2">
                 <h2 className="font-black text-[#0A254D] text-base sm:text-lg">Bantuan AI Guru</h2>
                 <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[#FED034]/30 text-[#0A254D] border border-[#FED034]">
-                  Flashcard
+                  {meta.name}
                 </span>
               </div>
-              <p className="text-xs text-stone-500 font-medium">
-                Buat draf materi & kartu kosakata bahasa Arab berharakat otomatis
-              </p>
+              <p className="text-xs text-stone-500 font-medium">{meta.subtitle}</p>
             </div>
           </div>
 
@@ -353,7 +569,7 @@ export default function AiAssistantModal({
           </button>
         </div>
 
-        {/* Peringatan Tetap Guru (Ketentuan 4) */}
+        {/* Peringatan Tetap Guru */}
         <div className="px-5 sm:px-6 py-2.5 bg-[#FFF8DC] border-b-2 border-[#FED034]/60 flex items-center gap-2.5 text-xs text-[#0A254D]">
           <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
           <span className="leading-snug">
@@ -458,10 +674,10 @@ export default function AiAssistantModal({
                 <div className="bg-stone-50 p-3.5 rounded-2xl border border-stone-200">
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-black text-[#0A254D]">
-                      Jumlah Kartu (1 - 15):
+                      Jumlah {meta.itemLabel} (1 - 15):
                     </label>
                     <span className="px-2.5 py-0.5 rounded-full bg-[#FED034] text-[#0A254D] font-black text-xs border border-[#0A254D]">
-                      {count} Kartu
+                      {count} {meta.itemLabel}
                     </span>
                   </div>
                   <input
@@ -504,7 +720,7 @@ export default function AiAssistantModal({
                 </div>
               </div>
 
-              {/* Pesan Error & Tombol Coba Lagi (Ketentuan 5) */}
+              {/* Pesan Error & Tombol Coba Lagi */}
               {errorMessage && (
                 <div className="p-3.5 bg-rose-50 border-2 border-rose-300 rounded-2xl text-xs text-rose-900 font-medium flex items-center justify-between gap-3 animate-in fade-in">
                   <div className="flex items-center gap-2">
@@ -523,7 +739,7 @@ export default function AiAssistantModal({
               )}
             </div>
           ) : (
-            /* PREVIEW VIEW (Ketentuan 3 & 6) */
+            /* PREVIEW VIEW */
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 bg-stone-50 p-3 rounded-2xl border border-stone-200">
                 <button
@@ -542,7 +758,7 @@ export default function AiAssistantModal({
                   </div>
                   <span>
                     {selectedItemIndices.size === previewItems.length ? 'Batalkan Semua' : 'Pilih Semua'}{' '}
-                    ({selectedItemIndices.size} dari {previewItems.length} kartu terpilih)
+                    ({selectedItemIndices.size} dari {previewItems.length} {meta.itemLabel.toLowerCase()} terpilih)
                   </span>
                 </button>
 
@@ -556,7 +772,7 @@ export default function AiAssistantModal({
                 </button>
               </div>
 
-              {/* Daftar Kartu yang Bisa Diedit Langsung */}
+              {/* Daftar Item yang Bisa Diedit Langsung */}
               <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
                 {previewItems.map((item, idx) => {
                   const isChecked = selectedItemIndices.has(idx);
@@ -578,60 +794,319 @@ export default function AiAssistantModal({
                           className="mt-2 w-5 h-5 accent-[#0A254D] cursor-pointer rounded-lg"
                         />
 
-                        <div className="flex-1 space-y-2.5">
-                          {/* Teks Arab (RTL) */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
-                              Arab:
-                            </span>
-                            <input
-                              type="text"
-                              dir="rtl"
-                              value={item.arabic}
-                              onChange={(e) => updatePreviewItem(idx, 'arabic', e.target.value)}
-                              className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xl font-bold font-amiri text-[#0A254D] text-right focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
-                            />
-                          </div>
+                        <div className="flex-1 space-y-3">
+                          {/* 1. KUIS PREVIEW */}
+                          {templateType === 'kuis' && (
+                            <div className="space-y-3">
+                              {/* Pertanyaan Arab */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Pertanyaan Bahasa Arab (RTL):
+                                </label>
+                                <input
+                                  type="text"
+                                  dir="rtl"
+                                  value={item.questionArabic}
+                                  onChange={(e) => updatePreviewField(idx, 'questionArabic', e.target.value)}
+                                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-lg font-bold font-amiri text-[#0A254D] text-right focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
 
-                          {/* Transliterasi Latin */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
-                              Latin:
-                            </span>
-                            <input
-                              type="text"
-                              value={item.latin}
-                              onChange={(e) => updatePreviewItem(idx, 'latin', e.target.value)}
-                              className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-[#0A254D] focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
-                            />
-                          </div>
+                              {/* Pertanyaan Indonesia */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Terjemahan / Petunjuk Pertanyaan (Indonesia):
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.questionIndo || ''}
+                                  onChange={(e) => updatePreviewField(idx, 'questionIndo', e.target.value)}
+                                  placeholder="Contoh: Apa arti kata tersebut?"
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-[#0A254D] focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
 
-                          {/* Arti Bahasa Indonesia */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
-                              Arti:
-                            </span>
-                            <input
-                              type="text"
-                              value={item.meaning}
-                              onChange={(e) => updatePreviewItem(idx, 'meaning', e.target.value)}
-                              className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-800 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
-                            />
-                          </div>
+                              {/* Pilihan Jawaban 4 Opsi */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1.5">
+                                  Pilihan Jawaban (Klik bulatan untuk kunci yang benar):
+                                </label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {(item.choices || []).map((choiceText: string, cIdx: number) => {
+                                    const isCorrect = item.correctIndex === cIdx;
+                                    return (
+                                      <div
+                                        key={cIdx}
+                                        className={`flex items-center gap-2 p-2 rounded-xl border-2 transition-all ${
+                                          isCorrect
+                                            ? 'bg-emerald-50 border-emerald-500'
+                                            : 'bg-stone-50 border-stone-200'
+                                        }`}
+                                      >
+                                        <button
+                                          type="button"
+                                          onClick={() => updatePreviewField(idx, 'correctIndex', cIdx)}
+                                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 cursor-pointer font-black text-xs transition-all ${
+                                            isCorrect
+                                              ? 'bg-emerald-500 border-emerald-600 text-white'
+                                              : 'bg-white border-stone-400 text-stone-600 hover:border-emerald-400'
+                                          }`}
+                                          title="Tandai sebagai kunci jawaban"
+                                        >
+                                          {String.fromCharCode(65 + cIdx)}
+                                        </button>
+                                        <input
+                                          type="text"
+                                          value={choiceText}
+                                          onChange={(e) => updateChoice(idx, cIdx, e.target.value)}
+                                          className="w-full bg-transparent border-0 text-xs font-bold text-[#0A254D] focus:outline-hidden"
+                                        />
+                                        {isCorrect && (
+                                          <span className="text-[10px] font-black uppercase text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-sm shrink-0">
+                                            Kunci
+                                          </span>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
 
-                          {/* Catatan Tambahan (opsional) */}
-                          {item.notes !== undefined && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
-                                Catatan:
-                              </span>
-                              <input
-                                type="text"
-                                value={item.notes || ''}
-                                onChange={(e) => updatePreviewItem(idx, 'notes', e.target.value)}
-                                placeholder="Contoh: Jamak dari..."
-                                className="w-full px-3 py-1 bg-stone-50 border border-stone-200 rounded-xl text-[11px] text-stone-600 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
-                              />
+                              {/* Penjelasan */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Penjelasan Jawaban:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.explanation || ''}
+                                  onChange={(e) => updatePreviewField(idx, 'explanation', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-700 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 2. BENAR / SALAH PREVIEW */}
+                          {templateType === 'true-false' && (
+                            <div className="space-y-3">
+                              {/* Pernyataan Arab */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Pernyataan Bahasa Arab (RTL):
+                                </label>
+                                <input
+                                  type="text"
+                                  dir="rtl"
+                                  value={item.statementArabic}
+                                  onChange={(e) => updatePreviewField(idx, 'statementArabic', e.target.value)}
+                                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-lg font-bold font-amiri text-[#0A254D] text-right focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+
+                              {/* Pernyataan Indonesia */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Arti Pernyataan (Indonesia):
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.statementIndo || ''}
+                                  onChange={(e) => updatePreviewField(idx, 'statementIndo', e.target.value)}
+                                  placeholder="Contoh: Matahari terbit dari arah timur."
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-[#0A254D] focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+
+                              {/* Kunci Jawaban Benar / Salah */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1.5">
+                                  Kunci Jawaban:
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => updatePreviewField(idx, 'isTrue', true)}
+                                    className={`min-h-[44px] py-2 px-3 rounded-xl border-2 font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                                      item.isTrue
+                                        ? 'bg-emerald-500 border-emerald-600 text-white shadow-[0_2px_0_#065f46]'
+                                        : 'bg-white border-stone-200 text-stone-600 hover:border-emerald-300'
+                                    }`}
+                                  >
+                                    <Check className="w-4 h-4" />
+                                    <span>BENAR (صَحِيح)</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => updatePreviewField(idx, 'isTrue', false)}
+                                    className={`min-h-[44px] py-2 px-3 rounded-xl border-2 font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                                      !item.isTrue
+                                        ? 'bg-rose-500 border-rose-600 text-white shadow-[0_2px_0_#9f1239]'
+                                        : 'bg-white border-stone-200 text-stone-600 hover:border-rose-300'
+                                    }`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                    <span>SALAH (خَطَأ)</span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Penjelasan */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Penjelasan Jawaban:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.explanation || ''}
+                                  onChange={(e) => updatePreviewField(idx, 'explanation', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-700 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 3. ISIAN SINGKAT / KALIMAT RUMPANG PREVIEW */}
+                          {templateType === 'fill-blank' && (
+                            <div className="space-y-3">
+                              {/* Kalimat Rumpang */}
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <label className="text-[11px] font-black text-stone-500 uppercase">
+                                    Kalimat Rumpang Bahasa Arab (Gunakan ___):
+                                  </label>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = item.question || '';
+                                      updatePreviewField(
+                                        idx,
+                                        'question',
+                                        current ? current + ' ___ ' : '___ '
+                                      );
+                                    }}
+                                    className="text-[10px] font-black text-[#00B4D8] hover:underline cursor-pointer"
+                                  >
+                                    + Sisipkan ___
+                                  </button>
+                                </div>
+                                <input
+                                  type="text"
+                                  dir="rtl"
+                                  value={item.question}
+                                  onChange={(e) => updatePreviewField(idx, 'question', e.target.value)}
+                                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-lg font-bold font-amiri text-[#0A254D] text-right focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+
+                              {/* Kunci Jawaban Utama */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div>
+                                  <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                    Kunci Jawaban Utama:
+                                  </label>
+                                  <input
+                                    type="text"
+                                    dir="rtl"
+                                    value={item.answer}
+                                    onChange={(e) => updatePreviewField(idx, 'answer', e.target.value)}
+                                    className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-bold font-amiri text-[#0A254D] text-right focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                    Jawaban Alternatif (Pisahkan koma):
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={(item.alternatives || []).join(', ')}
+                                    onChange={(e) => {
+                                      const parts = e.target.value
+                                        .split(',')
+                                        .map((p) => p.trim())
+                                        .filter(Boolean);
+                                      updatePreviewField(idx, 'alternatives', parts);
+                                    }}
+                                    placeholder="Contoh: المدرسة, مدرسة"
+                                    className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-800 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Penjelasan */}
+                              <div>
+                                <label className="block text-[11px] font-black text-stone-500 uppercase mb-1">
+                                  Arti Kalimat / Penjelasan:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.explanation || ''}
+                                  onChange={(e) => updatePreviewField(idx, 'explanation', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-700 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 4. FLASHCARD PREVIEW */}
+                          {templateType === 'flashcard' && (
+                            <div className="space-y-2.5">
+                              {/* Teks Arab (RTL) */}
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
+                                  Arab:
+                                </span>
+                                <input
+                                  type="text"
+                                  dir="rtl"
+                                  value={item.arabic}
+                                  onChange={(e) => updatePreviewField(idx, 'arabic', e.target.value)}
+                                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xl font-bold font-amiri text-[#0A254D] text-right focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+
+                              {/* Transliterasi Latin */}
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
+                                  Latin:
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.latin}
+                                  onChange={(e) => updatePreviewField(idx, 'latin', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-[#0A254D] focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+
+                              {/* Arti Bahasa Indonesia */}
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
+                                  Arti:
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.meaning}
+                                  onChange={(e) => updatePreviewField(idx, 'meaning', e.target.value)}
+                                  className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-800 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                />
+                              </div>
+
+                              {/* Catatan Tambahan (opsional) */}
+                              {item.notes !== undefined && (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[11px] font-black text-stone-500 uppercase w-14 shrink-0">
+                                    Catatan:
+                                  </span>
+                                  <input
+                                    type="text"
+                                    value={item.notes || ''}
+                                    onChange={(e) => updatePreviewField(idx, 'notes', e.target.value)}
+                                    placeholder="Contoh: Jamak dari..."
+                                    className="w-full px-3 py-1 bg-stone-50 border border-stone-200 rounded-xl text-[11px] text-stone-600 focus:bg-white focus:border-[#0A254D] focus:outline-hidden"
+                                  />
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -645,7 +1120,7 @@ export default function AiAssistantModal({
               <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-2xl flex items-center gap-2 text-xs text-indigo-950 font-medium">
                 <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" />
                 <span>
-                  Item yang dipilih akan <strong>ditambahkan ke akhir daftar kartu</strong> tanpa menimpa kartu yang sudah ada di editor.
+                  Item yang dipilih akan <strong>ditambahkan ke akhir daftar {meta.itemLabel.toLowerCase()}</strong> tanpa menimpa data yang sudah ada di editor.
                 </span>
               </div>
             </div>
@@ -689,7 +1164,9 @@ export default function AiAssistantModal({
               className="min-h-[44px] px-6 py-2.5 bg-[#FF3B8D] hover:bg-[#E62879] disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs sm:text-sm rounded-full border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] flex items-center gap-2 cursor-pointer transition-all active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>Masukkan {selectedItemIndices.size} Kartu ke Editor</span>
+              <span>
+                Masukkan {selectedItemIndices.size} {meta.itemLabel} ke Editor
+              </span>
             </button>
           )}
         </div>

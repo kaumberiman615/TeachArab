@@ -243,6 +243,20 @@ export default function QuizPlayer({
   const currentImage = currentQuestion.mediaImageId ? mediaFiles[currentQuestion.mediaImageId] : null;
   const currentAudio = currentQuestion.mediaAudioId ? mediaFiles[currentQuestion.mediaAudioId] : null;
 
+  if (!items || items.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl font-black">
+          ❓
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Soal Kuis</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada pertanyaan untuk dimainkan. Tambahkan pertanyaan di editor atau gunakan Bantuan AI.
+        </p>
+      </div>
+    );
+  }
+
   // 1. START SCREEN
   if (gameState === 'start') {
     return (

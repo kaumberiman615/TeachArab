@@ -29,6 +29,8 @@ interface FillBlankEditorProps {
   onAddMedia: (file: File, type: 'image' | 'audio' | 'video') => Promise<string>;
   onRemoveMedia: (id: string) => void;
   onOpenQuickInput: () => void;
+  onOpenAiAssistant?: () => void;
+  aiEnabled?: boolean;
   onUpdateSettings?: (settings: DraftSettings) => void;
 }
 
@@ -40,6 +42,8 @@ export default function FillBlankEditor({
   onUpdateItems,
   onUpdateMediaFiles,
   onOpenQuickInput,
+  onOpenAiAssistant,
+  aiEnabled = true,
   onUpdateSettings,
 }: FillBlankEditorProps) {
   const [newAltAnswer, setNewAltAnswer] = useState<Record<number, string>>({});
@@ -262,6 +266,17 @@ export default function FillBlankEditor({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {aiEnabled && onOpenAiAssistant && (
+            <button
+              type="button"
+              onClick={onOpenAiAssistant}
+              className="min-h-[44px] px-3.5 py-2 bg-[#FF3B8D] hover:bg-[#E62879] text-white font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5"
+            >
+              <Sparkles className="w-4 h-4 text-[#FED034]" />
+              <span>Bantuan AI</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onOpenQuickInput}
@@ -274,7 +289,7 @@ export default function FillBlankEditor({
           <button
             type="button"
             onClick={addItem}
-            className="min-h-[44px] px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
+            className="min-h-[44px] px-4 py-2 bg-[#0A254D] hover:bg-black text-white font-black rounded-2xl text-xs flex items-center gap-1.5 border-2 border-[#0A254D] shadow-[0_3px_0_#0A254D] transition-all cursor-pointer active:translate-y-0.5 active:shadow-[0_1px_0_#0A254D]"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Soal</span>
@@ -284,7 +299,48 @@ export default function FillBlankEditor({
 
       {/* Items list */}
       <div className="space-y-4">
-        {items.map((item, idx) => (
+        {items.length === 0 ? (
+          <div className="bg-white border-2 border-dashed border-stone-300 rounded-3xl p-8 sm:p-12 text-center shadow-xs space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 border-2 border-[#0A254D] flex items-center justify-center mx-auto text-3xl font-black shadow-[0_3px_0_#0A254D]">
+              📝
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Kalimat Rumpang</h3>
+              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto mt-1">
+                Belum ada kalimat isian rumpang. Tambah kalimat atau gunakan Bantuan AI untuk membuat otomatis.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={addItem}
+                className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#0A254D] hover:bg-black text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#000] active:translate-y-0.5"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Tambah Soal Baru</span>
+              </button>
+              <button
+                type="button"
+                onClick={onOpenQuickInput}
+                className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_2px_0_#0A254D] active:translate-y-0.5"
+              >
+                <Sparkles className="w-4 h-4 text-[#FF3B8D]" />
+                <span>Input Cepat</span>
+              </button>
+              {aiEnabled && onOpenAiAssistant && (
+                <button
+                  type="button"
+                  onClick={onOpenAiAssistant}
+                  className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+                >
+                  <Sparkles className="w-4 h-4 text-[#FED034]" />
+                  <span>Bantuan AI</span>
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          items.map((item, idx) => (
           <div
             key={item.id}
             className="bg-white border-2 border-stone-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4 hover:border-[#0A254D] transition-all"
@@ -489,7 +545,7 @@ export default function FillBlankEditor({
               />
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       {/* Bottom Add Button */}

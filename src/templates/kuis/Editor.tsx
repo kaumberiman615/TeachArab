@@ -24,6 +24,8 @@ interface QuizEditorProps {
   onUpdateItems: (newItems: QuizItem[]) => void;
   onUpdateMediaFiles: (newMedia: Record<string, MediaItem>) => void;
   onOpenQuickInput: () => void;
+  onOpenAiAssistant?: () => void;
+  aiEnabled?: boolean;
 }
 
 export default function QuizEditor({
@@ -33,6 +35,8 @@ export default function QuizEditor({
   onUpdateItems,
   onUpdateMediaFiles,
   onOpenQuickInput,
+  onOpenAiAssistant,
+  aiEnabled,
 }: QuizEditorProps) {
   const fontClass =
     theme.fontFamily === 'Noto Naskh Arabic'
@@ -182,7 +186,17 @@ export default function QuizEditor({
           <span>Total Soal Kuis:</span>
           <span className="px-3 py-1 rounded-full bg-[#FED034]/30 text-[#0A254D] border border-[#FED034] font-black">{normalizedItems.length} Soal</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
+          {aiEnabled && onOpenAiAssistant && (
+            <button
+              type="button"
+              onClick={onOpenAiAssistant}
+              className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+            >
+              <Sparkles className="w-4 h-4 text-[#FED034]" />
+              <span>Bantuan AI</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onOpenQuickInput}
@@ -194,7 +208,7 @@ export default function QuizEditor({
           <button
             type="button"
             onClick={handleAddItem}
-            className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+            className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#0A254D] hover:bg-black text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#000] active:translate-y-0.5"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Soal</span>
@@ -212,7 +226,7 @@ export default function QuizEditor({
             <div>
               <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Soal Kuis</h3>
               <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto mt-1">
-                Belum ada pertanyaan kuis. Tambah pertanyaan atau gunakan Input Cepat.
+                Belum ada pertanyaan kuis. Tambah pertanyaan atau gunakan Bantuan AI.
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
@@ -232,6 +246,16 @@ export default function QuizEditor({
                 <Sparkles className="w-4 h-4 text-[#FF3B8D]" />
                 <span>Input Cepat</span>
               </button>
+              {aiEnabled && onOpenAiAssistant && (
+                <button
+                  type="button"
+                  onClick={onOpenAiAssistant}
+                  className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+                >
+                  <Sparkles className="w-4 h-4 text-[#FED034]" />
+                  <span>Bantuan AI</span>
+                </button>
+              )}
             </div>
           </div>
         ) : (

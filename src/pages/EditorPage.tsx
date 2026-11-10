@@ -655,13 +655,13 @@ export default function EditorPage({
               </button>
             </div>
 
-            {/* AI Assistant Button (Flashcard template) */}
-            {draft.templateType === 'flashcard' && aiEnabled && (
+            {/* AI Assistant Button (Flashcard, Kuis, Benar/Salah, Isian Singkat) */}
+            {['flashcard', 'kuis', 'true-false', 'fill-blank'].includes(draft.templateType) && aiEnabled && (
               <button
                 type="button"
                 onClick={() => setShowAiModal(true)}
                 className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5"
-                title="Bantuan AI Gemini untuk Flashcard"
+                title="Bantuan AI Guru"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#FED034]" />
                 <span>Bantuan AI</span>
@@ -872,8 +872,8 @@ export default function EditorPage({
         }}
       />
 
-      {/* AI Assistant Modal (Khusus Flashcard pada rilis ini) */}
-      {draft.templateType === 'flashcard' && (
+      {/* AI Assistant Modal (Flashcard, Kuis, Benar/Salah, Isian Singkat) */}
+      {['flashcard', 'kuis', 'true-false', 'fill-blank'].includes(draft.templateType) && (
         <AiAssistantModal
           isOpen={showAiModal}
           templateType={draft.templateType}
