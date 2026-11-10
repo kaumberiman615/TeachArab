@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Draft, TemplateType, MediaItem, ThemeConfig, DraftSettings, isMatchingTemplate, CloudProject } from '../types';
-import { getTemplateOrNull } from '../templates/registry';
+import { getTemplateOrNull, getTemplate } from '../templates/registry';
 import { getCategoryByTemplateType } from '../templates/categories';
 import { saveDraft, getDraft } from '../services/storage';
 import { useAuth } from '../services/authContext';
-import { saveDraftToCloud, getProjectById, toggleProjectPublic, type FailedFileUpload } from '../services/cloudProjects';
+import { saveDraftToCloud, getProjectById, toggleProjectPublic, sanitizeForFirestore, type FailedFileUpload } from '../services/cloudProjects';
 import { getCloudinaryConfigStatus } from '../services/cloudinary';
 import ThemePanel from '../components/ThemePanel';
 import QuickInputModal from '../components/QuickInputModal';
+import AiAssistantModal from '../components/AiAssistantModal';
+import { fetchAiStatus } from '../services/aiService';
 import ExportModal from '../components/ExportModal';
 import ArabicKeyboard from '../components/ArabicKeyboard';
 import { ShareModal } from '../components/ShareModal';
@@ -18,6 +20,7 @@ import {
   type UploadProgressData,
   type CloudinaryConfigWarningData,
 } from '../components/UploadProgressModal';
+import ErrorBoundary from '../components/ErrorBoundary';
 import {
   Save,
   Download,
@@ -42,62 +45,70 @@ interface EditorPageProps {
   onNavigate: (path: string) => void;
 }
 
+function normalizeDraftData(loaded: Partial<Draft> | null | undefined, templateDef: any): Draft {
+  const defaultDraft = templateDef.createDefaultDraft();
+  if (!loaded) return defaultDraft;
+
+  return {
+    ...defaultDraft,
+    ...loaded,
+    id: loaded.id || defaultDraft.id,
+    title: loaded.title ?? defaultDraft.title,
+    description: loaded.description ?? defaultDraft.description ?? '',
+    templateType: templateDef.id,
+    theme: {
+      ...defaultDraft.theme,
+      ...(loaded.theme || {}),
+    },
+    settings: {
+      ...defaultDraft.settings,
+      ...(loaded.settings || {}),
+    },
+    items: Array.isArray(loaded.items) ? loaded.items : [],
+    mediaFiles: loaded.mediaFiles || {},
+    createdAt: loaded.createdAt || defaultDraft.createdAt || Date.now(),
+    updatedAt: loaded.updatedAt || Date.now(),
+  };
+}
+
 export default function EditorPage({
   templateType,
   initialDraftId,
   initialCloudId,
   onNavigate,
 }: EditorPageProps) {
-  // Check if template exists in registry
-  const templateDef = getTemplateOrNull(templateType);
-
-  // If template is not recognized, show "Template tidak ditemukan"
-  if (!templateDef) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6 bg-stone-50">
-        <div className="bg-white border border-stone-200 rounded-2xl p-8 max-w-md w-full text-center shadow-md space-y-4">
-          <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center mx-auto">
-            <AlertCircle className="w-8 h-8" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-stone-900">Template Tidak Ditemukan</h2>
-            <p className="text-stone-600 text-xs mt-1.5 leading-relaxed">
-              Jenis template <code className="bg-stone-100 px-1.5 py-0.5 rounded font-mono text-stone-800">"{templateType}"</code> tidak terdaftar dalam Teach Arab.
-            </p>
-          </div>
-          <div className="pt-2 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => onNavigate('/')}
-              className="w-full py-2.5 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-2xl border-2 border-[#0A254D] text-xs cursor-pointer shadow-[0_3px_0_#0A254D] transition-transform active:translate-y-0.5"
-            >
-              Lihat Galeri Template
-            </button>
-            <button
-              type="button"
-              onClick={() => onNavigate('/draf')}
-              className="w-full py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-bold rounded-2xl border-2 border-[#0A254D] text-xs cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
-            >
-              Buka Draf Saya
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Check if template exists in registry safely without conditional early return before hooks
+  const rawTemplateDef = getTemplateOrNull(templateType);
+  const isValidTemplate = Boolean(rawTemplateDef);
+  const templateDef = rawTemplateDef || getTemplate('flashcard');
 
   const { user, signInWithGoogle } = useAuth();
 
-  // Initialize draft based on valid templateDef
+  // Initialize draft based on resolved templateDef (always unconditional)
   const [draft, setDraft] = useState<Draft>(() => {
-    return templateDef.createDefaultDraft();
+    return normalizeDraftData(templateDef.createDefaultDraft(), templateDef);
   });
 
   const [activeMobileTab, setActiveMobileTab] = useState<'edit' | 'preview'>('edit');
   const [showThemePanel, setShowThemePanel] = useState(false);
   const [showQuickInput, setShowQuickInput] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');
+
+  // Check AI availability from backend on mount
+  useEffect(() => {
+    let isMounted = true;
+    fetchAiStatus().then((res) => {
+      if (isMounted) {
+        setAiEnabled(res.aiEnabled);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Cloud & Sharing states
   const [cloudProjectId, setCloudProjectId] = useState<string | null>(initialCloudId || null);
@@ -137,20 +148,24 @@ export default function EditorPage({
         setCloudShareId(project.shareId);
         setIsCloudPublic(project.isPublic);
 
-        // Populate draft from cloud project
-        setDraft((prev) => ({
-          ...prev,
-          id: project.id,
-          title: project.title,
-          description: project.description || '',
-          theme: project.content?.theme || prev.theme,
-          settings: project.content?.settings || prev.settings,
-          items: project.content?.items || [],
-          mediaFiles: {}, // Media URLs are referenced in project.mediaRefs
-        }));
+        // Populate draft from cloud project safely
+        const cloudContent = project.content || {};
+        const normalized = normalizeDraftData(
+          {
+            id: project.id,
+            title: project.title,
+            description: project.description || '',
+            theme: cloudContent.theme,
+            settings: cloudContent.settings,
+            items: cloudContent.items || [],
+            mediaFiles: {},
+          },
+          templateDef
+        );
+        setDraft(normalized);
       });
     }
-  }, [initialCloudId]);
+  }, [initialCloudId, templateDef]);
 
   // Load existing local draft if initialDraftId provided
   useEffect(() => {
@@ -161,11 +176,11 @@ export default function EditorPage({
           loaded.templateType === templateDef.id ||
           (isMatchingTemplate(loaded.templateType) && isMatchingTemplate(templateDef.id));
         if (matchesTemplate) {
-          setDraft(loaded);
+          setDraft(normalizeDraftData(loaded, templateDef));
         }
       });
     }
-  }, [initialDraftId, initialCloudId, templateDef.id]);
+  }, [initialDraftId, initialCloudId, templateDef]);
 
   // Keep URL in sync with draft ID so page refresh reloads this exact draft with media
   useEffect(() => {
@@ -508,6 +523,38 @@ export default function EditorPage({
   const categoryLabel = isMateri ? 'Materi' : 'Game';
   const backRoute = isMateri ? '/materi' : '/game';
 
+  if (!isValidTemplate) {
+    return (
+      <div className="min-h-screen bg-[#FAFCFC] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white rounded-3xl p-8 border-2 border-stone-100 shadow-xl text-center space-y-4">
+          <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
+            !
+          </div>
+          <h2 className="text-2xl font-black text-[#0A254D]">Template Tidak Ditemukan</h2>
+          <p className="text-stone-500 text-sm">
+            Template &quot;{templateType}&quot; tidak tersedia atau belum terdaftar. Silakan pilih template lain dari galeri.
+          </p>
+          <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              type="button"
+              onClick={() => onNavigate('/materi')}
+              className="px-5 py-2.5 rounded-xl bg-[#00B4D8] text-white font-bold hover:brightness-105 transition-all cursor-pointer text-sm"
+            >
+              Galeri Materi
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate('/game')}
+              className="px-5 py-2.5 rounded-xl bg-[#FF3B8D] text-white font-bold hover:brightness-105 transition-all cursor-pointer text-sm"
+            >
+              Galeri Game
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFCFC] flex flex-col pb-32">
       {/* Top Action Toolbar */}
@@ -607,6 +654,19 @@ export default function EditorPage({
                 <span>Pratinjau</span>
               </button>
             </div>
+
+            {/* AI Assistant Button (Flashcard template) */}
+            {draft.templateType === 'flashcard' && aiEnabled && (
+              <button
+                type="button"
+                onClick={() => setShowAiModal(true)}
+                className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] shadow-[0_2px_0_#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5"
+                title="Bantuan AI Gemini untuk Flashcard"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#FED034]" />
+                <span>Bantuan AI</span>
+              </button>
+            )}
 
             {/* Quick Input Button */}
             <button
@@ -733,21 +793,29 @@ export default function EditorPage({
             </div>
           )}
 
-          {/* Template-Specific Editor Component */}
-          <EditorComponent
-            items={draft.items}
-            mediaFiles={draft.mediaFiles || {}}
-            theme={draft.theme}
-            settings={draft.settings}
-            onUpdateItems={handleUpdateItems}
-            onUpdateMediaFiles={handleUpdateMediaFiles}
-            onAddMedia={handleAddMedia}
-            onRemoveMedia={handleRemoveMedia}
-            onOpenQuickInput={() => setShowQuickInput(true)}
-            onUpdateSettings={(newSettings: DraftSettings) =>
-              setDraft((prev) => ({ ...prev, settings: newSettings }))
-            }
-          />
+          {/* Template-Specific Editor Component wrapped in ErrorBoundary */}
+          <ErrorBoundary
+            title="Terjadi kesalahan pada editor"
+            fallbackMessage="Editor mengalami kendala saat merender komponen. Muat ulang halaman untuk mencoba lagi."
+            onNavigateBack={() => onNavigate(backRoute)}
+          >
+            <EditorComponent
+              items={Array.isArray(draft.items) ? draft.items : []}
+              mediaFiles={draft.mediaFiles || {}}
+              theme={draft.theme}
+              settings={draft.settings}
+              onUpdateItems={handleUpdateItems}
+              onUpdateMediaFiles={handleUpdateMediaFiles}
+              onAddMedia={handleAddMedia}
+              onRemoveMedia={handleRemoveMedia}
+              onOpenQuickInput={() => setShowQuickInput(true)}
+              onOpenAiAssistant={() => setShowAiModal(true)}
+              aiEnabled={aiEnabled}
+              onUpdateSettings={(newSettings: DraftSettings) =>
+                setDraft((prev) => ({ ...prev, settings: newSettings }))
+              }
+            />
+          </ErrorBoundary>
         </div>
 
         {/* Right Column: Live Interactive Player Preview */}
@@ -768,13 +836,19 @@ export default function EditorPage({
             </div>
 
             <div className="bg-stone-50 border-2 border-stone-200 rounded-3xl p-3 sm:p-5 shadow-sm min-h-[500px] flex flex-col justify-center">
-              <PlayerComponent
-                items={draft.items}
-                theme={draft.theme}
-                settings={draft.settings}
-                mediaFiles={draft.mediaFiles}
-                isProjectorMode={false}
-              />
+              <ErrorBoundary
+                title="Terjadi kesalahan pada pratinjau"
+                fallbackMessage="Komponen pratinjau mengalami kendala rendering. Muat ulang halaman untuk mencoba lagi."
+                onNavigateBack={() => onNavigate(backRoute)}
+              >
+                <PlayerComponent
+                  items={Array.isArray(draft.items) ? draft.items : []}
+                  theme={draft.theme}
+                  settings={draft.settings}
+                  mediaFiles={draft.mediaFiles || {}}
+                  isProjectorMode={false}
+                />
+              </ErrorBoundary>
             </div>
           </div>
         </div>
@@ -789,13 +863,30 @@ export default function EditorPage({
         templateType={draft.templateType}
         onClose={() => setShowQuickInput(false)}
         onApplyItems={(items: any[], mode: 'replace' | 'append') => {
+          const currentItems = Array.isArray(draft.items) ? draft.items : [];
           if (mode === 'replace') {
             handleUpdateItems(items);
           } else {
-            handleUpdateItems([...draft.items, ...items]);
+            handleUpdateItems([...currentItems, ...items]);
           }
         }}
       />
+
+      {/* AI Assistant Modal (Khusus Flashcard pada rilis ini) */}
+      {draft.templateType === 'flashcard' && (
+        <AiAssistantModal
+          isOpen={showAiModal}
+          templateType={draft.templateType}
+          onClose={() => setShowAiModal(false)}
+          onApplyItems={(newItems: any[]) => {
+            // Ketentuan 3: Selalu menambahkan ke akhir daftar (tidak boleh menimpa).
+            // Ketentuan 6: Sanitasi sebelum disimpan dan lolos sanitizeForFirestore.
+            const currentItems = Array.isArray(draft.items) ? draft.items : [];
+            const sanitizedItems = (newItems || []).map((item) => sanitizeForFirestore(item));
+            handleUpdateItems([...currentItems, ...sanitizedItems]);
+          }}
+        />
+      )}
 
       {/* Offline Export Modal */}
       <ExportModal

@@ -79,7 +79,7 @@ export default function SentenceOrderPlayer({
       ? 'font-scheherazade'
       : 'font-naskh';
 
-  const currentItem = runtimeItems[currentIndex] || items[0];
+  const currentItem = (runtimeItems && runtimeItems[currentIndex]) || (items && items[0]) || null;
 
   // Parse valid sentences from sentenceArabic (supports multiple variations separated by '/')
   const getValidSentenceStrings = (raw: string): string[] => {
@@ -268,6 +268,20 @@ export default function SentenceOrderPlayer({
   const audioUrl = currentItem?.mediaAudioId ? getMediaUrl(mediaFiles[currentItem.mediaAudioId]) : null;
 
   // START SCREEN
+  if (!items || items.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl font-black">
+          📜
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Kalimat</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada kalimat untuk disusun. Tambahkan kalimat di editor terlebih dahulu.
+        </p>
+      </div>
+    );
+  }
+
   if (gameState === 'start') {
     return (
       <GameStartScreen

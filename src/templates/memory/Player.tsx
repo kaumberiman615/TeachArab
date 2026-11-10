@@ -253,10 +253,16 @@ export default function MemoryPlayer({
     }
   };
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-stone-200 p-8 text-center text-stone-500 text-sm">
-        Belum ada pasangan kartu dalam game Memory ini. Silakan tambahkan kosakata di editor.
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-3xl font-black">
+          🧠
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Kartu Memori</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada pasangan kartu memori untuk dimainkan. Tambahkan pasangan kata di editor terlebih dahulu.
+        </p>
       </div>
     );
   }

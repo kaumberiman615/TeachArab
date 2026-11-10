@@ -14,6 +14,7 @@ import { AuthProvider } from './services/authContext';
 import { TemplateType } from './types';
 import { getTemplate } from './templates/registry';
 import { saveDraft } from './services/storage';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
   // Parse current route from window.location.hash or fallback to '/'
@@ -119,7 +120,11 @@ export default function App() {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1">{content}</main>
+        <main className="flex-1">
+          <ErrorBoundary onNavigateBack={() => navigate('/')}>
+            {content}
+          </ErrorBoundary>
+        </main>
 
         {/* Playful Footer */}
         {!isStandaloneView && (

@@ -44,10 +44,6 @@ export default function MatchingEditor({
   };
 
   const handleDeleteItem = (index: number) => {
-    if (items.length <= 2) {
-      alert('Game mencocokkan minimal memerlukan 2 pasangan kata agar dapat dimainkan.');
-      return;
-    }
     const newItems = items.filter((_, i) => i !== index);
     onUpdateItems(newItems);
   };

@@ -300,6 +300,20 @@ export default function WheelPlayer({
     }
   };
 
+  if (!items || items.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-3xl font-black">
+          🎡
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Entri Roda</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada entri roda untuk diputar. Tambahkan entri di editor terlebih dahulu.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className={`space-y-4 max-w-5xl mx-auto ${isProjectorMode ? 'p-4 sm:p-6' : ''}`}>
       {/* Top Header Controls */}

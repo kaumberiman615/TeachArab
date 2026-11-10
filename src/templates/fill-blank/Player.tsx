@@ -75,11 +75,11 @@ export default function FillBlankPlayer({
       ? 'font-scheherazade'
       : 'font-naskh';
 
-  const currentItem = runtimeItems[currentIndex] || items[0];
+  const currentItem = (runtimeItems && runtimeItems[currentIndex]) || (items && items[0]) || null;
 
   const startGame = () => {
-    let list = [...items].filter((item) => item.question && item.question.trim().length > 0);
-    if (list.length === 0) list = [...items];
+    let list = [...(items || [])].filter((item) => item.question && item.question.trim().length > 0);
+    if (list.length === 0) list = [...(items || [])];
     if (settings.fbShuffle !== false) {
       list = list.sort(() => Math.random() - 0.5);
     }
@@ -106,6 +106,20 @@ export default function FillBlankPlayer({
       }, 150);
     }
   }, [gameState, currentIndex, runtimeItems]);
+
+  if (!items || items.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl font-black">
+          📝
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Soal Isian</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada kalimat isian untuk dimainkan. Tambahkan kalimat di editor terlebih dahulu.
+        </p>
+      </div>
+    );
+  }
 
   // Handle typing from virtual keyboard
   const handleInsertChar = (char: string) => {

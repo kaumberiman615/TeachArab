@@ -1,14 +1,19 @@
 import { AI_CONFIG } from './config.js';
 
-interface UserUsage {
+interface IpUsage {
   timestamps: number[];
 }
 
-// In-memory store for user rate limits
-const usageStore = new Map<string, UserUsage>();
+/**
+ * Catatan penting:
+ * Penghitung laju (rate limit) di memori (in-memory Map) ini tidak permanen di lingkungan serverless
+ * atau saat proses server melakukan restart. Untuk persistensi penuh antar instance serverless,
+ * penyimpanan terdistribusi seperti Redis atau Firestore dapat dihubungkan di masa mendatang.
+ */
+const ipUsageStore = new Map<string, IpUsage>();
 
 /**
- * Clean up timestamps older than 24 hours
+ * Bersihkan timestamp yang sudah lebih dari 24 jam
  */
 function cleanOldTimestamps(timestamps: number[], now: number): number[] {
   const cutoff = now - AI_CONFIG.RATE_LIMITS.WINDOW_DAY_MS;
@@ -23,15 +28,16 @@ export interface RateLimitResult {
 }
 
 /**
- * Check if the user is within rate limits (10/hour, 30/day)
+ * Periksa batas laju permintaan per IP (maksimal 10/jam dan 30/hari)
  */
-export function checkRateLimit(userId: string): RateLimitResult {
+export function checkRateLimit(ipAddress: string): RateLimitResult {
+  const ip = ipAddress || 'unknown_ip';
   const now = Date.now();
-  let usage = usageStore.get(userId);
+  let usage = ipUsageStore.get(ip);
 
   if (!usage) {
     usage = { timestamps: [] };
-    usageStore.set(userId, usage);
+    ipUsageStore.set(ip, usage);
   } else {
     usage.timestamps = cleanOldTimestamps(usage.timestamps, now);
   }
@@ -48,7 +54,7 @@ export function checkRateLimit(userId: string): RateLimitResult {
       allowed: false,
       remainingHourly: 0,
       remainingDaily,
-      message: 'Batas penggunaan tercapai: maksimal 10 permintaan per jam. Silakan coba lagi nanti.',
+      message: 'Batas permintaan terlampaui: maksimal 10 permintaan per jam. Silakan coba lagi nanti.',
     };
   }
 
@@ -57,7 +63,7 @@ export function checkRateLimit(userId: string): RateLimitResult {
       allowed: false,
       remainingHourly,
       remainingDaily: 0,
-      message: 'Batas penggunaan harian tercapai: maksimal 30 permintaan per hari. Silakan coba lagi besok.',
+      message: 'Batas permintaan harian terlampaui: maksimal 30 permintaan per hari. Silakan coba lagi besok.',
     };
   }
 
@@ -69,15 +75,16 @@ export function checkRateLimit(userId: string): RateLimitResult {
 }
 
 /**
- * Record a successful AI generation request
+ * Catat penggunaan sukses untuk IP tertentu
  */
-export function recordRateLimitUsage(userId: string): RateLimitResult {
+export function recordRateLimitUsage(ipAddress: string): RateLimitResult {
+  const ip = ipAddress || 'unknown_ip';
   const now = Date.now();
-  let usage = usageStore.get(userId);
+  let usage = ipUsageStore.get(ip);
 
   if (!usage) {
     usage = { timestamps: [] };
-    usageStore.set(userId, usage);
+    ipUsageStore.set(ip, usage);
   }
 
   usage.timestamps.push(now);
@@ -95,11 +102,12 @@ export function recordRateLimitUsage(userId: string): RateLimitResult {
 }
 
 /**
- * Get current quota status for a user without recording a request
+ * Ambil status kuota saat ini untuk IP tertentu
  */
-export function getRateLimitStatus(userId: string): { remainingHourly: number; remainingDaily: number } {
+export function getRateLimitStatus(ipAddress: string): { remainingHourly: number; remainingDaily: number } {
+  const ip = ipAddress || 'unknown_ip';
   const now = Date.now();
-  const usage = usageStore.get(userId);
+  const usage = ipUsageStore.get(ip);
   if (!usage) {
     return {
       remainingHourly: AI_CONFIG.RATE_LIMITS.MAX_HOURLY,

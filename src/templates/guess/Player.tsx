@@ -88,12 +88,12 @@ export default function GuessPlayer({
       ? 'font-scheherazade'
       : 'font-naskh';
 
-  const currentItem = runtimeItems[currentIndex] || items[0];
+  const currentItem = (runtimeItems && runtimeItems[currentIndex]) || (items && items[0]) || null;
   const currentMode = currentItem?.answerMode || settings.guessAnswerMode || 'choice';
 
   const startGame = () => {
-    let list = [...items].filter((i) => i.answer && i.answer.trim().length > 0);
-    if (list.length === 0) list = [...items];
+    let list = [...(items || [])].filter((i) => i.answer && i.answer.trim().length > 0);
+    if (list.length === 0) list = [...(items || [])];
     if (settings.guessShuffle !== false) {
       list = list.sort(() => Math.random() - 0.5);
     }
@@ -276,6 +276,20 @@ export default function GuessPlayer({
   };
 
   // START SCREEN
+  if (!items || items.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-3xl font-black">
+          🔍
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Tebakan</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada tebak kata untuk dimainkan. Tambahkan tebakan di editor terlebih dahulu.
+        </p>
+      </div>
+    );
+  }
+
   if (gameState === 'start') {
     return (
       <GameStartScreen

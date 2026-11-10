@@ -150,11 +150,28 @@ export default function MediaManager({
       ? `name="${file.name || 'unknown'}", type="${file.type || 'unknown'}", size=${file.size ?? 0} bytes`
       : 'Berkas: N/A';
 
-    const textLog = `[Tahap: ${stage}] Error Name: ${e.name} | Message: ${e.message} | Stack: ${e.stack || 'Tidak ada stack'} | Detail: ${fileDetails}`;
-    console.error(textLog);
+    const isPermissionError =
+      e.name === 'NotAllowedError' ||
+      e.name === 'PermissionDeniedError' ||
+      e.name === 'SecurityError' ||
+      stage.toLowerCase().includes('izin') ||
+      stage.toLowerCase().includes('mikrofon');
+
+    const textLog = `[Tahap: ${stage}] ${isPermissionError ? 'Info' : 'Error Name'}: ${e.name} | Message: ${e.message} | Detail: ${fileDetails}`;
+    
+    // Gunakan console.warn untuk penolakan izin browser biasa agar tidak dianggap uncaught error fatal
+    if (isPermissionError) {
+      console.warn(textLog);
+    } else {
+      console.error(textLog);
+    }
 
     setStageFailed(stage);
-    setErrorMessage(`Gagal pada tahap "${stage}": ${e.message || 'Terjadi kesalahan'}`);
+    setErrorMessage(
+      isPermissionError
+        ? 'Akses mikrofon tidak diizinkan atau dibatasi oleh browser. Anda dapat mengunggah file audio (.mp3, .wav) atau izinkan mikrofon di pengaturan browser.'
+        : `Gagal pada tahap "${stage}": ${e.message || 'Terjadi kesalahan'}`
+    );
     setLastDiagnosticError(`[${stage}] ${e.name}: ${e.message}`);
   };
 
@@ -386,7 +403,21 @@ export default function MediaManager({
       const e = micErr as { name?: string; message?: string };
       const errName = e.name || 'Error';
 
-      if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
+      if (currentStreamRef.current) {
+        try {
+          currentStreamRef.current.getTracks().forEach((track) => track.stop());
+        } catch {
+          // ignore
+        }
+        currentStreamRef.current = null;
+      }
+      setIsRecording(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+
+      if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError' || errName === 'SecurityError') {
         setMicPermissionDenied(true);
       }
       logAndSetError('Akses Izin Mikrofon', micErr);
@@ -505,15 +536,24 @@ export default function MediaManager({
                         Jika Teach Arab dibuka di jendela frame pratinjau, klik <strong>Buka di Tab Baru</strong> di bawah agar browser dapat meminta izin mikrofon secara langsung.
                       </li>
                     </ol>
-                    <div className="flex flex-wrap gap-2 pt-0.5">
+                    <div className="flex flex-wrap items-center gap-2 pt-0.5">
                       <button
                         type="button"
-                        onClick={() => window.open(window.location.href, '_blank')}
-                        className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        onClick={() => fileInputAudioRef.current?.click()}
+                        className="px-3 py-1.5 bg-[#FF3B8D] hover:bg-[#E62879] text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Unggah File Audio Saja</span>
+                      </button>
+                      <a
+                        href={window.location.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs no-underline"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         <span>Buka di Tab Baru</span>
-                      </button>
+                      </a>
                       <button
                         type="button"
                         onClick={() => {

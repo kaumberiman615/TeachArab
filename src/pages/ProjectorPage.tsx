@@ -4,6 +4,7 @@ import { getDraft } from '../services/storage';
 import { getTemplateOrNull } from '../templates/registry';
 import ExportModal from '../components/ExportModal';
 import { LogoIcon } from '../components/Logo';
+import ErrorBoundary from '../components/ErrorBoundary';
 import {
   ArrowLeft,
   Maximize2,
@@ -151,13 +152,19 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
 
       {/* Main Full-Scale Canvas */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-8 flex flex-col justify-center">
-        <PlayerComponent
-          items={draft.items}
-          theme={draft.theme}
-          settings={draft.settings}
-          mediaFiles={draft.mediaFiles}
-          isProjectorMode={true}
-        />
+        <ErrorBoundary
+          title="Terjadi kesalahan pada tampilan proyektor"
+          fallbackMessage="Mode proyektor mengalami kendala rendering materi ini."
+          onNavigateBack={() => onNavigate(`/buat/${draft.templateType}?id=${draft.id}`)}
+        >
+          <PlayerComponent
+            items={Array.isArray(draft.items) ? draft.items : []}
+            theme={draft.theme}
+            settings={draft.settings}
+            mediaFiles={draft.mediaFiles || {}}
+            isProjectorMode={true}
+          />
+        </ErrorBoundary>
       </main>
 
       <ExportModal

@@ -31,16 +31,6 @@ export default function FlashcardPlayer({
     setShowLatin(theme.showLatin);
   }, [theme.showHarakat, theme.showLatin]);
 
-  if (!items || items.length === 0) {
-    return (
-      <div className="bg-white rounded-2xl p-12 text-center border border-stone-200">
-        <p className="text-stone-500 font-medium">Belum ada kosakata untuk ditampilkan.</p>
-      </div>
-    );
-  }
-
-  const currentItem = items[currentIndex];
-
   const fontClass =
     theme.fontFamily === 'Noto Naskh Arabic'
       ? 'font-noto'
@@ -67,23 +57,27 @@ export default function FlashcardPlayer({
   };
 
   const handleNext = () => {
+    if (!items || items.length === 0) return;
     soundManager.playClick();
     setIsFlipped(false);
     setCurrentIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
   };
 
   const handlePrev = () => {
+    if (!items || items.length === 0) return;
     soundManager.playClick();
     setIsFlipped(false);
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
   };
 
   const handleFlip = () => {
+    if (!items || items.length === 0) return;
     soundManager.playClick();
     setIsFlipped(!isFlipped);
   };
 
   const handleShuffle = () => {
+    if (!items || items.length === 0) return;
     soundManager.playClick();
     setIsFlipped(false);
     const randomIndex = Math.floor(Math.random() * items.length);
@@ -92,6 +86,7 @@ export default function FlashcardPlayer({
 
   // Keyboard controls (Space = flip, ArrowLeft = prev, ArrowRight = next)
   useEffect(() => {
+    if (!items || items.length === 0) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
@@ -109,7 +104,24 @@ export default function FlashcardPlayer({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFlipped, currentIndex, items.length]);
+  }, [isFlipped, currentIndex, items?.length]);
+
+  const safeIndex = items && items.length > 0 ? Math.min(currentIndex, items.length - 1) : 0;
+  const currentItem = items && items.length > 0 ? items[safeIndex] : null;
+
+  if (!items || items.length === 0 || !currentItem) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-3xl font-black">
+          🃏
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Kartu</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada kartu untuk ditampilkan dalam pratinjau. Tambah kartu di editor atau gunakan Bantuan AI untuk membuat kosakata otomatis.
+        </p>
+      </div>
+    );
+  }
 
   // Media preview urls
   const currentImage = currentItem.mediaImageId ? mediaFiles[currentItem.mediaImageId] : null;

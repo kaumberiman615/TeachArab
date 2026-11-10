@@ -11,6 +11,8 @@ interface FlashcardEditorProps {
   onUpdateItems: (newItems: FlashcardItem[]) => void;
   onUpdateMediaFiles: (newMedia: Record<string, MediaItem>) => void;
   onOpenQuickInput: () => void;
+  onOpenAiAssistant?: () => void;
+  aiEnabled?: boolean;
   onSelectArabicInput?: (inputEl: HTMLInputElement) => void;
 }
 
@@ -21,6 +23,8 @@ export default function FlashcardEditor({
   onUpdateItems,
   onUpdateMediaFiles,
   onOpenQuickInput,
+  onOpenAiAssistant,
+  aiEnabled,
 }: FlashcardEditorProps) {
   const fontClass =
     theme.fontFamily === 'Noto Naskh Arabic'
@@ -29,35 +33,34 @@ export default function FlashcardEditor({
       ? 'font-scheherazade'
       : 'font-amiri';
 
+  const safeItems = Array.isArray(items) ? items : [];
+
   const handleAddItem = () => {
-    onUpdateItems([...items, createEmptyFlashcard()]);
+    onUpdateItems([...safeItems, createEmptyFlashcard()]);
   };
 
   const handleDuplicateItem = (index: number) => {
-    const item = items[index];
+    if (!safeItems[index]) return;
+    const item = safeItems[index];
     const newItem: FlashcardItem = {
       ...item,
       id: 'fc_' + Math.random().toString(36).substring(2, 9),
     };
-    const newItems = [...items];
+    const newItems = [...safeItems];
     newItems.splice(index + 1, 0, newItem);
     onUpdateItems(newItems);
   };
 
   const handleDeleteItem = (index: number) => {
-    if (items.length <= 1) {
-      alert('Materi minimal memiliki 1 kartu kosakata.');
-      return;
-    }
-    const newItems = items.filter((_, i) => i !== index);
+    const newItems = safeItems.filter((_, i) => i !== index);
     onUpdateItems(newItems);
   };
 
   const handleMove = (index: number, direction: 'up' | 'down') => {
     if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === items.length - 1) return;
+    if (direction === 'down' && index === safeItems.length - 1) return;
     const targetIdx = direction === 'up' ? index - 1 : index + 1;
-    const newItems = [...items];
+    const newItems = [...safeItems];
     const temp = newItems[index];
     newItems[index] = newItems[targetIdx];
     newItems[targetIdx] = temp;
@@ -65,13 +68,15 @@ export default function FlashcardEditor({
   };
 
   const handleChangeField = (index: number, field: keyof FlashcardItem, value: any) => {
-    const newItems = [...items];
+    if (!safeItems[index]) return;
+    const newItems = [...safeItems];
     newItems[index] = { ...newItems[index], [field]: value };
     onUpdateItems(newItems);
   };
 
   const handleStripHarakat = (index: number) => {
-    const current = items[index].arabic;
+    if (!safeItems[index]) return;
+    const current = safeItems[index].arabic || '';
     handleChangeField(index, 'arabic', removeHarakat(current));
   };
 
@@ -81,9 +86,21 @@ export default function FlashcardEditor({
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white rounded-2xl border-2 border-stone-200 shadow-2xs">
         <div className="text-xs font-black text-[#0A254D] flex items-center gap-2">
           <span>Total Kosakata:</span>
-          <span className="px-3 py-1 rounded-full bg-[#FED034]/30 text-[#0A254D] border border-[#FED034] font-black">{items.length} Kartu</span>
+          <span className="px-3 py-1 rounded-full bg-[#FED034]/30 text-[#0A254D] border border-[#FED034] font-black">
+            {safeItems.length} Kartu
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
+          {aiEnabled && onOpenAiAssistant && (
+            <button
+              type="button"
+              onClick={onOpenAiAssistant}
+              className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+            >
+              <Sparkles className="w-4 h-4 text-[#FED034]" />
+              <span>Bantuan AI</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onOpenQuickInput}
@@ -95,7 +112,7 @@ export default function FlashcardEditor({
           <button
             type="button"
             onClick={handleAddItem}
-            className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+            className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#0A254D] hover:bg-black text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#000] active:translate-y-0.5"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Kartu</span>
@@ -105,7 +122,48 @@ export default function FlashcardEditor({
 
       {/* Cards List */}
       <div className="space-y-4">
-        {items.map((item, index) => (
+        {safeItems.length === 0 ? (
+          <div className="bg-white border-2 border-dashed border-stone-300 rounded-3xl p-8 sm:p-12 text-center shadow-xs space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-[#FFF0F6] text-[#FF3B8D] border-2 border-[#0A254D] flex items-center justify-center mx-auto text-3xl font-black shadow-[0_3px_0_#0A254D]">
+              🃏
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Kartu</h3>
+              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto mt-1">
+                Belum ada kartu. Tambah kartu atau pakai Bantuan AI.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={handleAddItem}
+                className="min-h-[44px] px-5 py-2 text-xs font-black bg-[#0A254D] hover:bg-black text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#000] active:translate-y-0.5"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Tambah Kartu</span>
+              </button>
+              <button
+                type="button"
+                onClick={onOpenQuickInput}
+                className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-white hover:bg-stone-50 text-[#0A254D] border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_2px_0_#0A254D] active:translate-y-0.5"
+              >
+                <Sparkles className="w-4 h-4 text-[#FF3B8D]" />
+                <span>Input Cepat</span>
+              </button>
+              {aiEnabled && onOpenAiAssistant && (
+                <button
+                  type="button"
+                  onClick={onOpenAiAssistant}
+                  className="min-h-[44px] px-4.5 py-2 text-xs font-black bg-[#FF3B8D] hover:bg-[#E62879] text-white border-2 border-[#0A254D] rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_3px_0_#0A254D] active:translate-y-0.5"
+                >
+                  <Sparkles className="w-4 h-4 text-[#FED034]" />
+                  <span>Bantuan AI</span>
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          safeItems.map((item, index) => (
           <div
             key={item.id}
             className="bg-white border-2 border-stone-200 rounded-3xl p-5 shadow-xs relative transition-all hover:border-[#00B4D8]"
@@ -249,7 +307,7 @@ export default function FlashcardEditor({
               onRemoveAudio={() => handleChangeField(index, 'mediaAudioId', undefined)}
             />
           </div>
-        ))}
+        )))}
       </div>
 
       {/* Bottom Add Button */}

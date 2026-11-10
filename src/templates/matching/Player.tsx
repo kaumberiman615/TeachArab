@@ -125,8 +125,14 @@ export default function MatchingPlayer({
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-white rounded-2xl p-12 text-center border border-stone-200">
-        <p className="text-stone-500 font-medium">Belum ada pasangan kata untuk dicocokkan.</p>
+      <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-stone-200 flex flex-col items-center justify-center space-y-3 min-h-[360px]">
+        <div className="w-16 h-16 rounded-2xl bg-cyan-50 text-[#00B4D8] flex items-center justify-center text-3xl font-black">
+          🔗
+        </div>
+        <h3 className="text-lg font-black text-[#0A254D]">Belum Ada Pasangan Kata</h3>
+        <p className="text-stone-500 text-xs sm:text-sm max-w-sm">
+          Belum ada pasangan kata untuk dicocokkan. Tambahkan pasangan kata di editor terlebih dahulu.
+        </p>
       </div>
     );
   }
