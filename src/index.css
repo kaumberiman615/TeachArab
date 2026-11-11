@@ -59,6 +59,12 @@
     background-color: #FAFCFC;
     overflow-x: hidden;
   }
+
+  /* Accessibility: Keyboard focus indicator */
+  :focus-visible {
+    outline: 3px solid #0A254D !important;
+    outline-offset: 2px !important;
+  }
 }
 
 /* Arabic typography utilities - Untouched and pristine */

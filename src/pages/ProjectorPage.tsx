@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Draft } from '../types';
 import { getDraft } from '../services/storage';
 import { getTemplateOrNull } from '../templates/registry';
@@ -12,6 +12,7 @@ import {
   Download,
   AlertCircle,
   Edit3,
+  Loader2,
 } from 'lucide-react';
 
 interface ProjectorPageProps {
@@ -157,13 +158,22 @@ export default function ProjectorPage({ draftId, onNavigate }: ProjectorPageProp
           fallbackMessage="Mode proyektor mengalami kendala rendering materi ini."
           onNavigateBack={() => onNavigate(`/buat/${draft.templateType}?id=${draft.id}`)}
         >
-          <PlayerComponent
-            items={Array.isArray(draft.items) ? draft.items : []}
-            theme={draft.theme}
-            settings={draft.settings}
-            mediaFiles={draft.mediaFiles || {}}
-            isProjectorMode={true}
-          />
+          <Suspense
+            fallback={
+              <div className="p-16 flex flex-col items-center justify-center min-h-[400px] text-stone-400 space-y-4">
+                <Loader2 className="w-10 h-10 text-[#00B4D8] animate-spin" />
+                <span className="text-sm font-bold text-stone-600">Memuat mode proyektor...</span>
+              </div>
+            }
+          >
+            <PlayerComponent
+              items={Array.isArray(draft.items) ? draft.items : []}
+              theme={draft.theme}
+              settings={draft.settings}
+              mediaFiles={draft.mediaFiles || {}}
+              isProjectorMode={true}
+            />
+          </Suspense>
         </ErrorBoundary>
       </main>
 

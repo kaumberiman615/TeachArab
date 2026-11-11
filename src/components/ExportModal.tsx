@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Draft } from '../types';
 import {
   generateOfflineHTML,
@@ -7,6 +7,7 @@ import {
   downloadBlob,
 } from '../utils/export';
 import { estimateDraftSize, formatBytes } from '../services/storage';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 import {
   X,
   Download,
@@ -29,6 +30,9 @@ export default function ExportModal({ isOpen, draft, onClose }: ExportModalProps
   const [estimatedSize, setEstimatedSize] = useState<string>('0 B');
   const [totalBytes, setTotalBytes] = useState<number>(0);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  useModalAccessibility(isOpen, onClose, modalRef);
 
   useEffect(() => {
     if (isOpen) {
@@ -98,8 +102,17 @@ export default function ExportModal({ isOpen, draft, onClose }: ExportModalProps
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-      <div className="bg-white rounded-[32px] max-w-lg w-full shadow-2xl border-2 border-stone-100 overflow-hidden flex flex-col">
+    <div
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Unduh dan Ekspor Materi"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="bg-white rounded-[32px] max-w-lg w-full shadow-2xl border-2 border-stone-100 overflow-hidden flex flex-col outline-none"
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b-2 border-stone-100 flex items-center justify-between bg-[#FAFCFC]">
           <div className="flex items-center gap-3">

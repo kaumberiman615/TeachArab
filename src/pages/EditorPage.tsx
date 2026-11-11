@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { Draft, TemplateType, MediaItem, ThemeConfig, DraftSettings, isMatchingTemplate, CloudProject } from '../types';
 import { getTemplateOrNull, getTemplate } from '../templates/registry';
 import { getCategoryByTemplateType } from '../templates/categories';
@@ -21,6 +21,7 @@ import {
   type CloudinaryConfigWarningData,
 } from '../components/UploadProgressModal';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { formatAppError } from '../utils/errorHelper';
 import {
   Save,
   Download,
@@ -346,24 +347,13 @@ export default function EditorPage({
       }
     } catch (err: unknown) {
       console.error('[EditorPage executeSaveToCloud Error]:', err);
-      const isFirestore =
-        (err as any)?.isFirestoreError ||
-        (err instanceof Error && (err.name === 'FirestoreSaveError' || err.message.includes('Firestore')));
-
-      const errorTitle = isFirestore
-        ? 'Gagal Menyimpan Data (Firestore)'
-        : 'Gagal Mengunggah Media (Cloudinary)';
-
-      const msg = err instanceof Error ? err.message : String(err);
-      const suggestion = isFirestore
-        ? 'Terjadi kendala saat menyimpan dokumen ke database Firestore. Pastikan koneksi stabil dan izin akses akun Anda valid.'
-        : 'Periksa pengaturan Cloudinary atau koneksi internet Anda, lalu coba lagi.';
+      const formatted = formatAppError(err, action === 'share' ? 'share' : 'save');
 
       setShowUploadModal(true);
       setUploadModalStatus('error');
-      setUploadError(msg);
-      setUploadErrorTitle(errorTitle);
-      setUploadErrorSuggestion(suggestion);
+      setUploadError(formatted.message);
+      setUploadErrorTitle(formatted.title);
+      setUploadErrorSuggestion(formatted.suggestion);
     } finally {
       setIsSavingToCloud(false);
     }
@@ -793,28 +783,37 @@ export default function EditorPage({
             </div>
           )}
 
-          {/* Template-Specific Editor Component wrapped in ErrorBoundary */}
+          {/* Template-Specific Editor Component wrapped in ErrorBoundary & Suspense */}
           <ErrorBoundary
             title="Terjadi kesalahan pada editor"
             fallbackMessage="Editor mengalami kendala saat merender komponen. Muat ulang halaman untuk mencoba lagi."
             onNavigateBack={() => onNavigate(backRoute)}
           >
-            <EditorComponent
-              items={Array.isArray(draft.items) ? draft.items : []}
-              mediaFiles={draft.mediaFiles || {}}
-              theme={draft.theme}
-              settings={draft.settings}
-              onUpdateItems={handleUpdateItems}
-              onUpdateMediaFiles={handleUpdateMediaFiles}
-              onAddMedia={handleAddMedia}
-              onRemoveMedia={handleRemoveMedia}
-              onOpenQuickInput={() => setShowQuickInput(true)}
-              onOpenAiAssistant={() => setShowAiModal(true)}
-              aiEnabled={aiEnabled}
-              onUpdateSettings={(newSettings: DraftSettings) =>
-                setDraft((prev) => ({ ...prev, settings: newSettings }))
+            <Suspense
+              fallback={
+                <div className="p-12 bg-white rounded-3xl border-2 border-stone-200 flex flex-col items-center justify-center min-h-[360px] text-stone-400 space-y-3">
+                  <Loader2 className="w-8 h-8 text-[#00B4D8] animate-spin" />
+                  <span className="text-xs font-bold text-stone-600">Memuat editor template...</span>
+                </div>
               }
-            />
+            >
+              <EditorComponent
+                items={Array.isArray(draft.items) ? draft.items : []}
+                mediaFiles={draft.mediaFiles || {}}
+                theme={draft.theme}
+                settings={draft.settings}
+                onUpdateItems={handleUpdateItems}
+                onUpdateMediaFiles={handleUpdateMediaFiles}
+                onAddMedia={handleAddMedia}
+                onRemoveMedia={handleRemoveMedia}
+                onOpenQuickInput={() => setShowQuickInput(true)}
+                onOpenAiAssistant={() => setShowAiModal(true)}
+                aiEnabled={aiEnabled}
+                onUpdateSettings={(newSettings: DraftSettings) =>
+                  setDraft((prev) => ({ ...prev, settings: newSettings }))
+                }
+              />
+            </Suspense>
           </ErrorBoundary>
         </div>
 
@@ -841,13 +840,22 @@ export default function EditorPage({
                 fallbackMessage="Komponen pratinjau mengalami kendala rendering. Muat ulang halaman untuk mencoba lagi."
                 onNavigateBack={() => onNavigate(backRoute)}
               >
-                <PlayerComponent
-                  items={Array.isArray(draft.items) ? draft.items : []}
-                  theme={draft.theme}
-                  settings={draft.settings}
-                  mediaFiles={draft.mediaFiles || {}}
-                  isProjectorMode={false}
-                />
+                <Suspense
+                  fallback={
+                    <div className="p-12 flex flex-col items-center justify-center min-h-[300px] text-stone-400 space-y-3">
+                      <Loader2 className="w-8 h-8 text-[#FF3B8D] animate-spin" />
+                      <span className="text-xs font-bold text-stone-600">Memuat pratinjau...</span>
+                    </div>
+                  }
+                >
+                  <PlayerComponent
+                    items={Array.isArray(draft.items) ? draft.items : []}
+                    theme={draft.theme}
+                    settings={draft.settings}
+                    mediaFiles={draft.mediaFiles || {}}
+                    isProjectorMode={false}
+                  />
+                </Suspense>
               </ErrorBoundary>
             </div>
           </div>

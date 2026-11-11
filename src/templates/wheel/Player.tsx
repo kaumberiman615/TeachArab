@@ -63,6 +63,18 @@ export default function WheelPlayer({
     setSelectedEntry(null);
   }, [items]);
 
+  // Accessibility: Close result modal on Escape key
+  useEffect(() => {
+    if (!showResultModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowResultModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showResultModal]);
+
   const fontClass =
     theme.fontFamily === 'Amiri'
       ? 'Amiri'
@@ -124,9 +136,9 @@ export default function WheelPlayer({
       ctx.fillStyle = entry.color || '#059669';
       ctx.fill();
 
-      // Border between slices
+      // Border between slices (slimmer line for 24-30 slices)
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = numSlices > 24 ? 1.2 : 2.5;
       ctx.stroke();
 
       // Text inside slice
@@ -136,21 +148,22 @@ export default function WheelPlayer({
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#ffffff';
 
-      // Font size adjusted by slice count
-      const fontSize = numSlices > 18 ? 12 : numSlices > 12 ? 14 : 16;
+      // Font size adjusted by slice count for crisp 30-entry rendering
+      const fontSize = numSlices > 24 ? 10 : numSlices > 18 ? 12 : numSlices > 12 ? 14 : 16;
       ctx.font = `bold ${fontSize}px "${fontClass}", sans-serif`;
 
-      // Shadow for readability
+      // Shadow for readability (lightweight shadow for smooth 60fps on mid-range phones)
       ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-      ctx.shadowBlur = 4;
+      ctx.shadowBlur = numSlices > 24 ? 1 : 4;
       ctx.shadowOffsetX = 1;
       ctx.shadowOffsetY = 1;
 
       const rawText = theme.showHarakat ? entry.text : removeHarakat(entry.text);
-      // Truncate if too long
-      const textToRender = rawText.length > 22 ? rawText.substring(0, 20) + '...' : rawText;
+      // Truncate based on slice width
+      const maxChars = numSlices > 24 ? 13 : numSlices > 18 ? 17 : 22;
+      const textToRender = rawText.length > maxChars ? rawText.substring(0, maxChars - 2) + '...' : rawText;
 
-      ctx.fillText(textToRender, radius - 20, 0);
+      ctx.fillText(textToRender, radius - 16, 0);
       ctx.restore();
     }
 
@@ -351,8 +364,9 @@ export default function WheelPlayer({
               setSoundMuted(next);
               soundManager.setMuted(next);
             }}
-            className="w-10 h-10 rounded-full border border-[#0A254D]/15 flex items-center justify-center text-[#0A254D] hover:bg-slate-100 transition-colors cursor-pointer"
+            className="min-h-[44px] min-w-[44px] rounded-full border border-[#0A254D]/15 flex items-center justify-center text-[#0A254D] hover:bg-slate-100 transition-colors cursor-pointer"
             title={soundMuted ? 'Nyalakan Suara' : 'Matikan Suara'}
+            aria-label={soundMuted ? 'Nyalakan Suara' : 'Matikan Suara'}
           >
             {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-[#00B4D8]" />}
           </button>
@@ -360,8 +374,9 @@ export default function WheelPlayer({
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="w-10 h-10 rounded-full border border-[#0A254D]/15 flex items-center justify-center text-[#0A254D] hover:bg-slate-100 transition-colors cursor-pointer"
+            className="min-h-[44px] min-w-[44px] rounded-full border border-[#0A254D]/15 flex items-center justify-center text-[#0A254D] hover:bg-slate-100 transition-colors cursor-pointer"
             title="Layar Penuh"
+            aria-label="Layar Penuh"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
@@ -459,14 +474,22 @@ export default function WheelPlayer({
 
       {/* POPUP RESULT MODAL */}
       {showResultModal && selectedEntry && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="wheel-result-title"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+        >
           <div className="bg-white border-3 border-[#0A254D] rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center shadow-[0_8px_0_#0A254D] space-y-6 animate-in zoom-in-95">
             <div className="w-16 h-16 rounded-2xl bg-[#FED034] border-2 border-[#0A254D] text-[#0A254D] flex items-center justify-center mx-auto text-2xl font-black shadow-[0_3px_0_#0A254D]">
               🎯
             </div>
 
             <div>
-              <span className="text-xs font-black text-[#0A254D] uppercase tracking-wider bg-[#FFE4EE] border border-[#FF3B8D] px-3.5 py-1 rounded-full">
+              <span
+                id="wheel-result-title"
+                className="text-xs font-black text-[#0A254D] uppercase tracking-wider bg-[#FFE4EE] border border-[#FF3B8D] px-3.5 py-1 rounded-full"
+              >
                 Hasil Terpilih!
               </span>
 
@@ -486,7 +509,7 @@ export default function WheelPlayer({
                   <button
                     type="button"
                     onClick={() => setShowExplanation(true)}
-                    className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-bold rounded-xl border border-indigo-200 transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                    className="min-h-[44px] px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-bold rounded-xl border border-indigo-200 transition-colors cursor-pointer inline-flex items-center gap-1.5"
                   >
                     <Info className="w-3.5 h-3.5" />
                     <span>Lihat Kunci Jawaban / Penjelasan</span>
@@ -510,14 +533,14 @@ export default function WheelPlayer({
                   <button
                     type="button"
                     onClick={() => awardTeamScore(10)}
-                    className="px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-xl border-2 border-[#0A254D] cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
+                    className="min-h-[44px] px-4 py-2 bg-[#FF3B8D] hover:bg-[#e02e7b] text-white font-black rounded-xl border-2 border-[#0A254D] cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
                   >
                     +10 Poin (Benar)
                   </button>
                   <button
                     type="button"
                     onClick={() => awardTeamScore(0)}
-                    className="px-4 py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-bold rounded-xl border-2 border-[#0A254D] cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
+                    className="min-h-[44px] px-4 py-2 bg-white hover:bg-stone-50 text-[#0A254D] font-bold rounded-xl border-2 border-[#0A254D] cursor-pointer shadow-[0_2px_0_#0A254D] transition-transform active:translate-y-0.5"
                   >
                     0 Poin (Lewati)
                   </button>
@@ -531,7 +554,7 @@ export default function WheelPlayer({
                 <button
                   type="button"
                   onClick={handleEliminateDrawnEntry}
-                  className="flex-1 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 min-h-[44px] py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>Hapus Entri dari Roda</span>
@@ -544,7 +567,7 @@ export default function WheelPlayer({
                   setShowResultModal(false);
                   if (isTeam) setCurrentTeam((prev) => (prev + 1) % teamCount);
                 }}
-                className="flex-1 py-3 bg-stone-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-xs"
+                className="flex-1 min-h-[44px] py-3 bg-stone-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-xs flex items-center justify-center"
               >
                 Tutup & Lanjutkan
               </button>

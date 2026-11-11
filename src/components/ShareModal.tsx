@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { X, Copy, Check, QrCode, Download, ExternalLink, Globe, Lock, Loader2 } from 'lucide-react';
 import QRCode from 'qrcode';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -22,6 +23,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [copied, setCopied] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  useModalAccessibility(isOpen, onClose, modalRef);
 
   // Derive public URL
   const publicUrl = typeof window !== 'undefined'
@@ -80,8 +84,17 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 border-2 border-stone-100 text-stone-800 max-h-[90vh] overflow-y-auto space-y-5">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Bagikan Materi ke Siswa"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="relative w-full max-w-lg bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 border-2 border-stone-100 text-stone-800 max-h-[90vh] overflow-y-auto space-y-5 outline-none"
+      >
         <button
           onClick={onClose}
           type="button"

@@ -13,62 +13,64 @@ import {
   Compass,
 } from 'lucide-react';
 
-import FlashcardEditor from './flashcard/Editor';
-import FlashcardPlayer from './flashcard/Player';
 import { DEFAULT_FLASHCARDS } from './flashcard/schema';
-
-import QuizEditor from './kuis/Editor';
-import QuizPlayer from './kuis/Player';
 import { DEFAULT_QUIZ } from './kuis/schema';
-
-import MatchingEditor from './matching/Editor';
-import MatchingPlayer from './matching/Player';
 import { DEFAULT_MATCHING } from './matching/schema';
-
-import SlideEditor from './slide/Editor';
-import SlidePlayer from './slide/Player';
 import { DEFAULT_SLIDES } from './slide/schema';
-
-import VocabPictureEditor from './vocab-picture/Editor';
-import VocabPicturePlayer from './vocab-picture/Player';
 import { DEFAULT_VOCAB_PICTURES } from './vocab-picture/schema';
-
-import ReadingEditor from './reading/Editor';
-import ReadingPlayer from './reading/Player';
 import { DEFAULT_READING_SENTENCES } from './reading/schema';
-
-import WordTableEditor from './word-table/Editor';
-import WordTablePlayer from './word-table/Player';
 import { DEFAULT_WORD_TABLE_ROWS, PRESET_TASHRIF_COLUMNS } from './word-table/schema';
-
-import TrueFalseEditor from './true-false/Editor';
-import TrueFalsePlayer from './true-false/Player';
 import { DEFAULT_TRUE_FALSE } from './true-false/schema';
-
-import MemoryEditor from './memory/Editor';
-import MemoryPlayer from './memory/Player';
 import { DEFAULT_MEMORY_PAIRS } from './memory/schema';
-
-import WheelEditor from './wheel/Editor';
-import WheelPlayer from './wheel/Player';
 import { DEFAULT_WHEEL_ENTRIES } from './wheel/schema';
-
-import LetterOrderEditor from './letter-order/Editor';
-import LetterOrderPlayer from './letter-order/Player';
 import { DEFAULT_LETTER_ORDER_ITEMS } from './letter-order/schema';
-
-import SentenceOrderEditor from './sentence-order/Editor';
-import SentenceOrderPlayer from './sentence-order/Player';
 import { DEFAULT_SENTENCE_ORDER_ITEMS } from './sentence-order/schema';
-
-import FillBlankEditor from './fill-blank/Editor';
-import FillBlankPlayer from './fill-blank/Player';
 import { DEFAULT_FILL_BLANK_ITEMS } from './fill-blank/schema';
-
-import GuessEditor from './guess/Editor';
-import GuessPlayer from './guess/Player';
 import { DEFAULT_GUESS_ITEMS } from './guess/schema';
 import { SpellCheck, ListOrdered, PenLine, Eye } from 'lucide-react';
+
+// Lazy-loaded Editors and Players for fast initial page load (Code Splitting)
+const FlashcardEditor = React.lazy(() => import('./flashcard/Editor'));
+const FlashcardPlayer = React.lazy(() => import('./flashcard/Player'));
+
+const QuizEditor = React.lazy(() => import('./kuis/Editor'));
+const QuizPlayer = React.lazy(() => import('./kuis/Player'));
+
+const MatchingEditor = React.lazy(() => import('./matching/Editor'));
+const MatchingPlayer = React.lazy(() => import('./matching/Player'));
+
+const SlideEditor = React.lazy(() => import('./slide/Editor'));
+const SlidePlayer = React.lazy(() => import('./slide/Player'));
+
+const VocabPictureEditor = React.lazy(() => import('./vocab-picture/Editor'));
+const VocabPicturePlayer = React.lazy(() => import('./vocab-picture/Player'));
+
+const ReadingEditor = React.lazy(() => import('./reading/Editor'));
+const ReadingPlayer = React.lazy(() => import('./reading/Player'));
+
+const WordTableEditor = React.lazy(() => import('./word-table/Editor'));
+const WordTablePlayer = React.lazy(() => import('./word-table/Player'));
+
+const TrueFalseEditor = React.lazy(() => import('./true-false/Editor'));
+const TrueFalsePlayer = React.lazy(() => import('./true-false/Player'));
+
+const MemoryEditor = React.lazy(() => import('./memory/Editor'));
+const MemoryPlayer = React.lazy(() => import('./memory/Player'));
+
+const WheelEditor = React.lazy(() => import('./wheel/Editor'));
+const WheelPlayer = React.lazy(() => import('./wheel/Player'));
+
+const LetterOrderEditor = React.lazy(() => import('./letter-order/Editor'));
+const LetterOrderPlayer = React.lazy(() => import('./letter-order/Player'));
+
+const SentenceOrderEditor = React.lazy(() => import('./sentence-order/Editor'));
+const SentenceOrderPlayer = React.lazy(() => import('./sentence-order/Player'));
+
+const FillBlankEditor = React.lazy(() => import('./fill-blank/Editor'));
+const FillBlankPlayer = React.lazy(() => import('./fill-blank/Player'));
+
+const GuessEditor = React.lazy(() => import('./guess/Editor'));
+const GuessPlayer = React.lazy(() => import('./guess/Player'));
 
 export interface TemplateDefinition {
   id: TemplateType;

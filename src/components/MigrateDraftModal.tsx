@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { UploadCloud, FileText, X } from 'lucide-react';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface MigrateDraftModalProps {
   isOpen: boolean;
@@ -14,11 +15,23 @@ export const MigrateDraftModal: React.FC<MigrateDraftModalProps> = ({
   onConfirm,
   onDismiss,
 }) => {
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useModalAccessibility(isOpen, onDismiss, modalRef);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-xs animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border-2 border-stone-200 text-navy-deep">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-xs animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Simpan Draf ke Cloud"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border-2 border-stone-200 text-navy-deep outline-none"
+      >
         <button
           onClick={onDismiss}
           type="button"

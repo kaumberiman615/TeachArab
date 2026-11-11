@@ -68,17 +68,17 @@ export class ErrorBoundary extends Component<Props, State> {
             <button
               type="button"
               onClick={this.handleReload}
-              className="px-4 py-2 text-xs font-black bg-[#0A254D] hover:bg-black text-white rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:translate-y-0.5"
+              className="min-h-[44px] px-5 py-2.5 text-xs font-black bg-[#0A254D] hover:bg-black text-white rounded-full flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:translate-y-0.5"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-4 h-4" />
               <span>Muat ulang</span>
             </button>
             <button
               type="button"
               onClick={this.handleBack}
-              className="px-4 py-2 text-xs font-black bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-full flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5"
+              className="min-h-[44px] px-5 py-2.5 text-xs font-black bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-full flex items-center gap-1.5 transition-all cursor-pointer active:translate-y-0.5 border border-stone-200"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-4 h-4" />
               <span>Kembali</span>
             </button>
           </div>

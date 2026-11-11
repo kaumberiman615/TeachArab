@@ -203,8 +203,9 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
             <button
               type="button"
               onClick={handleExit}
-              className="w-9 h-9 flex items-center justify-center text-stone-500 hover:text-navy-deep rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-500 hover:text-navy-deep rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
               title="Keluar / Kembali"
+              aria-label="Keluar / Kembali"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
@@ -270,8 +271,9 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
             <button
               type="button"
               onClick={onToggleSound}
-              className="w-10 h-10 flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-navy-deep rounded-full transition-colors cursor-pointer"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-navy-deep rounded-full transition-colors cursor-pointer"
               title={soundMuted ? 'Nyalakan Efek Suara' : 'Matikan Efek Suara'}
+              aria-label={soundMuted ? 'Nyalakan Efek Suara' : 'Matikan Efek Suara'}
             >
               {soundMuted ? <VolumeX className="w-4 h-4 text-stone-400" /> : <Volume2 className="w-4 h-4 text-cyan-bubble" />}
             </button>
@@ -281,8 +283,9 @@ export const GameTopBar: React.FC<GameTopBarProps> = ({
             <button
               type="button"
               onClick={onToggleFullscreen}
-              className="w-10 h-10 flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-navy-deep rounded-full transition-colors cursor-pointer"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-navy-deep rounded-full transition-colors cursor-pointer"
               title="Layar Penuh Proyektor"
+              aria-label="Layar Penuh Proyektor"
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>

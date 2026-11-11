@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -10,10 +11,13 @@ import {
   ChevronRight,
   Volume2,
   Users,
+  HelpCircle,
 } from 'lucide-react';
 import { getAllMateriTemplates, getAllGameTemplates } from '../templates/registry';
 import { TemplateType } from '../types';
 import { LogoIcon } from '../components/Logo';
+import OnboardingModal from '../components/OnboardingModal';
+import { getSafeLocalStorage, ONBOARDING_COMPLETED_KEY } from '../utils/safeStorage';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -21,6 +25,18 @@ interface HomePageProps {
 }
 
 export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps) {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    const hasSeen = getSafeLocalStorage(ONBOARDING_COMPLETED_KEY);
+    if (!hasSeen) {
+      const timer = setTimeout(() => {
+        setShowOnboarding(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const materiTemplates = getAllMateriTemplates();
   const gameTemplates = getAllGameTemplates();
 
@@ -59,10 +75,22 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
         </div>
 
         <div className="max-w-5xl mx-auto relative z-10 text-center space-y-6">
-          {/* Playful Kicker Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-[#0A254D] text-xs font-black tracking-wider uppercase shadow-[0_2px_0_rgba(10,37,77,0.15)]">
-            <LogoIcon size={18} className="shrink-0" />
-            <span>Teach Arab · Media & Game Interaktif</span>
+          {/* Playful Kicker Pill Badge + Tour Button */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-[#0A254D] text-xs font-black tracking-wider uppercase shadow-[0_2px_0_rgba(10,37,77,0.15)]">
+              <LogoIcon size={18} className="shrink-0" />
+              <span>Teach Arab · Media & Game Interaktif</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowOnboarding(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0A254D] hover:bg-[#071933] text-white text-xs font-black uppercase tracking-wider shadow-[0_2px_0_#000] cursor-pointer transition-all active:translate-y-0.5"
+              title="Buka panduan tur singkat 4 langkah"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#FED034]" />
+              <span>Tur 4 Langkah</span>
+            </button>
           </div>
 
           {/* Chunky Playful Title */}
@@ -483,6 +511,13 @@ export default function HomePage({ onNavigate, onSelectTemplate }: HomePageProps
           </div>
         </div>
       </section>
+
+      {/* Onboarding Tour Modal (4 Langkah) */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onNavigate={onNavigate}
+      />
     </div>
   );
 }

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TemplateType, FlashcardItem, QuizItem, TrueFalseItem, FillBlankItem } from '../types';
 import { generateAiContent, fetchAiStatus } from '../services/aiService';
 import { sanitizeForFirestore } from '../services/cloudProjects';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 import {
   Sparkles,
   X,
@@ -211,6 +212,9 @@ export default function AiAssistantModal({
   onClose,
   onApplyItems,
 }: AiAssistantModalProps) {
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useModalAccessibility(isOpen, onClose, modalRef);
+
   const tasks = getAvailableTasksForTemplate(templateType);
   const [selectedTask, setSelectedTask] = useState<TaskOption>(tasks[0]);
   const [topicOrText, setTopicOrText] = useState('');
@@ -540,8 +544,17 @@ export default function AiAssistantModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0A254D]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-2 border-[#0A254D] my-auto animate-in fade-in zoom-in-95">
+    <div
+      className="fixed inset-0 z-50 bg-[#0A254D]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Bantuan AI ${meta.name}`}
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-2 border-[#0A254D] my-auto animate-in fade-in zoom-in-95 outline-none"
+      >
         {/* Header Bar */}
         <div className="px-5 sm:px-6 py-4 border-b-2 border-stone-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">

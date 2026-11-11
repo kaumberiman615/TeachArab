@@ -367,17 +367,31 @@ export default function MemoryPlayer({
       )}
 
       {/* Cards Grid */}
-      <div className={`grid ${gridColsClass} gap-3 sm:gap-4`}>
+      <div className={`grid ${gridColsClass} ${cards.length > 12 ? 'gap-2 sm:gap-3' : 'gap-3 sm:gap-4'}`}>
         {cards.map((card, idx) => {
           const isRevealed = card.isFlipped || card.isMatched;
           const imageMedia = card.mediaImageId ? mediaFiles[card.mediaImageId] : undefined;
           const imageUrl = imageMedia ? getMediaUrl(imageMedia) : undefined;
+          const cardLabel = isRevealed
+            ? card.cardType === 'arabic'
+              ? `Kartu ${idx + 1}: ${card.arabicText}`
+              : `Kartu ${idx + 1}: ${card.meaningText}`
+            : `Kartu ${idx + 1}: Tertutup`;
 
           return (
             <div
               key={card.instanceId}
+              role="button"
+              tabIndex={0}
+              aria-label={cardLabel}
               onClick={() => handleCardClick(idx)}
-              className={`aspect-[3/4] sm:aspect-square rounded-2xl cursor-pointer select-none transition-all duration-300 transform perspective-1000 ${
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleCardClick(idx);
+                }
+              }}
+              className={`aspect-[3/4] sm:aspect-square min-h-[44px] rounded-2xl cursor-pointer select-none transition-all duration-300 transform perspective-1000 outline-hidden focus-visible:ring-3 focus-visible:ring-[#0A254D] focus-visible:ring-offset-2 ${
                 card.isMatched
                   ? 'opacity-85 ring-3 ring-emerald-500 scale-95 shadow-sm'
                   : isRevealed

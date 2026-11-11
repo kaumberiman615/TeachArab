@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Cloud, CheckCircle2, ShieldCheck, X } from 'lucide-react';
 import { LogoIcon } from './Logo';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface LoginExplanationModalProps {
   isOpen: boolean;
@@ -15,11 +16,23 @@ export const LoginExplanationModal: React.FC<LoginExplanationModalProps> = ({
   onConfirmLogin,
   reason = 'general',
 }) => {
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useModalAccessibility(isOpen, onClose, modalRef);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 border-2 border-stone-100 text-stone-800 space-y-5">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Penjelasan Masuk Akun Google"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="relative w-full max-w-md bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 border-2 border-stone-100 text-stone-800 space-y-5 outline-none"
+      >
         <button
           onClick={onClose}
           type="button"

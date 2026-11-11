@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { TemplateType } from '../types';
 import { parseQuickInput } from '../utils/quickInput';
 import { X, Sparkles, Check, FileText } from 'lucide-react';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface QuickInputModalProps {
   isOpen: boolean;
@@ -18,6 +19,9 @@ export default function QuickInputModal({
 }: QuickInputModalProps) {
   const [rawText, setRawText] = useState('');
   const [applyMode, setApplyMode] = useState<'replace' | 'append'>('append');
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  useModalAccessibility(isOpen, onClose, modalRef);
 
   if (!isOpen) return null;
 
@@ -78,8 +82,17 @@ export default function QuickInputModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-      <div className="bg-white rounded-[32px] max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border-2 border-stone-100">
+    <div
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Input Cepat Batch"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="bg-white rounded-[32px] max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border-2 border-stone-100 outline-none"
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b-2 border-stone-100 flex items-center justify-between bg-[#FAFCFC]">
           <div className="flex items-center gap-3">

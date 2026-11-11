@@ -8,6 +8,7 @@ import {
   type User,
   isFirebaseConfigured,
 } from './firebase';
+import { formatAppError } from '../utils/errorHelper';
 
 interface AuthContextType {
   user: User | null;
@@ -54,9 +55,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return result.user;
     } catch (error: any) {
       console.error('Gagal login dengan Google:', error);
-      // Don't throw for popup closed by user
       if (error?.code !== 'auth/popup-closed-by-user' && error?.code !== 'auth/cancelled-popup-request') {
-        alert('Gagal masuk dengan Google: ' + (error?.message || 'Terjadi kesalahan'));
+        const formatted = formatAppError(error, 'login');
+        alert(`${formatted.title}\n\n${formatted.message}\n\nSaran: ${formatted.suggestion}`);
       }
       return null;
     }

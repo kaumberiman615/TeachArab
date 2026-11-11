@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { getPublicProjectByShareId } from '../services/cloudProjects';
 import { CloudProject, TemplateType } from '../types';
 import { getTemplateOrNull } from '../templates/registry';
-import { AlertCircle, Maximize2, Minimize2, Sparkles, Home } from 'lucide-react';
+import { AlertCircle, Maximize2, Minimize2, Sparkles, Home, Loader2 } from 'lucide-react';
 import Logo, { LogoIcon } from '../components/Logo';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 interface PublicSharePageProps {
   shareId: string;
@@ -172,15 +173,30 @@ export default function PublicSharePage({ shareId, onNavigate }: PublicSharePage
         </div>
       </header>
 
-      {/* Responsive Player Area */}
+      {/* Responsive Player Area with ErrorBoundary */}
       <main className="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-6 md:p-8 flex flex-col justify-center">
-        <PlayerComponent
-          items={project.content.items}
-          theme={project.content.theme}
-          settings={project.content.settings}
-          mediaFiles={mediaFiles}
-          isProjectorMode={true}
-        />
+        <ErrorBoundary
+          title="Terjadi kesalahan pada tampilan materi"
+          fallbackMessage="Materi ini mengalami kendala teknis saat memuat data."
+          onNavigateBack={() => onNavigate('/')}
+        >
+          <Suspense
+            fallback={
+              <div className="p-16 flex flex-col items-center justify-center min-h-[360px] text-stone-400 space-y-4">
+                <Loader2 className="w-10 h-10 text-[#00B4D8] animate-spin" />
+                <span className="text-sm font-bold text-stone-600">Memuat materi pembelajaran...</span>
+              </div>
+            }
+          >
+            <PlayerComponent
+              items={project.content.items}
+              theme={project.content.theme}
+              settings={project.content.settings}
+              mediaFiles={mediaFiles}
+              isProjectorMode={true}
+            />
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       {/* Minimal Footer with Teach Arab Branding */}

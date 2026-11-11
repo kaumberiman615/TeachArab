@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Cloud,
   AlertCircle,
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { CLOUDINARY_MEDIA_NOTICE, YOUTUBE_VIDEO_RECOMMENDATION } from '../config/limits';
 import { FailedFileUpload } from '../services/cloudProjects';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 export interface UploadProgressData {
   currentIndex: number;
@@ -63,6 +64,10 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
   onProceedAnyway,
   onOpenExport,
 }) => {
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const canClose = status !== 'uploading' && status !== 'saving_firestore';
+  useModalAccessibility(isOpen && canClose, onClose, modalRef);
+
   if (!isOpen) return null;
 
   const total = progress?.totalItems || 0;
@@ -76,8 +81,17 @@ export const UploadProgressModal: React.FC<UploadProgressModalProps> = ({
       : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-xs animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border-2 border-stone-200 text-navy-deep max-h-[90vh] overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-deep/60 backdrop-blur-xs animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Status Unggah & Simpan Cloud"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-7 border-2 border-stone-200 text-navy-deep max-h-[90vh] overflow-y-auto outline-none"
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Logo from './components/Logo';
 import HomePage from './pages/HomePage';
 import EditorPage from './pages/EditorPage';
@@ -127,44 +128,8 @@ export default function App() {
         </main>
 
         {/* Playful Footer */}
-        {!isStandaloneView && (
-          <footer className="bg-white border-t-2 border-stone-100 py-8 px-4 sm:px-6 text-center text-xs text-stone-600">
-            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Logo variant="full" size="sm" showTagline={false} />
-                <span className="text-stone-300" aria-hidden="true">·</span>
-                <span className="font-medium text-stone-500">Materi & Game Bahasa Arab Interaktif</span>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-3 font-bold text-xs text-stone-600">
-                <button
-                  type="button"
-                  onClick={() => navigate('/materi-saya')}
-                  className="hover:text-[#00B4D8] transition-colors cursor-pointer text-[#0A254D]"
-                >
-                  Materi Saya
-                </button>
-                <span className="text-stone-300" aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  onClick={() => navigate('/draf')}
-                  className="hover:text-[#0A254D] transition-colors cursor-pointer"
-                >
-                  Draf Lokal
-                </button>
-                <span className="text-stone-300" aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  onClick={() => navigate('/bantuan')}
-                  className="hover:text-[#FF3B8D] transition-colors cursor-pointer"
-                >
-                  Panduan
-                </button>
-                <span className="text-stone-300" aria-hidden="true">·</span>
-                <span className="text-stone-400 font-semibold">100% Offline & Mandiri</span>
-              </div>
-            </div>
-          </footer>
-        )}
+        {/* Footer with App Version, Feedback link, and Privacy note */}
+        {!isStandaloneView && <Footer onNavigate={navigate} />}
       </div>
     </AuthProvider>
   );
